@@ -72,8 +72,49 @@ main {
 }
 
 @media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
     main {
         grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    /* Afficher les filtres en grille sur tablette/mobile pour gagner de la place */
+    #filters-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .filter-group {
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    /* Retour à une colonne pour les filtres sur petits écrans */
+    #filters-container {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-group select {
+        padding: 0.75rem; /* Meilleure cible tactile */
+    }
+
+    .stat-card .value {
+        font-size: 1.5rem;
+    }
+    
+    .charts-section h2, 
+    .benefits-section h2, 
+    .anecdotes-section h2 {
+        font-size: 1.25rem;
     }
 }
 
