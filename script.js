@@ -114,7 +114,63 @@ function updateStats() {
     document.getElementById('avg-salary').textContent = count > 0 ? formatMoney(mean) : '- €';
     document.getElementById('median-salary').textContent = count > 0 ? formatMoney(median) : '- €';
 
+    updateBenefits(filteredData);
     updateAnecdotes(filteredData);
+}
+
+function updateBenefits(data) {
+    const list = document.getElementById('benefits-list');
+    list.innerHTML = '';
+    
+    const count = data.length;
+    if (count === 0) {
+        list.innerHTML = '<p style="color:var(--text-muted)">Pas de données.</p>';
+        return;
+    }
+
+    const keywords = [
+        { label: 'Télétravail', terms: ['télétravail', 'teletravail', 'remote'] },
+        { label: 'Tickets Resto', terms: ['ticket', 'restaurant', 'tr', 'panier'] },
+        { label: 'Voiture', terms: ['voiture', 'véhicule'] },
+        { label: 'RTT / Congés', terms: ['rtt', 'congés', 'vacances'] },
+        { label: 'Intéressement', terms: ['intéressement', 'participation', 'interessement'] }
+    ];
+
+    const stats = keywords.map(k => {
+        const matchCount = data.filter(d => {
+            if (!d.avantages) return false;
+            const text = d.avantages.toLowerCase();
+            return k.terms.some(term => text.includes(term));
+        }).length;
+        
+        return { label: k.label, percentage: Math.round((matchCount / count) * 100) };
+    });
+
+    // Trier par pourcentage décroissant
+    stats.sort((a, b) => b.percentage - a.percentage);
+
+    stats.forEach(stat => {
+        if (stat.percentage > 0) {
+            const row = document.createElement('div');
+            row.className = 'benefit-row';
+            
+            const info = document.createElement('div');
+            info.className = 'benefit-info';
+            info.innerHTML = `<span>${stat.label}</span><span>${stat.percentage}%</span>`;
+            
+            const barContainer = document.createElement('div');
+            barContainer.className = 'benefit-bar-bg';
+            
+            const bar = document.createElement('div');
+            bar.className = 'benefit-bar-fill';
+            bar.style.width = `${stat.percentage}%`;
+            
+            barContainer.appendChild(bar);
+            row.appendChild(info);
+            row.appendChild(barContainer);
+            list.appendChild(row);
+        }
+    });
 }
 
 function updateAnecdotes(data) {
