@@ -178,16 +178,50 @@ function updateStats() {
     updateChart(filteredData); // On passe les données brutes pour compter par catégories
     updateBenefits(filteredData);
     updateAnecdotes(filteredData);
+    updateFilterCounters(filteredData, activeFilters); // Mise à jour dynamique des compteurs
+}
+
+function updateFilterCounters(filteredData, activeFilters) {
+    filtersConfig.forEach(config => {
+        const select = document.querySelector(`select[name="${config.key}"]`);
+        if (!select) return;
+
+        // Si ce filtre est celui qui vient d'être modifié, on garde ses options intactes (sauf si on veut tout recalculer)
+        // Mais pour une UX correcte "facettes", on recalcule généralement tout SAUF le filtre courant pour voir l'impact
+        // Ici, on va recalculer les counts basés sur les AUTRES filtres actifs.
+        
+        // 1. Créer un dataset temporaire filtré par tous les filtres SAUF celui en cours (config.key)
+        const contextFilters = { ...activeFilters };
+        delete contextFilters[config.key];
+
+        const contextData = allData.filter(item => {
+            for (const key in contextFilters) {
+                if (String(item[key]) !== String(contextFilters[key])) {
+                    return false;
+                }
+            }
+            return true;
+        });
+
+        // 2. Compter les occurrences dans ce contexte
+        const counts = contextData.reduce((acc, item) => {
+            const val = item[config.key];
+            acc[val] = (acc[val] || 0) + 1;
+            return acc;
+        }, {});
+
+        // 3. Mettre à jour les labels des options
+        Array.from(select.options).forEach(option => {
+            if (option.value === '') return; // On ne touche pas à "Tous"
+            const count = counts[option.value] || 0;
+            option.textContent = `${option.value} (${count})`;
+        });
+    });
 }
 
 // Fonction utilitaire pour convertir les strings de salaire en nombre approximatif
 function parseSalaryRange(rangeStr) {
     if (!rangeStr) return 0;
-    // Nettoyage aggressif : 
-    // 1. Remplace les 'o' par '0' (typo 1OOk)
-    // 2. Supprime les espaces
-    // 3. Remplace les tirets longs (–, —) par un tiret court (-)
-    // 4. Met en minuscule
     const cleanStr = rangeStr.toLowerCase()
         .replace(/o/g, '0')
         .replace(/\s/g, '')
