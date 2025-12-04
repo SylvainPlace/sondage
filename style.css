@@ -141,6 +141,26 @@ main {
     margin-top: 0.25rem;
 }
 
+/* Charts */
+.charts-section {
+    margin-bottom: 2rem;
+}
+
+.charts-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.chart-container {
+    background: var(--bg-card);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    height: 300px;
+    position: relative;
+}
+
 /* Benefits Section */
 .benefits-section {
     margin-bottom: 2rem;

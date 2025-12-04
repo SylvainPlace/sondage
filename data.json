@@ -7,7 +7,7 @@
     "type_structure": "Grand Groupe",
     "poste": "Analyste Financier",
     "experience": 3,
-    "salaire_brut": 45000,
+    "salaire_brut": "45-50k€",
     "primes": 5000,
     "avantages": "TR, Mutuelle, Intéressement",
     "conseil": "Négociez votre salaire d'entrée, c'est déterminant pour la suite."
@@ -20,7 +20,7 @@
     "type_structure": "ESN",
     "poste": "Développeuse Fullstack",
     "experience": 4,
-    "salaire_brut": 42000,
+    "salaire_brut": "40-45k€",
     "primes": 2000,
     "avantages": "Télétravail, TR",
     "conseil": ""
@@ -33,7 +33,7 @@
     "type_structure": "PME",
     "poste": "Chef de projet",
     "experience": 2,
-    "salaire_brut": 32000,
+    "salaire_brut": "30-35k€",
     "primes": 1000,
     "avantages": "TR",
     "conseil": "L'ambiance compte autant que le salaire."
@@ -46,7 +46,7 @@
     "type_structure": "Startup",
     "poste": "Lead Dev",
     "experience": 5,
-    "salaire_brut": 65000,
+    "salaire_brut": "60-70k€",
     "primes": 0,
     "avantages": "BSPCE, Télétravail illimité",
     "conseil": "Rejoignez une startup pour apprendre vite."
@@ -59,7 +59,7 @@
     "type_structure": "Grand Groupe",
     "poste": "Ingénieur Process",
     "experience": 3,
-    "salaire_brut": 38000,
+    "salaire_brut": "35-40k€",
     "primes": 3500,
     "avantages": "Véhicule de fonction",
     "conseil": ""

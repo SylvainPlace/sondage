@@ -1,4 +1,5 @@
 let allData = [];
+let salaryChart = null;
 
 // Configuration des champs à filtrer
 // label: Texte affiché, key: clé dans le JSON
@@ -90,32 +91,135 @@ function updateStats() {
 
     // 3. Calculs
     const count = filteredData.length;
-    const salaires = filteredData.map(d => d.salaire_brut).sort((a, b) => a - b);
+    
+    // Conversion des plages de salaire en nombre (valeur médiane) pour le calcul de la moyenne
+    const salairesNumeriques = filteredData.map(d => parseSalaryRange(d.salaire_brut)).filter(val => val > 0).sort((a, b) => a - b);
     
     let mean = 0;
     let median = 0;
 
-    if (count > 0) {
+    if (salairesNumeriques.length > 0) {
         // Moyenne
-        const sum = salaires.reduce((acc, val) => acc + val, 0);
-        mean = Math.round(sum / count);
+        const sum = salairesNumeriques.reduce((acc, val) => acc + val, 0);
+        mean = Math.round(sum / salairesNumeriques.length);
 
         // Médiane
-        const mid = Math.floor(count / 2);
-        if (count % 2 !== 0) {
-            median = salaires[mid];
+        const mid = Math.floor(salairesNumeriques.length / 2);
+        if (salairesNumeriques.length % 2 !== 0) {
+            median = salairesNumeriques[mid];
         } else {
-            median = Math.round((salaires[mid - 1] + salaires[mid]) / 2);
+            median = Math.round((salairesNumeriques[mid - 1] + salairesNumeriques[mid]) / 2);
         }
     }
 
     // 4. Mise à jour du DOM
     document.getElementById('count').textContent = count;
-    document.getElementById('avg-salary').textContent = count > 0 ? formatMoney(mean) : '- €';
-    document.getElementById('median-salary').textContent = count > 0 ? formatMoney(median) : '- €';
+    document.getElementById('avg-salary').textContent = salairesNumeriques.length > 0 ? formatMoney(mean) : '- €';
+    document.getElementById('median-salary').textContent = salairesNumeriques.length > 0 ? formatMoney(median) : '- €';
 
+    updateChart(filteredData); // On passe les données brutes pour compter par catégories
     updateBenefits(filteredData);
     updateAnecdotes(filteredData);
+}
+
+// Fonction utilitaire pour convertir les strings de salaire en nombre approximatif
+function parseSalaryRange(rangeStr) {
+    if (!rangeStr) return 0;
+    const cleanStr = rangeStr.toLowerCase().replace(/o/g, '0').replace(/\s/g, ''); // Fix typos like "1 OOk"
+    
+    if (cleanStr.includes('moinsde30')) return 28000;
+    if (cleanStr.includes('plusde100')) return 110000;
+
+    // Format "30-35k€" -> extraction des nombres
+    const matches = cleanStr.match(/(\d+)-(\d+)/);
+    if (matches) {
+        const min = parseInt(matches[1]) * 1000;
+        const max = parseInt(matches[2]) * 1000;
+        return (min + max) / 2;
+    }
+    
+    return 0;
+}
+
+function updateChart(data) {
+    const ctx = document.getElementById('salaryChart').getContext('2d');
+    
+    if (salaryChart) {
+        salaryChart.destroy();
+    }
+
+    if (data.length === 0) return;
+
+    // Définition de l'ordre officiel des catégories
+    const categories = [
+        'Moins de 30k€',
+        '30-35k€',
+        '35-40k€',
+        '40-45k€',
+        '45-50k€',
+        '50-60k€',
+        '60-70k€',
+        '70-80k€',
+        '80-90k€',
+        '90-100k€',
+        'Plus de 100k€'
+    ];
+
+    // Comptage par catégorie
+    const counts = categories.map(cat => {
+        return data.filter(d => {
+            // Normalisation pour comparaison (gestion des typos mineures)
+            const dClean = d.salaire_brut.toLowerCase().replace(/\s/g, '').replace(/o/g, '0').replace('—', '-');
+            const catClean = cat.toLowerCase().replace(/\s/g, '');
+            
+            // Correspondance exacte ou partielle robuste
+            if (catClean.includes('90-100') && dClean.includes('90-100')) return true;
+            return dClean === catClean;
+        }).length;
+    });
+
+    salaryChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: categories,
+            datasets: [{
+                label: 'Nombre d\'alumni',
+                data: counts,
+                backgroundColor: '#2563eb',
+                borderRadius: 4,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        title: (items) => `Tranche : ${items[0].label}`,
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
 }
 
 function updateBenefits(data) {
