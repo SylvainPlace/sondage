@@ -39,6 +39,30 @@ header h1 {
 
 header p {
     color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.cta-button {
+    display: inline-block;
+    background-color: var(--primary);
+    color: white;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+}
+
+.cta-button:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 8px rgba(37, 99, 235, 0.3);
+}
+
+.cta-button:active {
+    transform: translateY(0);
 }
 
 main {
