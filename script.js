@@ -83,56 +83,161 @@ function initFilters() {
 
         const label = document.createElement('label');
         label.textContent = config.label;
+
+        // Custom Checkbox Dropdown Structure
+        const dropdown = document.createElement('div');
+        dropdown.className = 'custom-dropdown';
         
-        const select = document.createElement('select');
-        select.name = config.key;
-        select.addEventListener('change', updateStats);
+        // Bouton principal du dropdown
+        const dropdownBtn = document.createElement('button');
+        dropdownBtn.className = 'dropdown-btn';
+        dropdownBtn.textContent = 'Tous'; // Texte par défaut
+        dropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // Fermer les autres dropdowns
+            document.querySelectorAll('.dropdown-content.show').forEach(el => {
+                if (el !== dropdownContent) el.classList.remove('show');
+            });
+            dropdownContent.classList.toggle('show');
+        });
 
-        const defaultOption = document.createElement('option');
-        defaultOption.value = '';
-        defaultOption.textContent = 'Tous';
-        select.appendChild(defaultOption);
+        // Contenu du dropdown (liste de checkboxes)
+        const dropdownContent = document.createElement('div');
+        dropdownContent.className = 'dropdown-content';
 
-        // Calcul des occurrences pour chaque valeur
+        // Option "Tous" (reset)
+        const allOptionDiv = document.createElement('div');
+        allOptionDiv.className = 'checkbox-option';
+        const allCheckbox = document.createElement('input');
+        allCheckbox.type = 'checkbox';
+        allCheckbox.id = `filter-${config.key}-all`;
+        allCheckbox.checked = true;
+        allCheckbox.addEventListener('change', () => {
+            if (allCheckbox.checked) {
+                // Désélectionner les autres
+                dropdownContent.querySelectorAll('input:not(#filter-' + config.key + '-all)').forEach(cb => cb.checked = false);
+                updateBtnText();
+                updateStats();
+            } else {
+                // On ne peut pas décocher "Tous" si rien d'autre n'est coché (il faut au moins une sélection)
+                // Mais ici on laisse faire, si rien n'est coché => comme si Tous
+                const anyChecked = Array.from(dropdownContent.querySelectorAll('input:not(#filter-' + config.key + '-all)')).some(cb => cb.checked);
+                if (!anyChecked) allCheckbox.checked = true;
+            }
+        });
+        
+        const allLabel = document.createElement('label');
+        allLabel.htmlFor = `filter-${config.key}-all`;
+        allLabel.textContent = 'Tous';
+        
+        allOptionDiv.appendChild(allCheckbox);
+        allOptionDiv.appendChild(allLabel);
+        dropdownContent.appendChild(allOptionDiv);
+
+        // Génération des options dynamiques
         const counts = allData.reduce((acc, item) => {
             const val = item[config.key];
             acc[val] = (acc[val] || 0) + 1;
             return acc;
         }, {});
 
-        uniqueValues.forEach(val => {
+        uniqueValues.forEach((val, index) => {
             if (val !== undefined && val !== null && val !== '') {
-                const option = document.createElement('option');
-                option.value = val;
-                option.textContent = `${val} (${counts[val] || 0})`;
-                select.appendChild(option);
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'checkbox-option';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `filter-${config.key}-${index}`;
+                checkbox.value = val;
+                checkbox.dataset.key = config.key;
+                
+                checkbox.addEventListener('change', () => {
+                    if (checkbox.checked) {
+                        allCheckbox.checked = false;
+                    } else {
+                        // Si plus rien n'est coché, recocher "Tous"
+                        const anyChecked = Array.from(dropdownContent.querySelectorAll('input:not(#filter-' + config.key + '-all)')).some(cb => cb.checked);
+                        if (!anyChecked) allCheckbox.checked = true;
+                    }
+                    updateBtnText();
+                    updateStats();
+                });
+
+                const optLabel = document.createElement('label');
+                optLabel.htmlFor = `filter-${config.key}-${index}`;
+                optLabel.textContent = `${val} (${counts[val] || 0})`; // Initial count
+
+                optionDiv.appendChild(checkbox);
+                optionDiv.appendChild(optLabel);
+                dropdownContent.appendChild(optionDiv);
             }
         });
 
+        function updateBtnText() {
+            const checked = Array.from(dropdownContent.querySelectorAll('input:not(#filter-' + config.key + '-all):checked'));
+            if (checked.length === 0) {
+                dropdownBtn.textContent = 'Tous';
+                allCheckbox.checked = true;
+            } else if (checked.length === 1) {
+                dropdownBtn.textContent = checked[0].value;
+            } else {
+                dropdownBtn.textContent = `${checked.length} sélectionnés`;
+            }
+        }
+
+        dropdown.appendChild(dropdownBtn);
+        dropdown.appendChild(dropdownContent);
         group.appendChild(label);
-        group.appendChild(select);
+        group.appendChild(dropdown);
         container.appendChild(group);
+    });
+
+    // Fermer les dropdowns au clic ailleurs
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.custom-dropdown')) {
+            document.querySelectorAll('.dropdown-content.show').forEach(el => el.classList.remove('show'));
+        }
     });
 }
 
 function resetFilters() {
-    const selects = document.querySelectorAll('#filters-container select');
-    selects.forEach(s => s.value = '');
+    document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
+        const allCheckbox = dropdown.querySelector('input[id$="-all"]');
+        if (allCheckbox) {
+            allCheckbox.checked = true;
+            // Déclencher l'event manuellement ou resetter les autres
+            dropdown.querySelectorAll('input:not([id$="-all"])').forEach(cb => cb.checked = false);
+            // Update text btn
+            const btn = dropdown.querySelector('.dropdown-btn');
+            if (btn) btn.textContent = 'Tous';
+        }
+    });
     updateStats();
 }
 
 function updateStats() {
     // 1. Récupérer les valeurs des filtres
     const activeFilters = {};
-    document.querySelectorAll('#filters-container select').forEach(s => {
-        if (s.value) activeFilters[s.name] = s.value;
+    
+    document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
+        const checkboxes = Array.from(dropdown.querySelectorAll('input:checked:not([id$="-all"])'));
+        if (checkboxes.length > 0) {
+            // On récupère la clé depuis le dataset du premier checkbox coché (ou via un attribut sur le dropdown)
+            // Ici on va tricher un peu et regarder l'ID ou ajouter un data-key sur le container
+            const key = checkboxes[0].dataset.key;
+            if (key) {
+                activeFilters[key] = checkboxes.map(cb => cb.value);
+            }
+        }
     });
 
     // 2. Filtrer les données
     const filteredData = allData.filter(item => {
         for (const key in activeFilters) {
-            // Comparaison souple (String vs Number)
-            if (String(item[key]) !== String(activeFilters[key])) {
+            const filterValues = activeFilters[key];
+            const itemValue = String(item[key]);
+            if (!filterValues.some(val => String(val) === itemValue)) {
                 return false;
             }
         }
@@ -196,7 +301,10 @@ function updateFilterCounters(filteredData, activeFilters) {
 
         const contextData = allData.filter(item => {
             for (const key in contextFilters) {
-                if (String(item[key]) !== String(contextFilters[key])) {
+                const filterValues = contextFilters[key]; // Tableau des valeurs acceptées
+                const itemValue = String(item[key]);
+                // Si la valeur de l'item ne correspond à AUCUNE des valeurs sélectionnées pour ce filtre
+                if (!filterValues.some(val => String(val) === itemValue)) {
                     return false;
                 }
             }
