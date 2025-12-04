@@ -15,6 +15,19 @@ const filtersConfig = [
 document.addEventListener('DOMContentLoaded', () => {
     fetchData();
     document.getElementById('reset-filters').addEventListener('click', resetFilters);
+    
+    // Scroll to top logic
+    const scrollTopBtn = document.getElementById('scroll-top');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            scrollTopBtn.classList.add('visible');
+        } else {
+            scrollTopBtn.classList.remove('visible');
+        }
+    });
+    scrollTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 });
 
 async function fetchData() {
@@ -80,11 +93,18 @@ function initFilters() {
         defaultOption.textContent = 'Tous';
         select.appendChild(defaultOption);
 
+        // Calcul des occurrences pour chaque valeur
+        const counts = allData.reduce((acc, item) => {
+            const val = item[config.key];
+            acc[val] = (acc[val] || 0) + 1;
+            return acc;
+        }, {});
+
         uniqueValues.forEach(val => {
             if (val !== undefined && val !== null && val !== '') {
                 const option = document.createElement('option');
                 option.value = val;
-                option.textContent = val;
+                option.textContent = `${val} (${counts[val] || 0})`;
                 select.appendChild(option);
             }
         });
@@ -143,6 +163,14 @@ function updateStats() {
     }
 
     // 4. Mise à jour du DOM
+    if (count === 0) {
+        document.getElementById('no-results').style.display = 'block';
+        document.getElementById('results-content').style.display = 'none';
+    } else {
+        document.getElementById('no-results').style.display = 'none';
+        document.getElementById('results-content').style.display = 'block';
+    }
+
     document.getElementById('count').textContent = count;
     document.getElementById('avg-salary').textContent = salairesNumeriques.length > 0 ? formatMoney(mean) : '- €';
     document.getElementById('median-salary').textContent = salairesNumeriques.length > 0 ? formatMoney(median) : '- €';

@@ -39,7 +39,14 @@
             </aside>
 
             <section class="results-panel">
-                <div class="stats-grid">
+                <div id="no-results" style="display: none; text-align: center; padding: 3rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+                    <h3>Aucun résultat trouvé</h3>
+                    <p style="color: var(--text-muted);">Essayez de modifier vos filtres pour élargir la recherche.</p>
+                </div>
+
+                <div id="results-content">
+                    <div class="stats-grid">
                     <div class="stat-card">
                         <h3>Salaire Moyen</h3>
                         <div class="value" id="avg-salary">- €</div>
@@ -77,9 +84,11 @@
                         <!-- Les anecdotes seront injectées ici -->
                     </div>
                 </div>
+                </div>
             </section>
         </main>
     </div>
+    <button id="scroll-top" class="scroll-top" aria-label="Remonter en haut">↑</button>
     <script src="script.js"></script>
 </body>
 </html>
