@@ -1,0 +1,67 @@
+[
+  {
+    "annee_diplome": 2020,
+    "sexe": "H",
+    "departement": "75",
+    "secteur": "Finance",
+    "type_structure": "Grand Groupe",
+    "poste": "Analyste Financier",
+    "experience": 3,
+    "salaire_brut": 45000,
+    "primes": 5000,
+    "avantages": "TR, Mutuelle, Intéressement",
+    "conseil": "Négociez votre salaire d'entrée, c'est déterminant pour la suite."
+  },
+  {
+    "annee_diplome": 2019,
+    "sexe": "F",
+    "departement": "92",
+    "secteur": "Informatique",
+    "type_structure": "ESN",
+    "poste": "Développeuse Fullstack",
+    "experience": 4,
+    "salaire_brut": 42000,
+    "primes": 2000,
+    "avantages": "Télétravail, TR",
+    "conseil": ""
+  },
+  {
+    "annee_diplome": 2021,
+    "sexe": "F",
+    "departement": "69",
+    "secteur": "Marketing",
+    "type_structure": "PME",
+    "poste": "Chef de projet",
+    "experience": 2,
+    "salaire_brut": 32000,
+    "primes": 1000,
+    "avantages": "TR",
+    "conseil": "L'ambiance compte autant que le salaire."
+  },
+  {
+    "annee_diplome": 2018,
+    "sexe": "H",
+    "departement": "75",
+    "secteur": "Informatique",
+    "type_structure": "Startup",
+    "poste": "Lead Dev",
+    "experience": 5,
+    "salaire_brut": 65000,
+    "primes": 0,
+    "avantages": "BSPCE, Télétravail illimité",
+    "conseil": "Rejoignez une startup pour apprendre vite."
+  },
+  {
+    "annee_diplome": 2020,
+    "sexe": "H",
+    "departement": "33",
+    "secteur": "Industrie",
+    "type_structure": "Grand Groupe",
+    "poste": "Ingénieur Process",
+    "experience": 3,
+    "salaire_brut": 38000,
+    "primes": 3500,
+    "avantages": "Véhicule de fonction",
+    "conseil": ""
+  }
+]

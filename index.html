@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salaires Alumni</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Observatoire des Salaires Alumni</h1>
+            <p>Explorez les données salariales par secteur, expérience et localisation.</p>
+        </header>
+
+        <main>
+            <aside class="filters-panel">
+                <div class="filter-header">
+                    <h2>Filtres</h2>
+                    <button id="reset-filters" class="btn-text">Réinitialiser</button>
+                </div>
+                
+                <div id="filters-container">
+                    <!-- Les filtres seront générés ici par JS -->
+                    <!-- Exemple de structure générée :
+                    <div class="filter-group">
+                        <label>Secteur</label>
+                        <select name="secteur"><option value="">Tous</option>...</select>
+                    </div>
+                    -->
+                </div>
+            </aside>
+
+            <section class="results-panel">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Salaire Moyen</h3>
+                        <div class="value" id="avg-salary">- €</div>
+                        <div class="subtitle">Brut annuel hors primes</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Salaire Médian</h3>
+                        <div class="value" id="median-salary">- €</div>
+                        <div class="subtitle">Brut annuel hors primes</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Répondants</h3>
+                        <div class="value" id="count">-</div>
+                        <div class="subtitle">Profils sélectionnés</div>
+                    </div>
+                </div>
+
+                <div class="anecdotes-section">
+                    <h2>Conseils & Retours d'expérience</h2>
+                    <div id="anecdotes-list" class="anecdotes-list">
+                        <!-- Les anecdotes seront injectées ici -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
