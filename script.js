@@ -6,6 +6,7 @@ let salaryChart = null;
 const filtersConfig = [
     { label: 'Année de Diplôme', key: 'annee_diplome' },
     { label: 'Sexe', key: 'sexe' },
+    { label: 'Expérience', key: 'xp_group' },
     { label: 'Secteur d\'activité', key: 'secteur' },
     { label: 'Type de structure', key: 'type_structure' },
     { label: 'Département', key: 'departement' }
@@ -19,7 +20,16 @@ document.addEventListener('DOMContentLoaded', () => {
 async function fetchData() {
     try {
         const response = await fetch('data.json');
-        allData = await response.json();
+        const rawData = await response.json();
+        
+        // Pré-traitement des données (création de groupes)
+        allData = rawData.map(item => {
+            return {
+                ...item,
+                xp_group: getXpGroup(item.experience)
+            };
+        });
+
         initFilters();
         updateStats();
     } catch (error) {
@@ -28,12 +38,32 @@ async function fetchData() {
     }
 }
 
+function getXpGroup(years) {
+    const xp = parseInt(years);
+    if (isNaN(xp)) return 'Non renseigné';
+    if (xp <= 1) return '0-1 an';
+    if (xp <= 3) return '2-3 ans';
+    if (xp <= 5) return '4-5 ans';
+    if (xp <= 9) return '6-9 ans';
+    return '10+ ans';
+}
+
 function initFilters() {
     const container = document.getElementById('filters-container');
     container.innerHTML = '';
 
     filtersConfig.forEach(config => {
-        const uniqueValues = [...new Set(allData.map(item => item[config.key]))].sort();
+        const uniqueValues = [...new Set(allData.map(item => item[config.key]))]
+            .sort((a, b) => {
+                // Tri spécifique pour les groupes d'expérience
+                if (config.key === 'xp_group') {
+                    const order = ['0-1 an', '2-3 ans', '4-5 ans', '6-9 ans', '10+ ans', 'Non renseigné'];
+                    return order.indexOf(a) - order.indexOf(b);
+                }
+
+                // Tri numérique si possible, sinon alphabétique
+                return !isNaN(a) && !isNaN(b) ? a - b : String(a).localeCompare(String(b));
+            });
         
         const group = document.createElement('div');
         group.className = 'filter-group';
