@@ -166,8 +166,8 @@ function parseSalaryRange(rangeStr) {
         .replace(/[–—]/g, '-') // Gère les tirets longs (en dash / em dash)
         .replace('—', '-');    // Double sécurité
     
-    if (cleanStr.includes('moinsde30')) return 28000;
-    if (cleanStr.includes('plusde100')) return 110000;
+    if (cleanStr.includes('moinsde30')) return 29000;// valeur random, pour les calculs de moyenne/médiane
+    if (cleanStr.includes('plusde100')) return 101000;// valeur random, pour les calculs de moyenne/médiane
 
     // Format "30-35k€" -> extraction des nombres
     const matches = cleanStr.match(/(\d+)-(\d+)/);
@@ -207,18 +207,17 @@ function updateChart(data) {
     // Comptage par catégorie
     const counts = categories.map(cat => {
         return data.filter(d => {
-            // Normalisation pour comparaison (gestion des typos mineures et tirets)
-            const dClean = d.salaire_brut.toLowerCase()
-                .replace(/\s/g, '')
-                .replace(/o/g, '0')
-                .replace(/[–—]/g, '-'); // Remplace tous les types de tirets
+            // Normalisation simple : minuscules, sans espaces, tirets standardisés
+            const normalize = (str) => {
+                if (!str) return '';
+                return str.toLowerCase()
+                    .replace(/\s/g, '')       // Supprime les espaces
+                    .replace(/[–—]/g, '-');   // Standardise les tirets
+            };
+
+            const dClean = normalize(d.salaire_brut);
+            const catClean = normalize(cat);
             
-            const catClean = cat.toLowerCase()
-                .replace(/\s/g, '')
-                .replace(/[–—]/g, '-');
-            
-            // Correspondance exacte ou partielle robuste
-            if (catClean.includes('90-100') && dClean.includes('90-100')) return true;
             return dClean === catClean;
         }).length;
     });
