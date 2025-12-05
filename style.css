@@ -1,5 +1,5 @@
 :root {
-    --primary: #2563eb;
+    --primary: #be9249;
     --bg-body: #f8fafc;
     --bg-card: #ffffff;
     --text-main: #1e293b;
@@ -52,13 +52,13 @@ header p {
     font-weight: 600;
     font-size: 1rem;
     transition: background-color 0.2s, transform 0.1s;
-    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 4px 6px rgba(190, 146, 73, 0.2);
 }
 
 .cta-button:hover {
-    background-color: #1d4ed8;
+    background-color: #99763a;
     transform: translateY(-1px);
-    box-shadow: 0 6px 8px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 6px 8px rgba(190, 146, 73, 0.3);
 }
 
 .cta-button:active {
@@ -392,7 +392,7 @@ main {
 }
 
 .scroll-top:hover {
-    background: #1d4ed8;
+    background: #99763a;
     transform: translateY(-2px);
 }
 

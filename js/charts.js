@@ -46,7 +46,7 @@ export function updateChart(data) {
             datasets: [{
                 label: 'Nombre d\'alumni',
                 data: counts,
-                backgroundColor: '#2563eb',
+                backgroundColor: '#be9249',
                 borderRadius: 4,
             }]
         },

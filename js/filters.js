@@ -162,9 +162,6 @@ export function getActiveFilters() {
 
 export function updateFilterCounters(allData, activeFilters) {
     filtersConfig.forEach(config => {
-        // Pour mettre à jour les labels, on cherche dans le DOM
-        // Attention: la logique précédente utilisait "select", ici on a des checkboxes custom
-        // Il faut cibler les labels correspondants
         
         const contextFilters = { ...activeFilters };
         delete contextFilters[config.key];
