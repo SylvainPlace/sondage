@@ -250,8 +250,18 @@ function updateStats() {
     // Conversion des plages de salaire en nombre (valeur médiane) pour le calcul de la moyenne
     const salairesNumeriques = filteredData.map(d => parseSalaryRange(d.salaire_brut)).filter(val => val > 0).sort((a, b) => a - b);
     
+    // Calcul des totaux (Salaire + Primes)
+    const salairesTotaux = filteredData.map(d => {
+        const base = parseSalaryRange(d.salaire_brut);
+        if (base === 0) return 0;
+        const prime = parsePrime(d.primes);
+        return base + prime;
+    }).filter(val => val > 0).sort((a, b) => a - b);
+
     let mean = 0;
     let median = 0;
+    let meanTotal = 0;
+    let medianTotal = 0;
 
     if (salairesNumeriques.length > 0) {
         // Moyenne
@@ -267,6 +277,20 @@ function updateStats() {
         }
     }
 
+    if (salairesTotaux.length > 0) {
+        // Moyenne Totale
+        const sumTotal = salairesTotaux.reduce((acc, val) => acc + val, 0);
+        meanTotal = Math.round(sumTotal / salairesTotaux.length);
+
+        // Médiane Totale
+        const midTotal = Math.floor(salairesTotaux.length / 2);
+        if (salairesTotaux.length % 2 !== 0) {
+            medianTotal = salairesTotaux[midTotal];
+        } else {
+            medianTotal = Math.round((salairesTotaux[midTotal - 1] + salairesTotaux[midTotal]) / 2);
+        }
+    }
+
     // 4. Mise à jour du DOM
     if (count === 0) {
         document.getElementById('no-results').style.display = 'block';
@@ -279,6 +303,8 @@ function updateStats() {
     document.getElementById('count').textContent = count;
     document.getElementById('avg-salary').textContent = salairesNumeriques.length > 0 ? formatMoney(mean) : '- €';
     document.getElementById('median-salary').textContent = salairesNumeriques.length > 0 ? formatMoney(median) : '- €';
+    document.getElementById('avg-salary-total').textContent = salairesTotaux.length > 0 ? formatMoney(meanTotal) : '- €';
+    document.getElementById('median-salary-total').textContent = salairesTotaux.length > 0 ? formatMoney(medianTotal) : '- €';
 
     updateChart(filteredData); // On passe les données brutes pour compter par catégories
     updateBenefits(filteredData);
@@ -336,8 +362,8 @@ function parseSalaryRange(rangeStr) {
         .replace(/[–—]/g, '-') // Gère les tirets longs (en dash / em dash)
         .replace('—', '-');    // Double sécurité
     
-    if (cleanStr.includes('moinsde30')) return 29000;// valeur random, pour les calculs de moyenne/médiane
-    if (cleanStr.includes('plusde100')) return 101000;// valeur random, pour les calculs de moyenne/médiane
+    if (cleanStr.includes('moinsde30')) return 29000; // valeur random, pour les calculs de moyenne/médiane
+    if (cleanStr.includes('plusde100')) return 101000; // valeur random, pour les calculs de moyenne/médiane
 
     // Format "30-35k€" -> extraction des nombres
     const matches = cleanStr.match(/(\d+)-(\d+)/);
@@ -347,6 +373,27 @@ function parseSalaryRange(rangeStr) {
         return (min + max) / 2;
     }
     
+    return 0;
+}
+
+function parsePrime(primeStr) {
+    if (!primeStr) return 0;
+    // Normalisation : minuscules, suppression espaces, unification tirets, o -> 0
+    const cleanStr = primeStr.toLowerCase()
+        .replace(/\s/g, '')
+        .replace(/[–—]/g, '-');
+
+    if (cleanStr.includes('aucune') || cleanStr === '0') return 0;
+    if (cleanStr.includes('moinsde2')) return 1000; // valeur random, pour les calculs de moyenne/médiane
+    if (cleanStr.includes('plusde10')) return 11000; // valeur random, pour les calculs de moyenne/médiane
+
+    // Recherche pattern "2-5" ou "2-5k"
+    const matches = cleanStr.match(/(\d+)-(\d+)/);
+    if (matches) {
+        const min = parseInt(matches[1]) * 1000;
+        const max = parseInt(matches[2]) * 1000;
+        return (min + max) / 2;
+    }
     return 0;
 }
 
