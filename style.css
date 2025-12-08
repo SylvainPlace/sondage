@@ -386,6 +386,11 @@ main {
     opacity: 0.7;
 }
 
+/* Remove Leaflet default outline on click */
+path.leaflet-interactive:focus {
+    outline: none;
+}
+
 /* Scroll to Top */
 .scroll-top {
     position: fixed;
