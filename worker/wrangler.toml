@@ -1,0 +1,12 @@
+name = "sondage-api"
+main = "worker.js"
+compatibility_date = "2023-12-01"
+
+# Ces variables seront remplacées par vos vrais secrets dans le dashboard Cloudflare
+# ou via 'wrangler secret put'
+[vars]
+SPREADSHEET_ID = "" 
+
+# NE METTEZ PAS VOS CLES PRIVEES ICI !
+# Utilisez 'wrangler secret put GCP_PRIVATE_KEY'
+# Utilisez 'wrangler secret put GCP_SERVICE_ACCOUNT_EMAIL'

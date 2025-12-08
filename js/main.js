@@ -2,6 +2,24 @@ import { initFilters, resetFilters, getActiveFilters, updateFilterCounters } fro
 import { updateChart, updateBenefits, updateAnecdotes } from './charts.js';
 import { parseSalaryRange, parsePrime, formatMoney, getXpGroup } from './utils.js';
 
+// Configuration API (Worker Cloudflare)
+const API_URL = 'https://sondage-api.sy-vain001.workers.dev/'; 
+// Exemple : 'https://sondage-api.votre-nom.workers.dev'
+
+const MAPPING = {
+    "annee_diplome": "Année de diplôme",
+    "sexe": "Sexe",
+    "departement": "Département actuel de travail",
+    "secteur": "Secteur d’activité",
+    "type_structure": "Type de structure",
+    "poste": "Poste actuel",
+    "experience": "Nombre d’années d’expérience (depuis le diplôme)",
+    "salaire_brut": "Salaire brut annuel actuel (hors primes)",
+    "primes": "Primes / variable annuel",
+    "avantages": "Avantages particuliers (optionnel)",
+    "conseil": "Un conseil, un retour d’expérience, une anecdote ? (facultatif)"
+};
+
 let allData = [];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -24,21 +42,86 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function fetchData() {
     try {
-        const response = await fetch('data.json');
-        const rawData = await response.json();
+        let rawData = [];
         
-        allData = rawData.map(item => {
-            return {
+        // Si l'URL n'est pas encore configurée, on utilise le fichier local (fallback)
+        if (API_URL.includes('REMPLACER_PAR')) {
+            console.warn('URL API non configurée, chargement de data.json');
+            const response = await fetch('data.json');
+            rawData = await response.json();
+            
+            // Le format local est déjà le bon, pas besoin de transformation complexe
+            allData = rawData.map(item => ({
                 ...item,
                 xp_group: getXpGroup(item.experience)
-            };
-        });
+            }));
+            
+        } else {
+            const response = await fetch(API_URL);
+            
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.error || 'Erreur API Worker');
+            }
+            
+            const result = await response.json();
+            if (!result.values || result.values.length < 2) {
+                throw new Error('Aucune donnée trouvée dans le sheet');
+            }
+
+            // Transformation des données API (Tableau de tableaux) vers JSON (Tableau d'objets)
+            const headers = result.values[0];
+            const rows = result.values.slice(1);
+            
+            // Création d'un index des colonnes "Titre" => Index
+            const headerMap = {};
+            headers.forEach((h, i) => headerMap[h] = i);
+
+            allData = rows.map(row => {
+                const item = {};
+                for (const [jsonKey, sheetColumnName] of Object.entries(MAPPING)) {
+                    // Recherche de la colonne correspondante (correspondance exacte ou partielle)
+                    let colIndex = headerMap[sheetColumnName];
+                    
+                    if (colIndex === undefined) {
+                        // Fallback : recherche partielle
+                        const foundHeader = headers.find(h => h.includes(sheetColumnName));
+                        if (foundHeader) colIndex = headerMap[foundHeader];
+                    }
+
+                    if (colIndex !== undefined && row[colIndex] !== undefined) {
+                        let value = row[colIndex];
+                         // Nettoyage spécifique selon le type attendu
+                        if (jsonKey === 'experience' || jsonKey === 'annee_diplome') {
+                            item[jsonKey] = Number(value) || 0;
+                        } else {
+                            item[jsonKey] = String(value).trim();
+                        }
+                    } else {
+                        item[jsonKey] = ""; // Valeur par défaut
+                    }
+                }
+                // Ajout du champ calculé xp_group
+                item.xp_group = getXpGroup(item.experience);
+                return item;
+            });
+        }
 
         initFilters(allData, updateStats);
         updateStats();
     } catch (error) {
         console.error('Erreur chargement données:', error);
-        alert("Impossible de charger les données du sondage.");
+        // Fallback silencieux sur data.json en cas d'erreur de l'API (optionnel)
+        try {
+            console.log('Tentative de repli sur data.json...');
+            const response = await fetch('data.json');
+            const localData = await response.json();
+            allData = localData.map(item => ({...item, xp_group: getXpGroup(item.experience)}));
+            initFilters(allData, updateStats);
+            updateStats();
+        } catch (e) {
+            alert("Impossible de charger les données (ni API ni local). Détail: " + error.message);
+        }
     }
 }
 
