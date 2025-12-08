@@ -114,8 +114,8 @@ export default {
                 headers: {
                 ...corsHeaders,
                 "Content-Type": "application/json",
-                // Cache Control: Cache for 1 hour (3600s) in CDN and Browser
-                "Cache-Control": "public, max-age=3600, s-maxage=3600",
+                // Cache Control: Cache for 10 hour (36000s) in CDN and Browser
+                "Cache-Control": "public, max-age=36000, s-maxage=36000",
                 },
             });
 
