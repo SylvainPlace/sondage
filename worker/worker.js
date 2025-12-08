@@ -146,7 +146,7 @@ function parseExperience(str) {
   
   const parts = str.match(/(\d+)-(\d+)/);
   if (parts) {
-      return (parseInt(parts[1]) + parseInt(parts[2])) / 2;
+      return Math.ceil((parseInt(parts[1]) + parseInt(parts[2])) / 2);
   }
   return parseInt(str) || 0;
 }
