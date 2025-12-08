@@ -33,22 +33,15 @@ async function fetchData() {
     try {
         let rawData = [];
         
-        // Si l'URL n'est pas encore configurée, on utilise le fichier local (fallback)
-        if (API_URL.includes('REMPLACER_PAR')) {
-            console.warn('URL API non configurée, chargement de data.json');
-            const response = await fetch('data.json');
-            rawData = await response.json();
-        } else {
-            const response = await fetch(API_URL);
-            
-            if (!response.ok) {
-                const err = await response.json();
-                throw new Error(err.error || 'Erreur API Worker');
-            }
-            
-            // Le backend renvoie maintenant directement le JSON formaté
-            rawData = await response.json();
+        const response = await fetch(API_URL);
+        
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.error || 'Erreur API Worker');
         }
+        
+        // Le backend renvoie maintenant directement le JSON formaté
+        rawData = await response.json();
 
         // Ajout du champ calculé xp_group côté client (UI logic)
         allData = rawData.map(item => ({
@@ -65,24 +58,11 @@ async function fetchData() {
 
     } catch (error) {
         console.error('Erreur chargement données:', error);
-        // Fallback silencieux sur data.json en cas d'erreur de l'API (optionnel)
-        try {
-            console.log('Tentative de repli sur data.json...');
-            const response = await fetch('data.json');
-            const localData = await response.json();
-            allData = localData.map(item => ({...item, xp_group: getXpGroup(item.experience)}));
-            initFilters(allData, updateStats);
-            updateStats();
-            
-            loader.style.display = 'none';
-            resultsContent.style.display = 'block';
-        } catch (e) {
-            loader.innerHTML = `<div style="color: red; text-align: center;">
-                <p style="font-size: 2rem; margin-bottom: 1rem;">⚠️</p>
-                <p>Impossible de charger les données.</p>
-                <p style="font-size: 0.875rem; margin-top: 0.5rem;">${error.message}</p>
-            </div>`;
-        }
+        loader.innerHTML = `<div style="color: red; text-align: center;">
+            <p style="font-size: 2rem; margin-bottom: 1rem;">⚠️</p>
+            <p>Impossible de charger les données.</p>
+            <p style="font-size: 0.875rem; margin-top: 0.5rem;">${error.message}</p>
+        </div>`;
     }
 }
 
