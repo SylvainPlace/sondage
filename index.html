@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -91,6 +93,25 @@
                     <h2>Avantages les plus fréquents</h2>
                     <div id="benefits-list" class="benefits-list">
                         <!-- Les avantages seront injectés ici -->
+                    </div>
+                </div>
+
+                <div class="charts-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h2>Répartition Géographique</h2>
+                        <div class="map-controls">
+                            <label style="margin-right: 10px; font-weight: 500; font-size: 0.875rem;">Afficher :</label>
+                            <select id="map-mode-select" class="dropdown-btn" style="width: auto; display: inline-block;">
+                                <option value="avg_base">Salaire Moyen</option>
+                                <option value="median_base">Salaire Médian</option>
+                                <option value="avg_total">Moyen (+ Primes)</option>
+                                <option value="median_total">Médian (+ Primes)</option>
+                                <option value="count">Nombre de répondants</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="map-container" class="chart-container" style="height: 500px;">
+                        <div id="map" style="height: 100%; width: 100%;"></div>
                     </div>
                 </div>
 

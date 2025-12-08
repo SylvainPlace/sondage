@@ -1,5 +1,6 @@
 import { initFilters, resetFilters, getActiveFilters, updateFilterCounters } from './filters.js';
 import { updateChart, updateXpChart, updateBenefits, updateAnecdotes } from './charts.js';
+import { updateMap, setMapMode } from './map.js';
 import { parseSalaryRange, parsePrime, formatMoney, getXpGroup } from './utils.js';
 
 // Configuration API (Worker Cloudflare)
@@ -11,6 +12,14 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchData();
     document.getElementById('reset-filters').addEventListener('click', () => resetFilters(updateStats));
     
+    // Map toggle listener
+    const mapToggle = document.getElementById('map-mode-select');
+    if (mapToggle) {
+        mapToggle.addEventListener('change', (e) => {
+            setMapMode(e.target.value);
+        });
+    }
+
     // Scroll to top logic
     const scrollTopBtn = document.getElementById('scroll-top');
     window.addEventListener('scroll', () => {
@@ -142,5 +151,6 @@ function updateStats() {
     updateXpChart(filteredData);
     updateBenefits(filteredData);
     updateAnecdotes(filteredData);
+    updateMap(filteredData);
     updateFilterCounters(allData, activeFilters);
 }
