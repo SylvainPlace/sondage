@@ -17,7 +17,7 @@ export default {
     // Use a specific cache key (e.g., ignore query params if you always want the same data)
     const cacheKey = new Request(cacheUrl.toString(), request);
     let response
-    //response = await cache.match(cacheKey);
+    response = await cache.match(cacheKey);
 
     if (!response) {
         try {
