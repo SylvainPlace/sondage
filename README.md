@@ -1,55 +1,72 @@
 # 📊 Observatoire des Salaires Alumni
 
-Ce projet est une application web interactive permettant de visualiser et d'explorer les données salariales des anciens élèves (Alumni). Il présente des statistiques détaillées sur les rémunérations, filtrables par divers critères (expérience, secteur, localisation, etc.).
+Ce projet est une application web interactive permettant de visualiser et d'explorer les données salariales des anciens élèves (Alumni). Il présente des statistiques détaillées sur les rémunérations, filtrables par divers critères, et alimentées directement depuis un Google Sheet via un Cloudflare Worker.
 
 ## 🚀 Fonctionnalités
 
 - **Tableau de bord statistique** : Affichage dynamique du salaire moyen, médian et du nombre de répondants.
-- **Système de filtres avancés** :
-  - Filtrage multicritères (Année de diplôme, Sexe, Expérience, Secteur, Type de structure, Département).
-  - Menus déroulants personnalisés avec sélection multiple (checkboxes).
-  - Mise à jour dynamique des compteurs d'options selon le contexte.
-- **Visualisation de données** :
-  - Graphique en barres (Histogramme) de la distribution des salaires.
-  - Barres de progression pour les avantages les plus fréquents.
-- **Section qualitative** : Liste des retours d'expérience et conseils des alumni.
-- **Responsive Design** : Interface adaptée aux mobiles, tablettes et ordinateurs.
+- **Visualisations avancées** :
+  - **Carte interactive (Leaflet)** : Répartition géographique des salaires et des alumni.
+  - **Graphique Salaire vs Expérience** : Analyse de l'évolution salariale selon l'ancienneté.
+  - **Distribution des salaires** : Histogramme interactif.
+- **Système de filtres complet** :
+  - Multicritères : Année de diplôme, Sexe, Expérience, Secteur, Type de structure, Localisation.
+  - Mise à jour dynamique des résultats et des graphiques.
+- **Section qualitative** : Liste des retours d'expérience, conseils et avantages (primes, télétravail, etc.).
+- **Responsive Design** : Interface optimisée pour mobiles, tablettes et ordinateurs.
 
-## 🛠️ Installation et Utilisation
+## 🛠️ Architecture Technique
 
-Ce projet est une application **statique** (HTML/CSS/JS). Il ne nécessite pas de serveur backend (Node.js, PHP, etc.) pour fonctionner localement de manière basique, bien que l'utilisation d'un serveur local soit recommandée pour éviter les restrictions CORS liées au chargement du fichier JSON.
+Le projet est divisé en deux parties :
+
+1.  **Frontend (Statique)** :
+    *   `index.html` / `style.css` / `js/`
+    *   Application Single Page (SPA) sans framework lourd.
+    *   Utilise des modules ES6 (`type="module"`).
+    *   Librairies : Chart.js (Graphiques), Leaflet (Cartes).
+
+2.  **Backend (Serverless)** :
+    *   Dossier `worker/`.
+    *   **Cloudflare Worker** : Sert d'API intermédiaire.
+    *   Récupère les données depuis un **Google Sheet** (via l'API Google Sheets).
+    *   **Cache** : Les données sont mises en cache (10h) pour optimiser les performances et limiter les appels à Google.
+    *   Normalisation des données (Régions, Secteurs, Expérience) côté serveur.
+
+## 📂 Structure du projet
+
+- **`index.html`** : Point d'entrée de l'application.
+- **`style.css`** : Styles globaux, variables CSS, layout responsive.
+- **`js/`** : Logique frontend modulaire.
+  - `main.js` : Orchestration, chargement des données.
+  - `filters.js` : Gestion des filtres et de l'UI de filtrage.
+  - `charts.js` : Configuration et mise à jour des graphiques Chart.js.
+  - `map.js` : Gestion de la carte Leaflet.
+  - `utils.js` : Fonctions utilitaires (formatage monétaire, parsing).
+- **`worker/`** : Code du Cloudflare Worker (`worker.js` et `wrangler.toml`).
+
+## ⚙️ Installation et Développement Local
 
 ### Prérequis
 
 - Un navigateur web moderne.
-- (Optionnel mais recommandé) Une extension de "Live Server" ou un serveur local simple (Python, Node, etc.).
+- Un serveur local simple (VS Code Live Server, Python http.server, etc.) est **indispensable** car l'application utilise des modules ES6 qui ne fonctionnent pas via l'ouverture directe du fichier (`file://`).
 
-### Comment lancer le projet
+### Lancer le frontend
 
-1. **Cloner ou télécharger** le dépôt.
-2. **Ouvrir le dossier** dans votre éditeur de code favori (ex: VS Code).
-3. **Lancer un serveur local** :
-   - *Méthode Python* : Ouvrez un terminal dans le dossier et lancez `python -m http.server 8000`. Ouvrez ensuite `http://localhost:8000` dans votre navigateur.
-   - *Méthode VS Code* : Utilisez l'extension "Live Server" et cliquez sur "Go Live".
-   - *Méthode simple* : Ouvrir directement `index.html` dans le navigateur (⚠️ **Attention** : cela peut bloquer le chargement des données `data.json` sur certains navigateurs à cause de la politique CORS).
+1.  Cloner le dépôt.
+2.  Ouvrir le dossier dans votre éditeur (ex: VS Code).
+3.  Lancer un serveur local (ex: extension "Live Server" sur VS Code).
+4.  L'application chargera les données depuis l'API de production (`https://sondage-api.sy-vain001.workers.dev/`) configurée dans `main.js`.
 
-## 📂 Structure du projet
+### Modifier le Worker (Backend)
 
-- **`index.html`** : Structure de la page et conteneurs principaux.
-- **`style.css`** : Feuilles de style, variables CSS, mise en page Grid/Flexbox et media queries.
-- **`script.js`** : Logique de l'application :
-  - Récupération des données (`fetch`).
-  - Gestion des filtres et de l'état.
-  - Calcul des statistiques (Moyenne, Médiane).
-  - Génération des graphiques avec **Chart.js**.
-- **`data.json`** : Base de données brute contenant les réponses au sondage.
+Si vous souhaitez modifier la logique backend :
+1.  Installez [Wrangler](https://developers.cloudflare.com/workers/wrangler/install-and-update/).
+2.  Configurez vos secrets (Google Service Account) via `wrangler secret put`.
+3.  Testez localement avec `wrangler dev` dans le dossier `worker/`.
 
-## ⚙️ Technologies utilisées
+## 📦 Technologies utilisées
 
-- **HTML5 / CSS3** : Structure sémantique et design moderne (Inter font).
-- **JavaScript (ES6+)** : Manipulation du DOM et logique métier sans framework lourd.
-- **Chart.js** : Librairie externe utilisée pour le rendu des graphiques.
-- **Google Fonts** : Police d'écriture *Inter*.
-
----
-*Projet réalisé pour visualiser les résultats de l'enquête d'insertion professionnelle.*
+- **Frontend** : HTML5, CSS3, JavaScript (ES6+), Chart.js, Leaflet.
+- **Backend** : Cloudflare Workers (JavaScript), Google Sheets API.
+- **Outils** : Git, Wrangler (CLI Cloudflare).
