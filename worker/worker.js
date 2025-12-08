@@ -86,6 +86,8 @@ export default {
                     item[jsonKey] = normalizeSector(value);
                 } else if (jsonKey === 'poste') {
                     item[jsonKey] = normalizeJob(value);
+                } else if (jsonKey === 'departement') {
+                    item[jsonKey] = normalizeRegion(value);
                 } else {
                     item[jsonKey] = String(value).trim();
                 }
@@ -190,6 +192,97 @@ function normalizeJob(str) {
   if (s.includes("recherche") || s.includes("r&d") || s.includes("doctorant") || s.includes("thèse")) return "Recherche / R&D";
 
   return "Autre";
+}
+
+function normalizeRegion(str) {
+  if (!str) return "Non renseigné";
+  const s = str.toLowerCase().trim();
+
+  // Télétravail
+  if (s.includes("télétravail")) return "Full Télétravail";
+
+  // International
+  if (s.includes("autre pays") || s.includes("monaco") || s.includes("suisse") || s.includes("luxembourg") || s.includes("belgique") || s.includes("royaume-uni") || s.includes("allemagne") || s.includes("canada")) return "International";
+
+  // Occitanie (31, 81, 09, 32, 34, 46, 65, 66, 82, 12, 48, 11, 30)
+  if (s.includes("haute-garonne") || s.includes("31") || 
+      s.includes("tarn") || s.includes("81") || 
+      s.includes("ariège") || s.includes("09") || 
+      s.includes("gers") || s.includes("32") || 
+      s.includes("hérault") || s.includes("34") ||
+      s.includes("lot") || s.includes("46") ||
+      s.includes("hautes-pyrenées") || s.includes("65") ||
+      s.includes("pyrenées-orientales") || s.includes("66") ||
+      s.includes("tarn-et-garonne") || s.includes("82") ||
+      s.includes("aveyron") || s.includes("12") ||
+      s.includes("lozère") || s.includes("48") ||
+      s.includes("aude") || s.includes("11") ||
+      s.includes("gard") || s.includes("30")) return "Occitanie";
+
+  // Île-de-France (75, 92, 93, 94, 77, 78, 91, 95)
+  if (s.includes("paris") || s.includes("75") || 
+      s.includes("hauts-de-seine") || s.includes("92") || 
+      s.includes("seine-saint-denis") || s.includes("93") || 
+      s.includes("val-de-marne") || s.includes("94") ||
+      s.includes("seine-et-marne") || s.includes("77") ||
+      s.includes("yvelines") || s.includes("78") ||
+      s.includes("essonne") || s.includes("91") ||
+      s.includes("val-d'oise") || s.includes("95")) return "Île-de-France";
+
+  // Nouvelle-Aquitaine (33, 87, 64, 40, 24, 47)
+  if (s.includes("gironde") || s.includes("33") || 
+      s.includes("haute-vienne") || s.includes("87") || 
+      s.includes("pyrénées-atlantiques") || s.includes("64") ||
+      s.includes("landes") || s.includes("40") ||
+      s.includes("dordogne") || s.includes("24") ||
+      s.includes("lot-et-garonne") || s.includes("47")) return "Nouvelle-Aquitaine";
+
+  // Auvergne-Rhône-Alpes (69, 63, 38, 01, 42, 73, 74)
+  if (s.includes("rhône") || s.includes("69") || 
+      s.includes("puy-de-dôme") || s.includes("63") ||
+      s.includes("isère") || s.includes("38") ||
+      s.includes("ain") || s.includes("01") ||
+      s.includes("loire") || s.includes("42") ||
+      s.includes("savoie") || s.includes("73") ||
+      s.includes("74")) return "Auvergne-Rhône-Alpes";
+
+  // Bretagne (29, 56, 35, 22)
+  if (s.includes("finistère") || s.includes("29") || 
+      s.includes("morbihan") || s.includes("56") ||
+      s.includes("ille-et-vilaine") || s.includes("35") ||
+      s.includes("côtes-d'armor") || s.includes("22")) return "Bretagne";
+
+  // Pays de la Loire (44, 49, 53, 72, 85)
+  if (s.includes("loire-atlantique") || s.includes("44") ||
+      s.includes("maine-et-loire") || s.includes("49") ||
+      s.includes("mayenne") || s.includes("53") ||
+      s.includes("sarthe") || s.includes("72") ||
+      s.includes("vendée") || s.includes("85")) return "Pays de la Loire";
+
+  // PACA (13, 83, 06, 84, 04, 05)
+  if (s.includes("bouches-du-rhône") || s.includes("13") || 
+      s.includes("var") || s.includes("83") ||
+      s.includes("alpes-maritimes") || s.includes("06") ||
+      s.includes("vaucluse") || s.includes("84")) return "PACA / Sud";
+
+  // Grand Est (67, 68, 57, 54, 88, 10, 51, 08, 52, 55)
+  if (s.includes("bas-rhin") || s.includes("67") || 
+      s.includes("haut-rhin") || s.includes("68") ||
+      s.includes("moselle") || s.includes("57") ||
+      s.includes("meurthe-et-moselle") || s.includes("54")) return "Grand Est";
+
+  // Centre-Val de Loire (37, 45, 18, 28, 36, 41)
+  if (s.includes("indre-et-loire") || s.includes("37") ||
+      s.includes("loiret") || s.includes("45")) return "Centre-Val de Loire";
+
+  // DOM-TOM (971, 972, 973, 974, 976, 987, 988)
+  if (s.includes("réunion") || s.includes("974") || 
+      s.includes("polynésie") || s.includes("987") ||
+      s.includes("guadeloupe") || s.includes("971") ||
+      s.includes("martinique") || s.includes("972") ||
+      s.includes("guyane") || s.includes("973")) return "DOM-TOM";
+
+  return "Autre Région";
 }
 
 // --- Google Auth Helpers (Web Crypto API) ---

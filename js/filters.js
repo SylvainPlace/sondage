@@ -5,7 +5,7 @@ export const filtersConfig = [
     { label: 'Poste', key: 'poste' },
     { label: 'Secteur d\'activité', key: 'secteur' },
     { label: 'Type de structure', key: 'type_structure' },
-    { label: 'Département', key: 'departement' }
+    { label: 'Région', key: 'departement' }
 ];
 
 export function initFilters(allData, updateCallback) {
