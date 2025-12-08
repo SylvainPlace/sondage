@@ -29,23 +29,22 @@
                 
                 <div id="filters-container">
                     <!-- Les filtres seront générés ici par JS -->
-                    <!-- Exemple de structure générée :
-                    <div class="filter-group">
-                        <label>Secteur</label>
-                        <select name="secteur"><option value="">Tous</option>...</select>
-                    </div>
-                    -->
                 </div>
             </aside>
 
             <section class="results-panel">
+                <div id="loader" class="loader-container">
+                    <div class="spinner"></div>
+                    <p>Chargement des données...</p>
+                </div>
+
                 <div id="no-results" style="display: none; text-align: center; padding: 3rem;">
                     <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
                     <h3>Aucun résultat trouvé</h3>
                     <p style="color: var(--text-muted);">Essayez de modifier vos filtres pour élargir la recherche.</p>
                 </div>
 
-                <div id="results-content">
+                <div id="results-content" style="display: none;">
                     <div class="stats-grid">
                     <div class="stat-card">
                         <h3>Salaire Moyen</h3>

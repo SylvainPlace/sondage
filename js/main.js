@@ -26,6 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function fetchData() {
+    const loader = document.getElementById('loader');
+    const resultsContent = document.getElementById('results-content');
+    const noResults = document.getElementById('no-results');
+
     try {
         let rawData = [];
         
@@ -54,6 +58,11 @@ async function fetchData() {
 
         initFilters(allData, updateStats);
         updateStats();
+
+        // Hide loader and show content
+        loader.style.display = 'none';
+        resultsContent.style.display = 'block';
+
     } catch (error) {
         console.error('Erreur chargement données:', error);
         // Fallback silencieux sur data.json en cas d'erreur de l'API (optionnel)
@@ -64,8 +73,15 @@ async function fetchData() {
             allData = localData.map(item => ({...item, xp_group: getXpGroup(item.experience)}));
             initFilters(allData, updateStats);
             updateStats();
+            
+            loader.style.display = 'none';
+            resultsContent.style.display = 'block';
         } catch (e) {
-            alert("Impossible de charger les données (ni API ni local). Détail: " + error.message);
+            loader.innerHTML = `<div style="color: red; text-align: center;">
+                <p style="font-size: 2rem; margin-bottom: 1rem;">⚠️</p>
+                <p>Impossible de charger les données.</p>
+                <p style="font-size: 0.875rem; margin-top: 0.5rem;">${error.message}</p>
+            </div>`;
         }
     }
 }
