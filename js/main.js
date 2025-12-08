@@ -1,5 +1,5 @@
 import { initFilters, resetFilters, getActiveFilters, updateFilterCounters } from './filters.js';
-import { updateChart, updateBenefits, updateAnecdotes } from './charts.js';
+import { updateChart, updateXpChart, updateBenefits, updateAnecdotes } from './charts.js';
 import { parseSalaryRange, parsePrime, formatMoney, getXpGroup } from './utils.js';
 
 // Configuration API (Worker Cloudflare)
@@ -139,6 +139,7 @@ function updateStats() {
     document.getElementById('median-salary-total').textContent = salairesTotaux.length > 0 ? formatMoney(medianTotal) : '- €';
 
     updateChart(filteredData);
+    updateXpChart(filteredData);
     updateBenefits(filteredData);
     updateAnecdotes(filteredData);
     updateFilterCounters(allData, activeFilters);

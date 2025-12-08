@@ -1,4 +1,7 @@
+import { parseSalaryRange, parsePrime } from './utils.js';
+
 let salaryChart = null;
+let xpChart = null;
 
 export function updateChart(data) {
     const ctx = document.getElementById('salaryChart').getContext('2d');
@@ -76,6 +79,172 @@ export function updateChart(data) {
                 x: {
                     grid: {
                         display: false
+                    }
+                }
+            }
+        }
+    });
+}
+
+export function updateXpChart(data) {
+    const ctx = document.getElementById('xpChart').getContext('2d');
+    
+    if (xpChart) {
+        xpChart.destroy();
+    }
+
+    if (data.length === 0) return;
+
+    // 1. Group data by exact year of experience (Granular)
+    const xpMap = {};
+    let maxXp = 0;
+
+    data.forEach(item => {
+        const xp = parseInt(item.experience);
+        if (!isNaN(xp)) {
+            if (xp > maxXp) maxXp = xp;
+            if (!xpMap[xp]) xpMap[xp] = { base: [], total: [] };
+            
+            const base = parseSalaryRange(item.salaire_brut);
+            const prime = parsePrime(item.primes);
+            
+            if (base > 0) {
+                xpMap[xp].base.push(base);
+                xpMap[xp].total.push(base + prime);
+            }
+        }
+    });
+
+    // Create labels 0 to Max
+    const labels = [];
+    for (let i = 0; i <= maxXp; i++) labels.push(i);
+
+    // 2. Calculate Metrics (Mean/Median)
+    const getStats = (arr) => {
+        if (!arr || arr.length === 0) return null; // Return null to break line instead of 0
+        
+        // Mean
+        const sum = arr.reduce((a, b) => a + b, 0);
+        const mean = Math.round(sum / arr.length);
+
+        // Median
+        const sorted = [...arr].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        const median = sorted.length % 2 !== 0 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
+
+        return { mean, median };
+    };
+
+    const meanBaseData = [];
+    const medianBaseData = [];
+    const meanTotalData = [];
+    const medianTotalData = [];
+
+    labels.forEach(year => {
+        const group = xpMap[year];
+        if (group) {
+            const baseStats = getStats(group.base);
+            const totalStats = getStats(group.total);
+
+            meanBaseData.push(baseStats ? baseStats.mean : null);
+            medianBaseData.push(baseStats ? baseStats.median : null);
+            meanTotalData.push(totalStats ? totalStats.mean : null);
+            medianTotalData.push(totalStats ? totalStats.median : null);
+        } else {
+            meanBaseData.push(null);
+            medianBaseData.push(null);
+            meanTotalData.push(null);
+            medianTotalData.push(null);
+        }
+    });
+
+    // 3. Configure Chart
+    xpChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels.map(l => l + ' ans'),
+            datasets: [
+                {
+                    label: 'Moyen (Base)',
+                    data: meanBaseData,
+                    borderColor: '#3b82f6', // Blue
+                    backgroundColor: '#3b82f6',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    spanGaps: true
+                },
+                {
+                    label: 'Médian (Base)',
+                    data: medianBaseData,
+                    borderColor: '#3b82f6',
+                    backgroundColor: '#3b82f6',
+                    borderWidth: 2,
+                    borderDash: [5, 5], // Dashed
+                    tension: 0.3,
+                    spanGaps: true
+                },
+                {
+                    label: 'Moyen (Total)',
+                    data: meanTotalData,
+                    borderColor: '#be9249', // Primary Gold
+                    backgroundColor: '#be9249',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    spanGaps: true
+                },
+                {
+                    label: 'Médian (Total)',
+                    data: medianTotalData,
+                    borderColor: '#be9249',
+                    backgroundColor: '#be9249',
+                    borderWidth: 2,
+                    borderDash: [5, 5], // Dashed
+                    tension: 0.3,
+                    spanGaps: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => {
+                            if (context.raw === null) return null;
+                            return `${context.dataset.label}: ${new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(context.raw)}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 30000,
+                    ticks: {
+                        callback: function(value) {
+                            return value / 1000 + 'k€';
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Années d\'expérience'
                     }
                 }
             }
