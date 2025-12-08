@@ -35,10 +35,69 @@ export default {
         throw new Error(`Google API Error: ${err}`);
       }
 
-      const data = await sheetResponse.json();
+      const rawData = await sheetResponse.json();
+      
+      if (!rawData.values || rawData.values.length < 2) {
+         throw new Error("No data found in sheet.");
+      }
 
-      // 5. Return Data
-      return new Response(JSON.stringify(data), {
+      // 5. Transform Data (Server-Side Formatting)
+      const headers = rawData.values[0];
+      const rows = rawData.values.slice(1);
+      
+      const MAPPING = {
+        "annee_diplome": "Année de diplôme",
+        "sexe": "Sexe",
+        "departement": "Département actuel de travail",
+        "secteur": "Secteur d’activité",
+        "type_structure": "Type de structure",
+        "poste": "Poste actuel",
+        "experience": "Nombre d’années d’expérience (depuis le diplôme)",
+        "salaire_brut": "Salaire brut annuel actuel (hors primes)",
+        "primes": "Primes / variable annuel",
+        "avantages": "Avantages particuliers (optionnel)",
+        "conseil": "Un conseil, un retour d’expérience, une anecdote ? (facultatif)"
+      };
+
+      // Header Index Map
+      const headerMap = {};
+      headers.forEach((h, i) => headerMap[h] = i);
+
+      const formattedData = rows.map(row => {
+        const item = {};
+        for (const [jsonKey, sheetColumnName] of Object.entries(MAPPING)) {
+            let colIndex = headerMap[sheetColumnName];
+            
+            // Fuzzy match fallback
+            if (colIndex === undefined) {
+                const foundHeader = headers.find(h => h.includes(sheetColumnName));
+                if (foundHeader) colIndex = headerMap[foundHeader];
+            }
+
+            if (colIndex !== undefined && row[colIndex] !== undefined) {
+                let value = row[colIndex];
+                // Type conversion
+                if (jsonKey === 'experience') {
+                    item[jsonKey] = parseExperience(value);
+                } else if (jsonKey === 'annee_diplome') {
+                    const num = parseInt(value, 10);
+                    item[jsonKey] = isNaN(num) ? 0 : num;
+                } else if (jsonKey === 'secteur') {
+                    item[jsonKey] = normalizeSector(value);
+                } else if (jsonKey === 'poste') {
+                    item[jsonKey] = normalizeJob(value);
+                } else {
+                    item[jsonKey] = String(value).trim();
+                }
+            } else {
+                item[jsonKey] = "";
+            }
+        }
+        return item;
+      });
+
+      // 6. Return Clean JSON
+      return new Response(JSON.stringify(formattedData), {
         headers: {
           ...corsHeaders,
           "Content-Type": "application/json",
@@ -56,6 +115,82 @@ export default {
     }
   },
 };
+
+// --- Helpers ---
+
+function parseExperience(str) {
+  if (!str) return 0;
+  str = String(str).trim();
+  if (str.includes('+')) return parseInt(str); // "10+" -> 10
+  
+  const parts = str.match(/(\d+)-(\d+)/);
+  if (parts) {
+      return (parseInt(parts[1]) + parseInt(parts[2])) / 2;
+  }
+  return parseInt(str) || 0;
+}
+
+function normalizeSector(str) {
+  if (!str) return "Non renseigné";
+  const s = str.toLowerCase();
+
+  // 1. Éditeur Logiciel Santé (Priorité)
+  if (s.includes("logiciel santé") || s.includes("logiciel médical")) return "Éditeur Logiciel Santé";
+
+  // 2. Structure de Soins
+  if (s.includes("établissement de santé") || s.includes("médico-social") || s.includes("hôpital") || s.includes("clinique") || s.includes("laboratoire") || s.includes("soins")) return "Structure de Soins";
+
+  // 3. Institution Publique
+  if (s.includes("public") || s.includes("ars") || s.includes("ans") || s.includes("ministère") || s.includes("gip")) return "Institution Publique";
+
+  // 4. ESN / Conseil
+  if (s.includes("esn") || s.includes("conseil") || s.includes("freelance") || s.includes("client")) return "ESN / Conseil";
+
+  // 5. Industrie Santé
+  if (s.includes("pharma") || s.includes("medtech") || s.includes("biotech") || s.includes("dispositif médical")) return "Industrie Santé";
+
+  // 6. Banque / Assurance
+  if (s.includes("banque") || s.includes("bancaire") || s.includes("assurance") || s.includes("insurtech") || s.includes("finance")) return "Banque / Assurance";
+
+  // 7. Éditeur Logiciel (Autre)
+  if (s.includes("éditeur") || s.includes("logiciel") || s.includes("saas") || s.includes("platform")) return "Éditeur Logiciel (Autre)";
+
+  // 8. Tech / Industrie / Autre
+  if (s.includes("tech") || s.includes("startup") || s.includes("industrie") || s.includes("télécom") || s.includes("sécurité") || s.includes("recherche")) return "Tech / Industrie / Autre";
+
+  return "Autre";
+}
+
+function normalizeJob(str) {
+  if (!str) return "Non renseigné";
+  const s = str.toLowerCase();
+
+  // 1. Chef de Projet / Product (Product Owner, PM, CdP, Scrum Master)
+  if (s.includes("product") || s.includes("po") || s.includes("chef de projet") || s.includes("cheffe de projet") || s.includes("projet") || s.includes("agile") || s.includes("scrum")) return "Chef de Projet / Product";
+
+  // 2. Développeur / Ingénieur (Dev, Software Eng, Fullstack)
+  if (s.includes("développeur") || s.includes("développeuse") || s.includes("dev") || s.includes("software") || s.includes("ingénieur logiciel") || s.includes("programmer") || s.includes("java") || s.includes("web")) return "Développeur / Ingénieur";
+
+  // 3. Tech Lead / Architecte
+  if (s.includes("tech lead") || s.includes("lead") || s.includes("architecte") || s.includes("principal")) return "Tech Lead / Architecte";
+
+  // 4. Data / BI
+  if (s.includes("data") || s.includes("bi ") || s.includes("business analyst") || s.endsWith(" bi")) return "Data / BI";
+
+  // 5. DevOps / Infra / Sécurité
+  if (s.includes("devops") || s.includes("système") || s.includes("réseau") || s.includes("sécurité") || s.includes("admin") || s.includes("cloud") || s.includes("sre") || s.includes("cyber")) return "DevOps / Infra / Sécurité";
+
+  // 6. Consultant / Intégrateur
+  if (s.includes("consultant") || s.includes("intégrateur") || s.includes("intératrice") || s.includes("support")) return "Consultant / Intégrateur";
+
+  // 7. Manager / Directeur
+  if (s.includes("manager") || s.includes("directeur") || s.includes("responsable") || s.includes("head of")) return "Manager / Directeur";
+
+  // 8. Recherche / R&D
+  if (s.includes("recherche") || s.includes("r&d") || s.includes("doctorant") || s.includes("thèse")) return "Recherche / R&D";
+
+  return "Autre";
+}
 
 // --- Google Auth Helpers (Web Crypto API) ---
 

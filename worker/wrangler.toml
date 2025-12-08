@@ -5,8 +5,8 @@ compatibility_date = "2023-12-01"
 # Ces variables seront remplacées par vos vrais secrets dans le dashboard Cloudflare
 # ou via 'wrangler secret put'
 [vars]
-SPREADSHEET_ID = "" 
+SPREADSHEET_ID = "1e9rXT2Gtg5w9vUDpBWV7G6TpUN7olxNacSX_mLYK3_U"
+GCP_SERVICE_ACCOUNT_EMAIL = "spl-001@sondage-480608.iam.gserviceaccount.com"
 
 # NE METTEZ PAS VOS CLES PRIVEES ICI !
 # Utilisez 'wrangler secret put GCP_PRIVATE_KEY'
-# Utilisez 'wrangler secret put GCP_SERVICE_ACCOUNT_EMAIL'

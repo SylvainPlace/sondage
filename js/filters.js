@@ -2,6 +2,7 @@ export const filtersConfig = [
     { label: 'Année de Diplôme', key: 'annee_diplome' },
     { label: 'Sexe', key: 'sexe' },
     { label: 'Expérience', key: 'xp_group' },
+    { label: 'Poste', key: 'poste' },
     { label: 'Secteur d\'activité', key: 'secteur' },
     { label: 'Type de structure', key: 'type_structure' },
     { label: 'Département', key: 'departement' }
@@ -14,6 +15,15 @@ export function initFilters(allData, updateCallback) {
     filtersConfig.forEach(config => {
         const uniqueValues = [...new Set(allData.map(item => item[config.key]))]
             .sort((a, b) => {
+                // Force "Autre" and "Non renseigné" to the end
+                const specialValues = ['Autre', 'Non renseigné'];
+                const isASpecial = specialValues.includes(a);
+                const isBSpecial = specialValues.includes(b);
+
+                if (isASpecial && !isBSpecial) return 1;
+                if (!isASpecial && isBSpecial) return -1;
+                if (isASpecial && isBSpecial) return a.localeCompare(b);
+
                 if (config.key === 'xp_group') {
                     const order = ['0-1 an', '2-3 ans', '4-5 ans', '6-9 ans', '10+ ans', 'Non renseigné'];
                     return order.indexOf(a) - order.indexOf(b);

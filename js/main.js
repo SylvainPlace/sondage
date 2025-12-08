@@ -4,21 +4,6 @@ import { parseSalaryRange, parsePrime, formatMoney, getXpGroup } from './utils.j
 
 // Configuration API (Worker Cloudflare)
 const API_URL = 'https://sondage-api.sy-vain001.workers.dev/'; 
-// Exemple : 'https://sondage-api.votre-nom.workers.dev'
-
-const MAPPING = {
-    "annee_diplome": "Année de diplôme",
-    "sexe": "Sexe",
-    "departement": "Département actuel de travail",
-    "secteur": "Secteur d’activité",
-    "type_structure": "Type de structure",
-    "poste": "Poste actuel",
-    "experience": "Nombre d’années d’expérience (depuis le diplôme)",
-    "salaire_brut": "Salaire brut annuel actuel (hors primes)",
-    "primes": "Primes / variable annuel",
-    "avantages": "Avantages particuliers (optionnel)",
-    "conseil": "Un conseil, un retour d’expérience, une anecdote ? (facultatif)"
-};
 
 let allData = [];
 
@@ -49,13 +34,6 @@ async function fetchData() {
             console.warn('URL API non configurée, chargement de data.json');
             const response = await fetch('data.json');
             rawData = await response.json();
-            
-            // Le format local est déjà le bon, pas besoin de transformation complexe
-            allData = rawData.map(item => ({
-                ...item,
-                xp_group: getXpGroup(item.experience)
-            }));
-            
         } else {
             const response = await fetch(API_URL);
             
@@ -64,48 +42,15 @@ async function fetchData() {
                 throw new Error(err.error || 'Erreur API Worker');
             }
             
-            const result = await response.json();
-            if (!result.values || result.values.length < 2) {
-                throw new Error('Aucune donnée trouvée dans le sheet');
-            }
-
-            // Transformation des données API (Tableau de tableaux) vers JSON (Tableau d'objets)
-            const headers = result.values[0];
-            const rows = result.values.slice(1);
-            
-            // Création d'un index des colonnes "Titre" => Index
-            const headerMap = {};
-            headers.forEach((h, i) => headerMap[h] = i);
-
-            allData = rows.map(row => {
-                const item = {};
-                for (const [jsonKey, sheetColumnName] of Object.entries(MAPPING)) {
-                    // Recherche de la colonne correspondante (correspondance exacte ou partielle)
-                    let colIndex = headerMap[sheetColumnName];
-                    
-                    if (colIndex === undefined) {
-                        // Fallback : recherche partielle
-                        const foundHeader = headers.find(h => h.includes(sheetColumnName));
-                        if (foundHeader) colIndex = headerMap[foundHeader];
-                    }
-
-                    if (colIndex !== undefined && row[colIndex] !== undefined) {
-                        let value = row[colIndex];
-                         // Nettoyage spécifique selon le type attendu
-                        if (jsonKey === 'experience' || jsonKey === 'annee_diplome') {
-                            item[jsonKey] = Number(value) || 0;
-                        } else {
-                            item[jsonKey] = String(value).trim();
-                        }
-                    } else {
-                        item[jsonKey] = ""; // Valeur par défaut
-                    }
-                }
-                // Ajout du champ calculé xp_group
-                item.xp_group = getXpGroup(item.experience);
-                return item;
-            });
+            // Le backend renvoie maintenant directement le JSON formaté
+            rawData = await response.json();
         }
+
+        // Ajout du champ calculé xp_group côté client (UI logic)
+        allData = rawData.map(item => ({
+            ...item,
+            xp_group: getXpGroup(item.experience)
+        }));
 
         initFilters(allData, updateStats);
         updateStats();
