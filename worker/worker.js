@@ -16,8 +16,8 @@ export default {
     const cacheUrl = new URL(request.url);
     // Use a specific cache key (e.g., ignore query params if you always want the same data)
     const cacheKey = new Request(cacheUrl.toString(), request);
-    
-    let response = await cache.match(cacheKey);
+    let response
+    //response = await cache.match(cacheKey);
 
     if (!response) {
         try {
@@ -93,6 +93,8 @@ export default {
                             item[jsonKey] = isNaN(num) ? 0 : num;
                         } else if (jsonKey === 'secteur') {
                             item[jsonKey] = normalizeSector(value);
+                        } else if (jsonKey === 'type_structure') {
+                            item[jsonKey] = normalizeStructure(value);
                         } else if (jsonKey === 'poste') {
                             item[jsonKey] = normalizeJob(value);
                         } else if (jsonKey === 'departement') {
@@ -207,6 +209,31 @@ function normalizeJob(str) {
 
   // Recherche / R&D
   if (s.includes("recherche") || s.includes("r&d") || s.includes("doctorant") || s.includes("thèse")) return "Recherche / R&D";
+
+  return "Autre";
+}
+
+function normalizeStructure(str) {
+  if (!str) return "Non renseigné";
+  const s = str.toLowerCase().trim();
+
+  // Start-up
+  if (s.includes("start-up") || s.includes("startup") || s.includes("scale")) return "Start-up";
+
+  // PME
+  if (s.includes("pme")) return "PME";
+
+  // ETI
+  if (s.includes("eti")) return "ETI";
+
+  // Grand groupe
+  if (s.includes("grand groupe") || s.includes("entreprise")) return "Grand groupe";
+
+  // Administration publique
+  if (s.includes("public") || s.includes("administration") || s.includes("gip") || s.includes("groupement") || s.includes("université") || s.includes("recherche") || s.includes("numih") || s.includes("hôpital")) return "Administration publique";
+
+  // Freelance / Indépendant
+  if (s.includes("freelance") || s.includes("indépendant")) return "Freelance / Indépendant";
 
   return "Autre";
 }
