@@ -55,7 +55,9 @@ Le projet est divisé en deux parties :
 
 1.  Cloner le dépôt.
 2.  Ouvrir le dossier dans votre éditeur (ex: VS Code).
-3.  Lancer un serveur local (ex: extension "Live Server" sur VS Code).
+3.  Lancer un serveur local :
+    *   **Option 1 : Live Server (VS Code)** : Installez l'extension et cliquez sur "Go Live".
+    *   **Option 2 : Python** : Ouvrez un terminal dans le dossier et lancez `python -m http.server 8000`. Ouvrez ensuite `http://localhost:8000` dans votre navigateur.
 4.  L'application chargera les données depuis l'API de production (`https://sondage-api.sy-vain001.workers.dev/`) configurée dans `main.js`.
 
 ### Modifier le Worker (Backend)
@@ -64,6 +66,7 @@ Si vous souhaitez modifier la logique backend :
 1.  Installez [Wrangler](https://developers.cloudflare.com/workers/wrangler/install-and-update/).
 2.  Configurez vos secrets (Google Service Account) via `wrangler secret put`.
 3.  Testez localement avec `wrangler dev` dans le dossier `worker/`.
+4.  **Déploiement Automatique** : Toute modification poussée sur le dépôt (dossier `worker/`) déclenche automatiquement le déploiement sur Cloudflare.
 
 ## 📦 Technologies utilisées
 
