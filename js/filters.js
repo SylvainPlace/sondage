@@ -54,7 +54,7 @@ export function initFilters(allData, updateCallback) {
         const dropdownContent = document.createElement('div');
         dropdownContent.className = 'dropdown-content';
 
-        const allOptionDiv = document.createElement('div');
+        const allOptionDiv = document.createElement('label');
         allOptionDiv.className = 'checkbox-option';
         const allCheckbox = document.createElement('input');
         allCheckbox.type = 'checkbox';
@@ -71,8 +71,8 @@ export function initFilters(allData, updateCallback) {
             }
         });
         
-        const allLabel = document.createElement('label');
-        allLabel.htmlFor = `filter-${config.key}-all`;
+        const allLabel = document.createElement('span');
+        allLabel.className = 'option-text';
         allLabel.textContent = 'Tous';
         
         allOptionDiv.appendChild(allCheckbox);
@@ -87,7 +87,7 @@ export function initFilters(allData, updateCallback) {
 
         uniqueValues.forEach((val, index) => {
             if (val !== undefined && val !== null && val !== '') {
-                const optionDiv = document.createElement('div');
+                const optionDiv = document.createElement('label');
                 optionDiv.className = 'checkbox-option';
                 
                 const checkbox = document.createElement('input');
@@ -107,8 +107,8 @@ export function initFilters(allData, updateCallback) {
                     updateCallback();
                 });
 
-                const optLabel = document.createElement('label');
-                optLabel.htmlFor = `filter-${config.key}-${index}`;
+                const optLabel = document.createElement('span');
+                optLabel.className = 'option-text';
                 optLabel.textContent = `${val} (${counts[val] || 0})`;
 
                 optionDiv.appendChild(checkbox);
@@ -200,9 +200,9 @@ export function updateFilterCounters(allData, activeFilters) {
             const val = input.value;
             const count = counts[val] || 0;
             // Le label est le sibling direct ou via un id
-            const label = document.querySelector(`label[for="${input.id}"]`);
-            if (label) {
-                label.textContent = `${val} (${count})`;
+            const textSpan = input.parentNode.querySelector('.option-text');
+            if (textSpan) {
+                textSpan.textContent = `${val} (${count})`;
             }
         });
     });

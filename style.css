@@ -210,12 +210,14 @@ main {
     display: block;
 }
 
-.checkbox-option {
+.dropdown-content .checkbox-option {
     padding: 0.5rem 0.75rem;
     display: flex;
     align-items: center;
     cursor: pointer;
     transition: background-color 0.1s;
+    margin-bottom: 0;
+    width: 100%;
 }
 
 .checkbox-option:hover {
@@ -223,14 +225,15 @@ main {
 }
 
 .checkbox-option input {
-    margin-right: 0.75rem;
+    margin: 0 0.75rem 0 0;
     cursor: pointer;
     accent-color: var(--primary);
     width: 16px;
     height: 16px;
+    flex-shrink: 0;
 }
 
-.checkbox-option label {
+.checkbox-option .option-text {
     cursor: pointer;
     font-size: 0.875rem;
     color: var(--text-main);
