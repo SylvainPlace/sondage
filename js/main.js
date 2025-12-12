@@ -150,7 +150,10 @@ function updateStats() {
     updateChart(filteredData);
     updateXpChart(filteredData);
     updateBenefits(filteredData);
-    updateAnecdotes(filteredData);
+    
+    const hasActiveFilters = Object.keys(activeFilters).length > 0;
+    updateAnecdotes(filteredData, hasActiveFilters);
+    
     updateMap(filteredData);
     updateFilterCounters(allData, activeFilters);
 }

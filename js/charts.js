@@ -306,9 +306,16 @@ export function updateBenefits(data) {
     });
 }
 
-export function updateAnecdotes(data) {
+export function updateAnecdotes(data, show = true) {
+    const section = document.querySelector('.anecdotes-section');
     const list = document.getElementById('anecdotes-list');
     list.innerHTML = '';
+
+    if (!show) {
+        list.innerHTML = '<p style="color:var(--text-muted)">Veuillez choisir un filtre pour voir les commentaires.</p>';
+        return;
+    }
+    section.style.display = 'block';
 
     const withConseil = data.filter(d => d.conseil && d.conseil.trim() !== '');
 
