@@ -1,8 +1,14 @@
 export default {
   async fetch(request, env, ctx) {
     // CORS Headers
+    const origin = request.headers.get('Origin');
+    const allowedOrigins = [
+      "https://sondage-2rm.pages.dev",
+      "http://localhost:8000"
+    ];
+    
     const corsHeaders = {
-      "Access-Control-Allow-Origin": "*", // Change to your domain in production
+      "Access-Control-Allow-Origin": allowedOrigins.includes(origin) ? origin : "https://sondage-2rm.pages.dev",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
     };
@@ -33,9 +39,15 @@ export default {
                 });
             }
 
-            // 3. Generate Simple Token (Not secure for high stakes, sufficient here)
-            // Ideally, use signed JWT. Here: base64(email:timestamp:signature)
-            const token = btoa(`${email}:${Date.now()}:${env.GLOBAL_PASSWORD}`);
+            // 3. Generate Signed JWT (HS256)
+            // Expires in 30 days (2592000 seconds)
+            const payload = {
+                sub: email,
+                iat: Math.floor(Date.now() / 1000),
+                exp: Math.floor(Date.now() / 1000) + (2592000)
+            };
+            
+            const token = await signJWT(payload, env.GLOBAL_PASSWORD);
 
             return new Response(JSON.stringify({ token }), {
                 headers: { ...corsHeaders, "Content-Type": "application/json" }
@@ -54,16 +66,10 @@ export default {
         return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
     }
 
-    // Basic Token Validation (Decode and check format)
-    // In production, verify signature or check DB/KV
+    // Verify JWT Signature
     const token = authHeader.split(' ')[1];
     try {
-        const decoded = atob(token);
-        const [email, timestamp, pwd] = decoded.split(':');
-        
-        if (pwd !== env.GLOBAL_PASSWORD) {
-            throw new Error('Invalid Token');
-        }
+        await verifyJWT(token, env.GLOBAL_PASSWORD);
     } catch (e) {
         return new Response(JSON.stringify({ error: "Invalid Token" }), { status: 403, headers: corsHeaders });
     }
@@ -193,6 +199,55 @@ export default {
     return response;
   },
 };
+
+// --- JWT Helpers (HS256) ---
+
+async function signJWT(payload, secret) {
+    const header = { alg: "HS256", typ: "JWT" };
+    const encodedHeader = base64url(JSON.stringify(header));
+    const encodedPayload = base64url(JSON.stringify(payload));
+    
+    const signature = await hmacSign(`${encodedHeader}.${encodedPayload}`, secret);
+    return `${encodedHeader}.${encodedPayload}.${signature}`;
+}
+
+async function verifyJWT(token, secret) {
+    const parts = token.split('.');
+    if (parts.length !== 3) throw new Error("Invalid token structure");
+    
+    const [encodedHeader, encodedPayload, signature] = parts;
+    const expectedSignature = await hmacSign(`${encodedHeader}.${encodedPayload}`, secret);
+    
+    if (signature !== expectedSignature) throw new Error("Invalid signature");
+    
+    const payload = JSON.parse(atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/')));
+    
+    // Check expiration if present
+    if (payload.exp && Date.now() / 1000 > payload.exp) {
+        throw new Error("Token expired");
+    }
+    
+    return payload;
+}
+
+async function hmacSign(data, secret) {
+    const enc = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+        "raw",
+        enc.encode(secret),
+        { name: "HMAC", hash: "SHA-256" },
+        false,
+        ["sign"]
+    );
+    
+    const signature = await crypto.subtle.sign(
+        "HMAC",
+        key,
+        enc.encode(data)
+    );
+    
+    return base64url(null, signature);
+}
 
 // --- Helpers ---
 
