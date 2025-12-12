@@ -455,3 +455,67 @@ path.leaflet-interactive:focus {
         right: 1rem;
     }
 }
+
+/* Auth Modal */
+#auth-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--bg-body);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-container {
+    padding: 1rem;
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.auth-card h2 {
+    margin-bottom: 1rem;
+    color: var(--text-main);
+}
+
+.auth-card p {
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+.auth-card .form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.auth-card label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.auth-card input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.auth-card input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(190, 146, 73, 0.2);
+}

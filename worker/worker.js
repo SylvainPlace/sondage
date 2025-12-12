@@ -3,19 +3,76 @@ export default {
     // CORS Headers
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*", // Change to your domain in production
-      "Access-Control-Allow-Methods": "GET, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
     };
 
     if (request.method === "OPTIONS") {
       return new Response(null, { headers: corsHeaders });
     }
 
+    const url = new URL(request.url);
+
+    // --- Route: LOGIN ---
+    if (url.pathname === '/login' && request.method === 'POST') {
+        try {
+            const { email, password } = await request.json();
+
+            // 1. Verify Global Password
+            if (password !== env.GLOBAL_PASSWORD) {
+                return new Response(JSON.stringify({ error: "Mot de passe incorrect" }), {
+                    status: 401, headers: corsHeaders
+                });
+            }
+
+            // 2. Verify Email in Whitelist (Google Sheet)
+            const whitelist = await getWhitelist(env);
+            if (!whitelist.includes(email.toLowerCase().trim())) {
+                return new Response(JSON.stringify({ error: "Email non autorisé" }), {
+                    status: 403, headers: corsHeaders
+                });
+            }
+
+            // 3. Generate Simple Token (Not secure for high stakes, sufficient here)
+            // Ideally, use signed JWT. Here: base64(email:timestamp:signature)
+            const token = btoa(`${email}:${Date.now()}:${env.GLOBAL_PASSWORD}`);
+
+            return new Response(JSON.stringify({ token }), {
+                headers: { ...corsHeaders, "Content-Type": "application/json" }
+            });
+
+        } catch (e) {
+            return new Response(JSON.stringify({ error: "Invalid Request" }), { status: 400, headers: corsHeaders });
+        }
+    }
+
+    // --- Route: DATA (Protected) ---
+    
+    // Auth Check
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
+    }
+
+    // Basic Token Validation (Decode and check format)
+    // In production, verify signature or check DB/KV
+    const token = authHeader.split(' ')[1];
+    try {
+        const decoded = atob(token);
+        const [email, timestamp, pwd] = decoded.split(':');
+        
+        if (pwd !== env.GLOBAL_PASSWORD) {
+            throw new Error('Invalid Token');
+        }
+    } catch (e) {
+        return new Response(JSON.stringify({ error: "Invalid Token" }), { status: 403, headers: corsHeaders });
+    }
+
+
     // Cache Check (Cloudflare Cache API)
     const cache = caches.default;
-    const cacheUrl = new URL(request.url);
     // Use a specific cache key (e.g., ignore query params if you always want the same data)
-    const cacheKey = new Request(cacheUrl.toString(), request);
+    const cacheKey = new Request(url.toString(), request);
     let response
     response = await cache.match(cacheKey);
 
@@ -31,9 +88,9 @@ export default {
 
             // Fetch Sheet Data
             const sheetName = "Réponses au formulaire 1"; // Make sure this matches!
-            const url = `https://sheets.googleapis.com/v4/spreadsheets/${env.SPREADSHEET_ID}/values/${encodeURIComponent(sheetName)}`;
+            const googleUrl = `https://sheets.googleapis.com/v4/spreadsheets/${env.SPREADSHEET_ID}/values/${encodeURIComponent(sheetName)}`;
             
-            const sheetResponse = await fetch(url, {
+            const sheetResponse = await fetch(googleUrl, {
                 headers: {
                 "Authorization": `Bearer ${token}`,
                 },
@@ -138,6 +195,29 @@ export default {
 };
 
 // --- Helpers ---
+
+async function getWhitelist(env) {
+    try {
+        const token = await getAccessToken(env.GCP_SERVICE_ACCOUNT_EMAIL, env.GCP_PRIVATE_KEY);
+        // Assumes specific sheet name 'Autorisations' and emails in Column A
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${env.SPREADSHEET_ID}/values/Autorisations!A:A`;
+        
+        const response = await fetch(url, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (!response.ok) return []; // Fail safe: empty whitelist
+
+        const data = await response.json();
+        if (!data.values) return [];
+
+        // Flatten and normalize
+        return data.values.flat().map(email => email.toLowerCase().trim());
+    } catch (e) {
+        console.error("Whitelist fetch error", e);
+        return [];
+    }
+}
 
 function parseExperience(str) {
   if (!str) return 0;

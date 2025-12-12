@@ -2,6 +2,7 @@ import { initFilters, resetFilters, getActiveFilters, updateFilterCounters } fro
 import { updateChart, updateXpChart, updateBenefits, updateAnecdotes } from './charts.js';
 import { updateMap, setMapMode } from './map.js';
 import { parseSalaryRange, parsePrime, formatMoney, getXpGroup } from './utils.js';
+import { initAuth } from './auth.js';
 
 // Configuration API (Worker Cloudflare)
 const API_URL = 'https://sondage-api.sy-vain001.workers.dev/'; 
@@ -9,7 +10,8 @@ const API_URL = 'https://sondage-api.sy-vain001.workers.dev/';
 let allData = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-    fetchData();
+    initAuth(API_URL, (token) => fetchData(token));
+    
     document.getElementById('reset-filters').addEventListener('click', () => resetFilters(updateStats));
     
     // Map toggle listener
@@ -34,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-async function fetchData() {
+async function fetchData(token) {
     const loader = document.getElementById('loader');
     const resultsContent = document.getElementById('results-content');
     const noResults = document.getElementById('no-results');
@@ -42,9 +44,19 @@ async function fetchData() {
     try {
         let rawData = [];
         
-        const response = await fetch(API_URL);
+        const response = await fetch(API_URL, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
         
         if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+                // Invalid token, re-auth
+                localStorage.removeItem('auth_token');
+                location.reload();
+                return;
+            }
             const err = await response.json();
             throw new Error(err.error || 'Erreur API Worker');
         }
