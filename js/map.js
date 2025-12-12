@@ -5,36 +5,39 @@ let map = null;
 let geoJsonLayer = null;
 let currentMode = "avg_base";
 let legendControl = null;
+let currentBreaks = [0, 0, 0, 0]; 
 
-// Color scale function for Salary.
-// Thresholds (35k, 45k, etc.) are based on approximate distribution quartiles to ensure visual contrast.
+// [Lightest -> Darkest]
+const MAP_COLORS = ["#f5eacc", "#dec086", "#be9249", "#8a6322", "#5c4217"];
+
 function getColor(d) {
-  return d > 65000
-    ? "#08519c"
-    : d > 55000
-    ? "#3182bd"
-    : d > 45000
-    ? "#6baed6"
-    : d > 35000
-    ? "#bdd7e7"
-    : "#eff3ff";
+  if (d === undefined || d === null) return "#f0f0f0";
+  if (d > currentBreaks[3]) return MAP_COLORS[4];
+  if (d > currentBreaks[2]) return MAP_COLORS[3];
+  if (d > currentBreaks[1]) return MAP_COLORS[2];
+  if (d > currentBreaks[0]) return MAP_COLORS[1];
+  return MAP_COLORS[0];
 }
 
-function getColorCount(d) {
-  return d > 50
-    ? "#006d2c"
-    : d > 20
-    ? "#31a354"
-    : d > 10
-    ? "#74c476"
-    : d > 5
-    ? "#a1d99b"
-    : "#edf8e9";
+function calculateBreaks(values) {
+  if (!values || values.length === 0) return [0, 0, 0, 0];
+
+  const sorted = [...values].sort((a, b) => a - b);
+  const min = sorted[0];
+  const max = sorted[sorted.length - 1];
+
+  if (min === max) return [min, min, min, min];
+
+  const q1 = sorted[Math.floor(sorted.length * 0.2)];
+  const q2 = sorted[Math.floor(sorted.length * 0.4)];
+  const q3 = sorted[Math.floor(sorted.length * 0.6)];
+  const q4 = sorted[Math.floor(sorted.length * 0.8)];
+
+  return [q1, q2, q3, q4];
 }
 
 function style(feature) {
   const props = feature.properties;
-  let color = "#f0f0f0";
   let value = 0;
 
   switch (currentMode) {
@@ -55,11 +58,8 @@ function style(feature) {
       break;
   }
 
-  if (currentMode === "count") {
-    if (value) color = getColorCount(value);
-  } else {
-    if (value) color = getColor(value);
-  }
+  // If no data for this region, use neutral gray
+  const color = value ? getColor(value) : "#f0f0f0";
 
   return {
     fillColor: color,
@@ -106,6 +106,33 @@ function normalizeRegionName(name) {
 export function setMapMode(mode) {
   currentMode = mode;
 
+  // Recalculate breaks based on the new mode's data across all regions
+  const values = [];
+  regionsData.features.forEach((f) => {
+    const props = f.properties;
+    let val = 0;
+    switch (mode) {
+      case "avg_base":
+        val = props.avgSalary;
+        break;
+      case "median_base":
+        val = props.medianSalary;
+        break;
+      case "avg_total":
+        val = props.avgTotal;
+        break;
+      case "median_total":
+        val = props.medianTotal;
+        break;
+      case "count":
+        val = props.count;
+        break;
+    }
+    if (val > 0) values.push(val);
+  });
+
+  currentBreaks = calculateBreaks(values);
+
   if (geoJsonLayer) {
     geoJsonLayer.setStyle(style);
   }
@@ -123,37 +150,50 @@ function updateLegend() {
   legendControl.onAdd = function (map) {
     const div = L.DomUtil.create("div", "info legend");
 
-    if (currentMode === "count") {
-      const grades = [0, 5, 10, 20, 50];
-      div.innerHTML += "<h4>Répondants</h4>";
-      for (let i = 0; i < grades.length; i++) {
-        div.innerHTML +=
-          '<i style="background:' +
-          getColorCount(grades[i] + 1) +
-          '"></i> ' +
-          grades[i] +
-          (grades[i + 1] ? "&ndash;" + grades[i + 1] + "<br>" : "+");
-      }
-    } else {
-      const grades = [0, 35000, 45000, 55000, 65000];
-      let title = "Salaire";
-      if (currentMode.includes("median")) title = "Salaire Médian";
-      else title = "Salaire Moyen";
+    // Title based on mode
+    let title = "Salaire";
+    if (currentMode === "count") title = "Répondants";
+    else if (currentMode.includes("median")) title = "Salaire Médian";
+    else title = "Salaire Moyen";
 
-      if (currentMode.includes("total")) title += " (+ Primes)";
+    if (currentMode.includes("total")) title += " (+ Primes)";
 
-      div.innerHTML += `<h4>${title}</h4>`;
-      for (let i = 0; i < grades.length; i++) {
-        div.innerHTML +=
-          '<i style="background:' +
-          getColor(grades[i] + 1) +
-          '"></i> ' +
-          formatMoney(grades[i]) +
-          (grades[i + 1]
-            ? "&ndash;" + formatMoney(grades[i + 1]) + "<br>"
-            : "+");
-      }
+    div.innerHTML += `<h4>${title}</h4>`;
+
+    // Dynamic Legend Ranges
+
+    // Helper to format numbers based on mode
+    const fmt = (v) => (currentMode === "count" ? v : formatMoney(v));
+
+    // Start from 0 to first break
+    div.innerHTML +=
+      '<i style="background:' +
+      MAP_COLORS[0] +
+      '"></i> ' +
+      "&lt; " +
+      fmt(currentBreaks[0]) +
+      "<br>";
+
+    // Middle ranges
+    for (let i = 0; i < 3; i++) {
+      div.innerHTML +=
+        '<i style="background:' +
+        MAP_COLORS[i + 1] +
+        '"></i> ' +
+        fmt(currentBreaks[i]) +
+        " &ndash; " +
+        fmt(currentBreaks[i + 1]) +
+        "<br>";
     }
+
+    // Last range
+    div.innerHTML +=
+      '<i style="background:' +
+      MAP_COLORS[4] +
+      '"></i> ' +
+      "&gt; " +
+      fmt(currentBreaks[3]) +
+      "<br>";
 
     return div;
   };
@@ -265,6 +305,8 @@ export function updateMap(data) {
     };
   });
 
+  const currentValues = [];
+
   regionsData.features.forEach((feature) => {
     const name = normalizeRegionName(feature.properties.nom);
 
@@ -284,6 +326,26 @@ export function updateMap(data) {
       feature.properties.avgTotal = stats.avgTotal;
       feature.properties.medianTotal = stats.medianTotal;
       feature.properties.count = stats.count;
+
+      let val = 0;
+      switch (currentMode) {
+        case "avg_base":
+          val = stats.avg;
+          break;
+        case "median_base":
+          val = stats.median;
+          break;
+        case "avg_total":
+          val = stats.avgTotal;
+          break;
+        case "median_total":
+          val = stats.medianTotal;
+          break;
+        case "count":
+          val = stats.count;
+          break;
+      }
+      if (val > 0) currentValues.push(val);
     } else {
       feature.properties.avgSalary = null;
       feature.properties.medianSalary = null;
@@ -292,6 +354,8 @@ export function updateMap(data) {
       feature.properties.count = 0;
     }
   });
+
+  currentBreaks = calculateBreaks(currentValues);
 
   if (geoJsonLayer) {
     map.removeLayer(geoJsonLayer);
