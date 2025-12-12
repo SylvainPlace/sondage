@@ -366,5 +366,5 @@ export function updateMap(data) {
     onEachFeature: onEachFeature,
   }).addTo(map);
 
-  if (!legendControl) updateLegend();
+  updateLegend();
 }
