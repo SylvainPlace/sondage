@@ -371,7 +371,8 @@ function normalizeSector(str) {
     s.includes("compagnie")||
     s.includes("autre")||
     s.includes("client")||
-    s.includes("free-lance")
+    s.includes("free-lance")||
+    s.includes("défense")
   )
     return "Tech / Industrie / Autre";
 
