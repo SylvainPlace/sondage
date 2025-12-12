@@ -200,7 +200,7 @@ async function getWhitelist(env) {
     try {
         const token = await getAccessToken(env.GCP_SERVICE_ACCOUNT_EMAIL, env.GCP_PRIVATE_KEY);
         // Assumes specific sheet name 'Autorisations' and emails in Column A
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${env.SPREADSHEET_ID}/values/Autorisations!A:A`;
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${env.SPREADSHEET_ID}/values/Whitelist!A:A`;
         
         const response = await fetch(url, {
             headers: { "Authorization": `Bearer ${token}` }
