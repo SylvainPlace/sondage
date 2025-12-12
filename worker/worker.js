@@ -47,7 +47,7 @@ export default {
                 exp: Math.floor(Date.now() / 1000) + (2592000)
             };
             
-            const token = await signJWT(payload, env.GLOBAL_PASSWORD);
+            const token = await signJWT(payload, env.JWT_SECRET);
 
             return new Response(JSON.stringify({ token }), {
                 headers: { ...corsHeaders, "Content-Type": "application/json" }
@@ -69,7 +69,7 @@ export default {
     // Verify JWT Signature
     const token = authHeader.split(' ')[1];
     try {
-        await verifyJWT(token, env.GLOBAL_PASSWORD);
+        await verifyJWT(token, env.JWT_SECRET);
     } catch (e) {
         return new Response(JSON.stringify({ error: "Invalid Token" }), { status: 403, headers: corsHeaders });
     }
