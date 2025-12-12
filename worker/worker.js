@@ -321,7 +321,9 @@ function normalizeSector(str) {
     s.includes("ars") ||
     s.includes("ans") ||
     s.includes("ministère") ||
-    s.includes("gip")
+    s.includes("gip")||
+    s.includes("doctorat")||
+    s.includes("recherche")
   )
     return "Institution Publique";
 
@@ -364,7 +366,12 @@ function normalizeSector(str) {
     s.includes("industrie") ||
     s.includes("télécom") ||
     s.includes("sécurité") ||
-    s.includes("recherche")
+    s.includes("security") ||
+    s.includes("recherche")||
+    s.includes("compagnie")||
+    s.includes("autre")||
+    s.includes("client")||
+    s.includes("free-lance")
   )
     return "Tech / Industrie / Autre";
 
