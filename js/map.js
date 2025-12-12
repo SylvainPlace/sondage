@@ -3,10 +3,11 @@ import { parseSalaryRange, parsePrime, formatMoney } from "./utils.js";
 
 let map = null;
 let geoJsonLayer = null;
-let currentMode = "avg_base"; // 'avg_base', 'median_base', 'avg_total', 'median_total', 'count'
+let currentMode = "avg_base";
 let legendControl = null;
 
-// Color scale function for Salary
+// Color scale function for Salary.
+// Thresholds (35k, 45k, etc.) are based on approximate distribution quartiles to ensure visual contrast.
 function getColor(d) {
   return d > 65000
     ? "#08519c"
@@ -19,7 +20,6 @@ function getColor(d) {
     : "#eff3ff";
 }
 
-// Color scale function for Count
 function getColorCount(d) {
   return d > 50
     ? "#006d2c"
@@ -90,13 +90,15 @@ function resetHighlight(e) {
   geoJsonLayer.resetStyle(e.target);
 }
 
+// Normalization is critical for matching potentially messy user input (accents, caps)
+// to standard GeoJSON properties (e.g., "Île-de-France" vs "ile de france").
 function normalizeRegionName(name) {
   if (!name) return "";
   return name
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // remove accents
-    .replace(/[^a-z0-9\s]/g, " ") // replace non-alphanumeric with space (removes ' and /)
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -104,12 +106,10 @@ function normalizeRegionName(name) {
 export function setMapMode(mode) {
   currentMode = mode;
 
-  // Redraw map style
   if (geoJsonLayer) {
     geoJsonLayer.setStyle(style);
   }
 
-  // Update legend
   updateLegend();
 }
 
@@ -162,7 +162,6 @@ function updateLegend() {
 }
 
 export function initMap() {
-  // Center on France
   map = L.map("map").setView([46.603354, 1.888334], 6);
 
   L.tileLayer(
@@ -175,7 +174,6 @@ export function initMap() {
     }
   ).addTo(map);
 
-  // Initial empty layer
   geoJsonLayer = L.geoJson(regionsData, {
     style: style,
     onEachFeature: onEachFeature,
@@ -190,7 +188,6 @@ function onEachFeature(feature, layer) {
     mouseout: resetHighlight,
   });
 
-  // Add tooltip
   const props = feature.properties;
   if (props && props.nom) {
     let content = `<strong>${props.nom}</strong><br/>`;
@@ -212,11 +209,10 @@ export function updateMap(data) {
     initMap();
   }
 
-  // 1. Aggregate data by region
   const regionStats = {};
 
   data.forEach((item) => {
-    const region = item.departement; // Assuming 'departement' holds region name
+    const region = item.departement;
     if (!region) return;
 
     const normalizedRegion = normalizeRegionName(region);
@@ -237,7 +233,6 @@ export function updateMap(data) {
     }
   });
 
-  // 2. Calculate stats
   const regionMetrics = {};
 
   const getStats = (arr) => {
@@ -270,17 +265,12 @@ export function updateMap(data) {
     };
   });
 
-  // 3. Update GeoJSON properties
   regionsData.features.forEach((feature) => {
     const name = normalizeRegionName(feature.properties.nom);
 
-    // Try direct match first
     let stats = regionMetrics[name];
 
-    // If not found, try to map known differences (optional, add if needed)
-    // e.g. "paca" -> "provence alpes cote d azur"
     if (!stats) {
-      // quick fix for common abbreviations if any
       if (
         name.includes("provence alpes cote d azur") &&
         regionMetrics["paca sud"]
@@ -303,7 +293,6 @@ export function updateMap(data) {
     }
   });
 
-  // 4. Redraw layer
   if (geoJsonLayer) {
     map.removeLayer(geoJsonLayer);
   }
@@ -313,6 +302,5 @@ export function updateMap(data) {
     onEachFeature: onEachFeature,
   }).addTo(map);
 
-  // Ensure legend is up to date (though mode didn't change, we want to ensure it's there)
   if (!legendControl) updateLegend();
 }

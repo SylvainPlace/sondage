@@ -19,7 +19,6 @@ import {
 } from "./utils.js";
 import { initAuth } from "./auth.js";
 
-// Configuration API (Worker Cloudflare)
 const API_URL = "https://sondage-api.sy-vain001.workers.dev/";
 
 let allData = [];
@@ -31,7 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
     .getElementById("reset-filters")
     .addEventListener("click", () => resetFilters(updateStats));
 
-  // Map toggle listener
   const mapToggle = document.getElementById("map-mode-select");
   if (mapToggle) {
     mapToggle.addEventListener("change", (e) => {
@@ -39,7 +37,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Scroll to top logic
   const scrollTopBtn = document.getElementById("scroll-top");
   window.addEventListener("scroll", () => {
     if (window.scrollY > 300) {
@@ -69,7 +66,6 @@ async function fetchData(token) {
 
     if (!response.ok) {
       if (response.status === 401 || response.status === 403) {
-        // Invalid token, re-auth
         localStorage.removeItem("auth_token");
         location.reload();
         return;
@@ -78,10 +74,8 @@ async function fetchData(token) {
       throw new Error(err.error || "Erreur API Worker");
     }
 
-    // Le backend renvoie maintenant directement le JSON formaté
     rawData = await response.json();
 
-    // Ajout du champ calculé xp_group côté client (UI logic)
     allData = rawData.map((item) => ({
       ...item,
       xp_group: getXpGroup(item.experience),
@@ -90,7 +84,6 @@ async function fetchData(token) {
     initFilters(allData, updateStats);
     updateStats();
 
-    // Hide loader and show content
     loader.style.display = "none";
     resultsContent.style.display = "block";
   } catch (error) {
@@ -104,10 +97,8 @@ async function fetchData(token) {
 }
 
 function updateStats() {
-  // 1. Récupérer les valeurs des filtres
   const activeFilters = getActiveFilters();
 
-  // 2. Filtrer les données
   const filteredData = allData.filter((item) => {
     for (const key in activeFilters) {
       const filterValues = activeFilters[key];
@@ -119,7 +110,6 @@ function updateStats() {
     return true;
   });
 
-  // 3. Calculs
   const count = filteredData.length;
 
   const salairesNumeriques = filteredData
@@ -170,7 +160,6 @@ function updateStats() {
     }
   }
 
-  // 4. Mise à jour du DOM
   if (count === 0) {
     document.getElementById("no-results").style.display = "block";
     document.getElementById("results-content").style.display = "none";

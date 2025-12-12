@@ -1,9 +1,8 @@
 export function initAuth(apiUrl, onAuthenticated) {
   const token = localStorage.getItem("auth_token");
 
-  // Check if we have a token (simple client-side check, real check is API call)
+  // This check is purely for UX speed; the real security happens when the API token is verified by the Worker.
   if (token) {
-    // Try to fetch data with this token
     onAuthenticated(token);
   } else {
     showLoginModal(apiUrl, onAuthenticated);
@@ -11,7 +10,6 @@ export function initAuth(apiUrl, onAuthenticated) {
 }
 
 function showLoginModal(apiUrl, onSuccess) {
-  // Create Modal HTML
   const modal = document.createElement("div");
   modal.id = "auth-modal";
   modal.innerHTML = `
@@ -37,10 +35,8 @@ function showLoginModal(apiUrl, onSuccess) {
 
   document.body.appendChild(modal);
 
-  // Prevent scrolling
   document.body.style.overflow = "hidden";
 
-  // Handle Form Submit
   const form = document.getElementById("auth-form");
   const errorMsg = document.getElementById("auth-error");
 
@@ -67,10 +63,8 @@ function showLoginModal(apiUrl, onSuccess) {
         throw new Error(data.error || "Erreur de connexion");
       }
 
-      // Success
       localStorage.setItem("auth_token", data.token);
 
-      // Remove modal
       document.body.removeChild(modal);
       document.body.style.overflow = "";
 

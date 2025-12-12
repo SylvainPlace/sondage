@@ -95,7 +95,7 @@ export function updateXpChart(data) {
 
   if (data.length === 0) return;
 
-  // 1. Group data by exact year of experience (Granular)
+  // We calculate both "Base" and "Total" (with primes) to show the full picture.
   const xpMap = {};
   let maxXp = 0;
 
@@ -115,19 +115,15 @@ export function updateXpChart(data) {
     }
   });
 
-  // Create labels 0 to Max
   const labels = [];
   for (let i = 0; i <= maxXp; i++) labels.push(i);
 
-  // 2. Calculate Metrics (Mean/Median)
   const getStats = (arr) => {
-    if (!arr || arr.length === 0) return null; // Return null to break line instead of 0
+    if (!arr || arr.length === 0) return null;
 
-    // Mean
     const sum = arr.reduce((a, b) => a + b, 0);
     const mean = Math.round(sum / arr.length);
 
-    // Median
     const sorted = [...arr].sort((a, b) => a - b);
     const mid = Math.floor(sorted.length / 2);
     const median =
@@ -161,7 +157,6 @@ export function updateXpChart(data) {
     }
   });
 
-  // 3. Configure Chart
   xpChart = new Chart(ctx, {
     type: "line",
     data: {
@@ -170,7 +165,7 @@ export function updateXpChart(data) {
         {
           label: "Moyen (Base)",
           data: meanBaseData,
-          borderColor: "#3b82f6", // Blue
+          borderColor: "#3b82f6",
           backgroundColor: "#3b82f6",
           borderWidth: 2,
           tension: 0.3,
@@ -182,14 +177,14 @@ export function updateXpChart(data) {
           borderColor: "#3b82f6",
           backgroundColor: "#3b82f6",
           borderWidth: 2,
-          borderDash: [5, 5], // Dashed
+          borderDash: [5, 5],
           tension: 0.3,
           spanGaps: true,
         },
         {
           label: "Moyen (Total)",
           data: meanTotalData,
-          borderColor: "#be9249", // Primary Gold
+          borderColor: "#be9249",
           backgroundColor: "#be9249",
           borderWidth: 2,
           tension: 0.3,
@@ -201,7 +196,7 @@ export function updateXpChart(data) {
           borderColor: "#be9249",
           backgroundColor: "#be9249",
           borderWidth: 2,
-          borderDash: [5, 5], // Dashed
+          borderDash: [5, 5],
           tension: 0.3,
           spanGaps: true,
         },
@@ -258,6 +253,7 @@ export function updateXpChart(data) {
   });
 }
 
+// Relies on keyword matching in a free-text field, so it's an approximation, not exact data.
 export function updateBenefits(data) {
   const list = document.getElementById("benefits-list");
   list.innerHTML = "";

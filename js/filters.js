@@ -16,7 +16,7 @@ export function initFilters(allData, updateCallback) {
     const uniqueValues = [
       ...new Set(allData.map((item) => item[config.key])),
     ].sort((a, b) => {
-      // Force "Autre" and "Non renseigné" to the end
+      // Force "Autre" and "Non renseigné" to the end of the lists (better UX).
       const specialValues = ["Autre", "Non renseigné"];
       const isASpecial = specialValues.includes(a);
       const isBSpecial = specialValues.includes(b);
@@ -220,13 +220,10 @@ export function updateFilterCounters(allData, activeFilters) {
       return acc;
     }, {});
 
-    // Mise à jour des labels dans le dropdown correspondant
-    // On cherche le input correspondant à la clé
     const inputs = document.querySelectorAll(`input[data-key="${config.key}"]`);
     inputs.forEach((input) => {
       const val = input.value;
       const count = counts[val] || 0;
-      // Le label est le sibling direct ou via un id
       const textSpan = input.parentNode.querySelector(".option-text");
       if (textSpan) {
         textSpan.textContent = `${val} (${count})`;
