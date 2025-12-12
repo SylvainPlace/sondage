@@ -28,7 +28,7 @@ export default {
             // 2. Verify Email in Whitelist (Google Sheet)
             const whitelist = await getWhitelist(env);
             if (!whitelist.includes(email.toLowerCase().trim())) {
-                return new Response(JSON.stringify({ error: "Email non autorisé" }), {
+                return new Response(JSON.stringify({ error: "Email non autorisé. Utilisez l'adresse de votre inscription à l'association. En cas d'oubli, contactez un administrateur." }), {
                     status: 403, headers: corsHeaders
                 });
             }
