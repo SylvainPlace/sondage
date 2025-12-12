@@ -1,14 +1,16 @@
 export default {
   async fetch(request, env, ctx) {
     // CORS Headers
-    const origin = request.headers.get('Origin');
+    const origin = request.headers.get("Origin");
     const allowedOrigins = [
       "https://sondage-2rm.pages.dev",
-      "http://localhost:8000"
+      "http://localhost:8000",
     ];
-    
+
     const corsHeaders = {
-      "Access-Control-Allow-Origin": allowedOrigins.includes(origin) ? origin : "https://sondage-2rm.pages.dev",
+      "Access-Control-Allow-Origin": allowedOrigins.includes(origin)
+        ? origin
+        : "https://sondage-2rm.pages.dev",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
     };
@@ -20,180 +22,209 @@ export default {
     const url = new URL(request.url);
 
     // --- Route: LOGIN ---
-    if (url.pathname === '/login' && request.method === 'POST') {
-        try {
-            const { email, password } = await request.json();
+    if (url.pathname === "/login" && request.method === "POST") {
+      try {
+        const { email, password } = await request.json();
 
-            // 1. Verify Global Password
-            if (password !== env.GLOBAL_PASSWORD) {
-                return new Response(JSON.stringify({ error: "Mot de passe incorrect" }), {
-                    status: 401, headers: corsHeaders
-                });
+        // 1. Verify Global Password
+        if (password !== env.GLOBAL_PASSWORD) {
+          return new Response(
+            JSON.stringify({ error: "Mot de passe incorrect" }),
+            {
+              status: 401,
+              headers: corsHeaders,
             }
-
-            // 2. Verify Email in Whitelist (Google Sheet)
-            const whitelist = await getWhitelist(env);
-            if (!whitelist.includes(email.toLowerCase().trim())) {
-                return new Response(JSON.stringify({ error: "Email non autorisé. Utilisez l'adresse de votre inscription à l'association. En cas d'oubli, contactez un administrateur." }), {
-                    status: 403, headers: corsHeaders
-                });
-            }
-
-            // 3. Generate Signed JWT (HS256)
-            // Expires in 30 days (2592000 seconds)
-            const payload = {
-                sub: email,
-                iat: Math.floor(Date.now() / 1000),
-                exp: Math.floor(Date.now() / 1000) + (2592000)
-            };
-            
-            const token = await signJWT(payload, env.JWT_SECRET);
-
-            return new Response(JSON.stringify({ token }), {
-                headers: { ...corsHeaders, "Content-Type": "application/json" }
-            });
-
-        } catch (e) {
-            return new Response(JSON.stringify({ error: "Invalid Request" }), { status: 400, headers: corsHeaders });
+          );
         }
+
+        // 2. Verify Email in Whitelist (Google Sheet)
+        const whitelist = await getWhitelist(env);
+        if (!whitelist.includes(email.toLowerCase().trim())) {
+          return new Response(
+            JSON.stringify({
+              error:
+                "Email non autorisé. Utilisez l'adresse de votre inscription à l'association. En cas d'oubli, contactez un administrateur.",
+            }),
+            {
+              status: 403,
+              headers: corsHeaders,
+            }
+          );
+        }
+
+        // 3. Generate Signed JWT (HS256)
+        // Expires in 30 days (2592000 seconds)
+        const payload = {
+          sub: email,
+          iat: Math.floor(Date.now() / 1000),
+          exp: Math.floor(Date.now() / 1000) + 2592000,
+        };
+
+        const token = await signJWT(payload, env.JWT_SECRET);
+
+        return new Response(JSON.stringify({ token }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: "Invalid Request" }), {
+          status: 400,
+          headers: corsHeaders,
+        });
+      }
     }
 
     // --- Route: DATA (Protected) ---
-    
+
     // Auth Check
-    const authHeader = request.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
+    const authHeader = request.headers.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: corsHeaders,
+      });
     }
 
     // Verify JWT Signature
-    const token = authHeader.split(' ')[1];
+    const token = authHeader.split(" ")[1];
     try {
-        await verifyJWT(token, env.JWT_SECRET);
+      await verifyJWT(token, env.JWT_SECRET);
     } catch (e) {
-        return new Response(JSON.stringify({ error: "Invalid Token" }), { status: 403, headers: corsHeaders });
+      return new Response(JSON.stringify({ error: "Invalid Token" }), {
+        status: 403,
+        headers: corsHeaders,
+      });
     }
-
 
     // Cache Check (Cloudflare Cache API)
     const cache = caches.default;
     // Use a specific cache key (e.g., ignore query params if you always want the same data)
     const cacheKey = new Request(url.toString(), request);
-    let response
+    let response;
     response = await cache.match(cacheKey);
 
     if (!response) {
-        try {
-            // Check Configuration
-            if (!env.GCP_SERVICE_ACCOUNT_EMAIL || !env.GCP_PRIVATE_KEY || !env.SPREADSHEET_ID) {
-                throw new Error("Missing configuration (Secrets).");
-            }
-
-            // Get Google Access Token
-            const token = await getAccessToken(env.GCP_SERVICE_ACCOUNT_EMAIL, env.GCP_PRIVATE_KEY);
-
-            // Fetch Sheet Data
-            const sheetName = "Réponses au formulaire 1"; // Make sure this matches!
-            const googleUrl = `https://sheets.googleapis.com/v4/spreadsheets/${env.SPREADSHEET_ID}/values/${encodeURIComponent(sheetName)}`;
-            
-            const sheetResponse = await fetch(googleUrl, {
-                headers: {
-                "Authorization": `Bearer ${token}`,
-                },
-            });
-
-            if (!sheetResponse.ok) {
-                const err = await sheetResponse.text();
-                throw new Error(`Google API Error: ${err}`);
-            }
-
-            const rawData = await sheetResponse.json();
-            
-            if (!rawData.values || rawData.values.length < 2) {
-                throw new Error("No data found in sheet.");
-            }
-
-            // Transform Data (Server-Side Formatting)
-            const headers = rawData.values[0];
-            const rows = rawData.values.slice(1);
-            
-            const MAPPING = {
-                "annee_diplome": "Année de diplôme",
-                "sexe": "Sexe",
-                "departement": "Département actuel de travail",
-                "secteur": "Secteur d’activité",
-                "type_structure": "Type de structure",
-                "poste": "Poste actuel",
-                "experience": "Nombre d’années d’expérience (depuis le diplôme)",
-                "salaire_brut": "Salaire brut annuel actuel (hors primes)",
-                "primes": "Primes / variable annuel",
-                "avantages": "Avantages particuliers (optionnel)",
-                "conseil": "Un conseil, un retour d’expérience, une anecdote ? (facultatif)"
-            };
-
-            // Header Index Map
-            const headerMap = {};
-            headers.forEach((h, i) => headerMap[h] = i);
-
-            const formattedData = rows.map(row => {
-                const item = {};
-                for (const [jsonKey, sheetColumnName] of Object.entries(MAPPING)) {
-                    let colIndex = headerMap[sheetColumnName];
-                    
-                    // Fuzzy match fallback
-                    if (colIndex === undefined) {
-                        const foundHeader = headers.find(h => h.includes(sheetColumnName));
-                        if (foundHeader) colIndex = headerMap[foundHeader];
-                    }
-
-                    if (colIndex !== undefined && row[colIndex] !== undefined) {
-                        let value = row[colIndex];
-                        // Type conversion
-                        if (jsonKey === 'experience') {
-                            item[jsonKey] = parseExperience(value);
-                        } else if (jsonKey === 'annee_diplome') {
-                            const num = parseInt(value, 10);
-                            item[jsonKey] = isNaN(num) ? 0 : num;
-                        } else if (jsonKey === 'secteur') {
-                            item[jsonKey] = normalizeSector(value);
-                        } else if (jsonKey === 'type_structure') {
-                            item[jsonKey] = normalizeStructure(value);
-                        } else if (jsonKey === 'poste') {
-                            item[jsonKey] = normalizeJob(value);
-                        } else if (jsonKey === 'departement') {
-                            item[jsonKey] = normalizeRegion(value);
-                        } else {
-                            item[jsonKey] = String(value).trim();
-                        }
-                    } else {
-                        item[jsonKey] = "";
-                    }
-                }
-                return item;
-            });
-
-            // Create Response
-            response = new Response(JSON.stringify(formattedData), {
-                headers: {
-                ...corsHeaders,
-                "Content-Type": "application/json",
-                // Cache Control: Cache for 10 hour (36000s) in CDN and Browser
-                "Cache-Control": "public, max-age=36000, s-maxage=36000",
-                },
-            });
-
-            // Save to Cache
-            ctx.waitUntil(cache.put(cacheKey, response.clone()));
-
-        } catch (error) {
-            return new Response(JSON.stringify({ error: error.message }), {
-                status: 500,
-                headers: {
-                ...corsHeaders,
-                "Content-Type": "application/json",
-                },
-            });
+      try {
+        // Check Configuration
+        if (
+          !env.GCP_SERVICE_ACCOUNT_EMAIL ||
+          !env.GCP_PRIVATE_KEY ||
+          !env.SPREADSHEET_ID
+        ) {
+          throw new Error("Missing configuration (Secrets).");
         }
+
+        // Get Google Access Token
+        const token = await getAccessToken(
+          env.GCP_SERVICE_ACCOUNT_EMAIL,
+          env.GCP_PRIVATE_KEY
+        );
+
+        // Fetch Sheet Data
+        const sheetName = "Réponses au formulaire 1"; // Make sure this matches!
+        const googleUrl = `https://sheets.googleapis.com/v4/spreadsheets/${
+          env.SPREADSHEET_ID
+        }/values/${encodeURIComponent(sheetName)}`;
+
+        const sheetResponse = await fetch(googleUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!sheetResponse.ok) {
+          const err = await sheetResponse.text();
+          throw new Error(`Google API Error: ${err}`);
+        }
+
+        const rawData = await sheetResponse.json();
+
+        if (!rawData.values || rawData.values.length < 2) {
+          throw new Error("No data found in sheet.");
+        }
+
+        // Transform Data (Server-Side Formatting)
+        const headers = rawData.values[0];
+        const rows = rawData.values.slice(1);
+
+        const MAPPING = {
+          annee_diplome: "Année de diplôme",
+          sexe: "Sexe",
+          departement: "Département actuel de travail",
+          secteur: "Secteur d’activité",
+          type_structure: "Type de structure",
+          poste: "Poste actuel",
+          experience: "Nombre d’années d’expérience (depuis le diplôme)",
+          salaire_brut: "Salaire brut annuel actuel (hors primes)",
+          primes: "Primes / variable annuel",
+          avantages: "Avantages particuliers (optionnel)",
+          conseil:
+            "Un conseil, un retour d’expérience, une anecdote ? (facultatif)",
+        };
+
+        // Header Index Map
+        const headerMap = {};
+        headers.forEach((h, i) => (headerMap[h] = i));
+
+        const formattedData = rows.map((row) => {
+          const item = {};
+          for (const [jsonKey, sheetColumnName] of Object.entries(MAPPING)) {
+            let colIndex = headerMap[sheetColumnName];
+
+            // Fuzzy match fallback
+            if (colIndex === undefined) {
+              const foundHeader = headers.find((h) =>
+                h.includes(sheetColumnName)
+              );
+              if (foundHeader) colIndex = headerMap[foundHeader];
+            }
+
+            if (colIndex !== undefined && row[colIndex] !== undefined) {
+              let value = row[colIndex];
+              // Type conversion
+              if (jsonKey === "experience") {
+                item[jsonKey] = parseExperience(value);
+              } else if (jsonKey === "annee_diplome") {
+                const num = parseInt(value, 10);
+                item[jsonKey] = isNaN(num) ? 0 : num;
+              } else if (jsonKey === "secteur") {
+                item[jsonKey] = normalizeSector(value);
+              } else if (jsonKey === "type_structure") {
+                item[jsonKey] = normalizeStructure(value);
+              } else if (jsonKey === "poste") {
+                item[jsonKey] = normalizeJob(value);
+              } else if (jsonKey === "departement") {
+                item[jsonKey] = normalizeRegion(value);
+              } else {
+                item[jsonKey] = String(value).trim();
+              }
+            } else {
+              item[jsonKey] = "";
+            }
+          }
+          return item;
+        });
+
+        // Create Response
+        response = new Response(JSON.stringify(formattedData), {
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+            // Cache Control: Cache for 10 hour (36000s) in CDN and Browser
+            "Cache-Control": "public, max-age=36000, s-maxage=36000",
+          },
+        });
+
+        // Save to Cache
+        ctx.waitUntil(cache.put(cacheKey, response.clone()));
+      } catch (error) {
+        return new Response(JSON.stringify({ error: error.message }), {
+          status: 500,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
+        });
+      }
     }
 
     return response;
@@ -203,85 +234,92 @@ export default {
 // --- JWT Helpers (HS256) ---
 
 async function signJWT(payload, secret) {
-    const header = { alg: "HS256", typ: "JWT" };
-    const encodedHeader = base64url(JSON.stringify(header));
-    const encodedPayload = base64url(JSON.stringify(payload));
-    
-    const signature = await hmacSign(`${encodedHeader}.${encodedPayload}`, secret);
-    return `${encodedHeader}.${encodedPayload}.${signature}`;
+  const header = { alg: "HS256", typ: "JWT" };
+  const encodedHeader = base64url(JSON.stringify(header));
+  const encodedPayload = base64url(JSON.stringify(payload));
+
+  const signature = await hmacSign(
+    `${encodedHeader}.${encodedPayload}`,
+    secret
+  );
+  return `${encodedHeader}.${encodedPayload}.${signature}`;
 }
 
 async function verifyJWT(token, secret) {
-    const parts = token.split('.');
-    if (parts.length !== 3) throw new Error("Invalid token structure");
-    
-    const [encodedHeader, encodedPayload, signature] = parts;
-    const expectedSignature = await hmacSign(`${encodedHeader}.${encodedPayload}`, secret);
-    
-    if (signature !== expectedSignature) throw new Error("Invalid signature");
-    
-    const payload = JSON.parse(atob(encodedPayload.replace(/-/g, '+').replace(/_/g, '/')));
-    
-    // Check expiration if present
-    if (payload.exp && Date.now() / 1000 > payload.exp) {
-        throw new Error("Token expired");
-    }
-    
-    return payload;
+  const parts = token.split(".");
+  if (parts.length !== 3) throw new Error("Invalid token structure");
+
+  const [encodedHeader, encodedPayload, signature] = parts;
+  const expectedSignature = await hmacSign(
+    `${encodedHeader}.${encodedPayload}`,
+    secret
+  );
+
+  if (signature !== expectedSignature) throw new Error("Invalid signature");
+
+  const payload = JSON.parse(
+    atob(encodedPayload.replace(/-/g, "+").replace(/_/g, "/"))
+  );
+
+  // Check expiration if present
+  if (payload.exp && Date.now() / 1000 > payload.exp) {
+    throw new Error("Token expired");
+  }
+
+  return payload;
 }
 
 async function hmacSign(data, secret) {
-    const enc = new TextEncoder();
-    const key = await crypto.subtle.importKey(
-        "raw",
-        enc.encode(secret),
-        { name: "HMAC", hash: "SHA-256" },
-        false,
-        ["sign"]
-    );
-    
-    const signature = await crypto.subtle.sign(
-        "HMAC",
-        key,
-        enc.encode(data)
-    );
-    
-    return base64url(null, signature);
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+
+  const signature = await crypto.subtle.sign("HMAC", key, enc.encode(data));
+
+  return base64url(null, signature);
 }
 
 // --- Helpers ---
 
 async function getWhitelist(env) {
-    try {
-        const token = await getAccessToken(env.GCP_SERVICE_ACCOUNT_EMAIL, env.GCP_PRIVATE_KEY);
-        // Assumes specific sheet name 'Autorisations' and emails in Column A
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${env.SPREADSHEET_ID}/values/Whitelist!A:A`;
-        
-        const response = await fetch(url, {
-            headers: { "Authorization": `Bearer ${token}` }
-        });
+  try {
+    const token = await getAccessToken(
+      env.GCP_SERVICE_ACCOUNT_EMAIL,
+      env.GCP_PRIVATE_KEY
+    );
+    // Assumes specific sheet name 'Autorisations' and emails in Column A
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${env.SPREADSHEET_ID}/values/Whitelist!A:A`;
 
-        if (!response.ok) return []; // Fail safe: empty whitelist
+    const response = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-        const data = await response.json();
-        if (!data.values) return [];
+    if (!response.ok) return []; // Fail safe: empty whitelist
 
-        // Flatten and normalize
-        return data.values.flat().map(email => email.toLowerCase().trim());
-    } catch (e) {
-        console.error("Whitelist fetch error", e);
-        return [];
-    }
+    const data = await response.json();
+    if (!data.values) return [];
+
+    // Flatten and normalize
+    return data.values.flat().map((email) => email.toLowerCase().trim());
+  } catch (e) {
+    console.error("Whitelist fetch error", e);
+    return [];
+  }
 }
 
 function parseExperience(str) {
   if (!str) return 0;
   str = String(str).trim();
-  if (str.includes('+')) return parseInt(str); // "10+" -> 10
-  
+  if (str.includes("+")) return parseInt(str); // "10+" -> 10
+
   const parts = str.match(/(\d+)-(\d+)/);
   if (parts) {
-      return Math.ceil((parseInt(parts[1]) + parseInt(parts[2])) / 2);
+    return Math.ceil((parseInt(parts[1]) + parseInt(parts[2])) / 2);
   }
   return parseInt(str) || 0;
 }
@@ -291,28 +329,77 @@ function normalizeSector(str) {
   const s = str.toLowerCase();
 
   // Éditeur Logiciel Santé (Priorité)
-  if (s.includes("logiciel santé") || s.includes("logiciel médical")) return "Éditeur Logiciel Santé";
+  if (s.includes("logiciel santé") || s.includes("logiciel médical"))
+    return "Éditeur Logiciel Santé";
 
   // Structure de Soins
-  if (s.includes("établissement de santé") || s.includes("médico-social") || s.includes("hôpital") || s.includes("clinique") || s.includes("laboratoire") || s.includes("soins")) return "Structure de Soins";
+  if (
+    s.includes("établissement de santé") ||
+    s.includes("médico-social") ||
+    s.includes("hôpital") ||
+    s.includes("clinique") ||
+    s.includes("laboratoire") ||
+    s.includes("soins")
+  )
+    return "Structure de Soins";
 
   // Institution Publique
-  if (s.includes("public") || s.includes("ars") || s.includes("ans") || s.includes("ministère") || s.includes("gip")) return "Institution Publique";
+  if (
+    s.includes("public") ||
+    s.includes("ars") ||
+    s.includes("ans") ||
+    s.includes("ministère") ||
+    s.includes("gip")
+  )
+    return "Institution Publique";
 
   // ESN / Conseil
-  if (s.includes("esn") || s.includes("conseil") || s.includes("freelance") || s.includes("client")) return "ESN / Conseil";
+  if (
+    s.includes("esn") ||
+    s.includes("conseil") ||
+    s.includes("freelance") ||
+    s.includes("client")
+  )
+    return "ESN / Conseil";
 
   // Industrie Santé
-  if (s.includes("pharma") || s.includes("medtech") || s.includes("biotech") || s.includes("dispositif médical")) return "Industrie Santé";
+  if (
+    s.includes("pharma") ||
+    s.includes("medtech") ||
+    s.includes("biotech") ||
+    s.includes("dispositif médical")
+  )
+    return "Industrie Santé";
 
   // Banque / Assurance
-  if (s.includes("banque") || s.includes("bancaire") || s.includes("assurance") || s.includes("insurtech") || s.includes("finance")) return "Banque / Assurance";
+  if (
+    s.includes("banque") ||
+    s.includes("bancaire") ||
+    s.includes("assurance") ||
+    s.includes("insurtech") ||
+    s.includes("finance")
+  )
+    return "Banque / Assurance";
 
   // Éditeur Logiciel (Autre)
-  if (s.includes("éditeur") || s.includes("logiciel") || s.includes("saas") || s.includes("platform")) return "Éditeur Logiciel (Autre)";
+  if (
+    s.includes("éditeur") ||
+    s.includes("logiciel") ||
+    s.includes("saas") ||
+    s.includes("platform")
+  )
+    return "Éditeur Logiciel (Autre)";
 
   // Tech / Industrie / Autre
-  if (s.includes("tech") || s.includes("startup") || s.includes("industrie") || s.includes("télécom") || s.includes("sécurité") || s.includes("recherche")) return "Tech / Industrie / Autre";
+  if (
+    s.includes("tech") ||
+    s.includes("startup") ||
+    s.includes("industrie") ||
+    s.includes("télécom") ||
+    s.includes("sécurité") ||
+    s.includes("recherche")
+  )
+    return "Tech / Industrie / Autre";
 
   return "Autre";
 }
@@ -322,28 +409,87 @@ function normalizeJob(str) {
   const s = str.toLowerCase();
 
   // Chef de Projet / Product (Product Owner, PM, CdP, Scrum Master)
-  if (s.includes("product") || s.includes("po") || s.includes("chef de projet") || s.includes("cheffe de projet") || s.includes("projet") || s.includes("agile") || s.includes("scrum")) return "Chef de Projet / Product";
+  if (
+    s.includes("product") ||
+    s.includes("po") ||
+    s.includes("chef de projet") ||
+    s.includes("cheffe de projet") ||
+    s.includes("projet") ||
+    s.includes("agile") ||
+    s.includes("scrum")
+  )
+    return "Chef de Projet / Product";
 
   // Développeur / Ingénieur (Dev, Software Eng, Fullstack)
-  if (s.includes("développeur") || s.includes("développeuse") || s.includes("dev") || s.includes("software") || s.includes("ingénieur logiciel") || s.includes("programmer") || s.includes("java") || s.includes("web")) return "Développeur / Ingénieur";
+  if (
+    s.includes("développeur") ||
+    s.includes("développeuse") ||
+    s.includes("dev") ||
+    s.includes("software") ||
+    s.includes("ingénieur logiciel") ||
+    s.includes("programmer") ||
+    s.includes("java") ||
+    s.includes("web")
+  )
+    return "Développeur / Ingénieur";
 
   // Tech Lead / Architecte
-  if (s.includes("tech lead") || s.includes("lead") || s.includes("architecte") || s.includes("principal")) return "Tech Lead / Architecte";
+  if (
+    s.includes("tech lead") ||
+    s.includes("lead") ||
+    s.includes("architecte") ||
+    s.includes("principal")
+  )
+    return "Tech Lead / Architecte";
 
   // Data / BI
-  if (s.includes("data") || s.includes("bi ") || s.includes("business analyst") || s.endsWith(" bi")) return "Data / BI";
+  if (
+    s.includes("data") ||
+    s.includes("bi ") ||
+    s.includes("business analyst") ||
+    s.endsWith(" bi")
+  )
+    return "Data / BI";
 
   // DevOps / Infra / Sécurité
-  if (s.includes("devops") || s.includes("système") || s.includes("réseau") || s.includes("sécurité") || s.includes("admin") || s.includes("cloud") || s.includes("sre") || s.includes("cyber")) return "DevOps / Infra / Sécurité";
+  if (
+    s.includes("devops") ||
+    s.includes("système") ||
+    s.includes("réseau") ||
+    s.includes("sécurité") ||
+    s.includes("admin") ||
+    s.includes("cloud") ||
+    s.includes("sre") ||
+    s.includes("cyber")
+  )
+    return "DevOps / Infra / Sécurité";
 
   // Consultant / Intégrateur
-  if (s.includes("consultant") || s.includes("intégrateur") || s.includes("intératrice") || s.includes("support")) return "Consultant / Intégrateur";
+  if (
+    s.includes("consultant") ||
+    s.includes("intégrateur") ||
+    s.includes("intératrice") ||
+    s.includes("support")
+  )
+    return "Consultant / Intégrateur";
 
   // Manager / Directeur
-  if (s.includes("manager") || s.includes("directeur") || s.includes("responsable") || s.includes("head of")) return "Manager / Directeur";
+  if (
+    s.includes("manager") ||
+    s.includes("directeur") ||
+    s.includes("responsable") ||
+    s.includes("head of")
+  )
+    return "Manager / Directeur";
 
   // Recherche / R&D
-  if (s.includes("recherche") || s.includes("r&d") || s.includes("doctorant") || s.includes("thèse")) return "Recherche / R&D";
+  if (
+    s.includes("recherche") ||
+    s.includes("r&d") ||
+    s.includes("doctorant") ||
+    s.includes("thèse")
+  )
+    return "Recherche / R&D";
 
   return "Autre";
 }
@@ -353,7 +499,8 @@ function normalizeStructure(str) {
   const s = str.toLowerCase().trim();
 
   // Start-up
-  if (s.includes("start-up") || s.includes("startup") || s.includes("scale")) return "Start-up";
+  if (s.includes("start-up") || s.includes("startup") || s.includes("scale"))
+    return "Start-up";
 
   // PME
   if (s.includes("pme")) return "PME";
@@ -362,13 +509,25 @@ function normalizeStructure(str) {
   if (s.includes("eti")) return "ETI";
 
   // Grand groupe
-  if (s.includes("grand groupe") || s.includes("entreprise")) return "Grand groupe";
+  if (s.includes("grand groupe") || s.includes("entreprise"))
+    return "Grand groupe";
 
   // Administration publique
-  if (s.includes("public") || s.includes("administration") || s.includes("gip") || s.includes("groupement") || s.includes("université") || s.includes("recherche") || s.includes("numih") || s.includes("hôpital")) return "Administration publique";
+  if (
+    s.includes("public") ||
+    s.includes("administration") ||
+    s.includes("gip") ||
+    s.includes("groupement") ||
+    s.includes("université") ||
+    s.includes("recherche") ||
+    s.includes("numih") ||
+    s.includes("hôpital")
+  )
+    return "Administration publique";
 
   // Freelance / Indépendant
-  if (s.includes("freelance") || s.includes("indépendant")) return "Freelance / Indépendant";
+  if (s.includes("freelance") || s.includes("indépendant"))
+    return "Freelance / Indépendant";
 
   return "Autre";
 }
@@ -381,85 +540,182 @@ function normalizeRegion(str) {
   if (s.includes("télétravail")) return "Full Télétravail";
 
   // International
-  if (s.includes("autre pays") || s.includes("monaco") || s.includes("suisse") || s.includes("luxembourg") || s.includes("belgique") || s.includes("royaume-uni") || s.includes("allemagne") || s.includes("canada")) return "International";
+  if (
+    s.includes("autre pays") ||
+    s.includes("monaco") ||
+    s.includes("suisse") ||
+    s.includes("luxembourg") ||
+    s.includes("belgique") ||
+    s.includes("royaume-uni") ||
+    s.includes("allemagne") ||
+    s.includes("canada")
+  )
+    return "International";
 
   // Occitanie (31, 81, 09, 32, 34, 46, 65, 66, 82, 12, 48, 11, 30)
-  if (s.includes("haute-garonne") || s.includes("31") || 
-      s.includes("tarn") || s.includes("81") || 
-      s.includes("ariège") || s.includes("09") || 
-      s.includes("gers") || s.includes("32") || 
-      s.includes("hérault") || s.includes("34") ||
-      s.includes("lot") || s.includes("46") ||
-      s.includes("hautes-pyrenées") || s.includes("65") ||
-      s.includes("pyrenées-orientales") || s.includes("66") ||
-      s.includes("tarn-et-garonne") || s.includes("82") ||
-      s.includes("aveyron") || s.includes("12") ||
-      s.includes("lozère") || s.includes("48") ||
-      s.includes("aude") || s.includes("11") ||
-      s.includes("gard") || s.includes("30")) return "Occitanie";
+  if (
+    s.includes("haute-garonne") ||
+    s.includes("31") ||
+    s.includes("tarn") ||
+    s.includes("81") ||
+    s.includes("ariège") ||
+    s.includes("09") ||
+    s.includes("gers") ||
+    s.includes("32") ||
+    s.includes("hérault") ||
+    s.includes("34") ||
+    s.includes("lot") ||
+    s.includes("46") ||
+    s.includes("hautes-pyrenées") ||
+    s.includes("65") ||
+    s.includes("pyrenées-orientales") ||
+    s.includes("66") ||
+    s.includes("tarn-et-garonne") ||
+    s.includes("82") ||
+    s.includes("aveyron") ||
+    s.includes("12") ||
+    s.includes("lozère") ||
+    s.includes("48") ||
+    s.includes("aude") ||
+    s.includes("11") ||
+    s.includes("gard") ||
+    s.includes("30")
+  )
+    return "Occitanie";
 
   // Île-de-France (75, 92, 93, 94, 77, 78, 91, 95)
-  if (s.includes("paris") || s.includes("75") || 
-      s.includes("hauts-de-seine") || s.includes("92") || 
-      s.includes("seine-saint-denis") || s.includes("93") || 
-      s.includes("val-de-marne") || s.includes("94") ||
-      s.includes("seine-et-marne") || s.includes("77") ||
-      s.includes("yvelines") || s.includes("78") ||
-      s.includes("essonne") || s.includes("91") ||
-      s.includes("val-d'oise") || s.includes("95")) return "Île-de-France";
+  if (
+    s.includes("paris") ||
+    s.includes("75") ||
+    s.includes("hauts-de-seine") ||
+    s.includes("92") ||
+    s.includes("seine-saint-denis") ||
+    s.includes("93") ||
+    s.includes("val-de-marne") ||
+    s.includes("94") ||
+    s.includes("seine-et-marne") ||
+    s.includes("77") ||
+    s.includes("yvelines") ||
+    s.includes("78") ||
+    s.includes("essonne") ||
+    s.includes("91") ||
+    s.includes("val-d'oise") ||
+    s.includes("95")
+  )
+    return "Île-de-France";
 
   // Nouvelle-Aquitaine (33, 87, 64, 40, 24, 47)
-  if (s.includes("gironde") || s.includes("33") || 
-      s.includes("haute-vienne") || s.includes("87") || 
-      s.includes("pyrénées-atlantiques") || s.includes("64") ||
-      s.includes("landes") || s.includes("40") ||
-      s.includes("dordogne") || s.includes("24") ||
-      s.includes("lot-et-garonne") || s.includes("47")) return "Nouvelle-Aquitaine";
+  if (
+    s.includes("gironde") ||
+    s.includes("33") ||
+    s.includes("haute-vienne") ||
+    s.includes("87") ||
+    s.includes("pyrénées-atlantiques") ||
+    s.includes("64") ||
+    s.includes("landes") ||
+    s.includes("40") ||
+    s.includes("dordogne") ||
+    s.includes("24") ||
+    s.includes("lot-et-garonne") ||
+    s.includes("47")
+  )
+    return "Nouvelle-Aquitaine";
 
   // Auvergne-Rhône-Alpes (69, 63, 38, 01, 42, 73, 74)
-  if (s.includes("rhône") || s.includes("69") || 
-      s.includes("puy-de-dôme") || s.includes("63") ||
-      s.includes("isère") || s.includes("38") ||
-      s.includes("ain") || s.includes("01") ||
-      s.includes("loire") || s.includes("42") ||
-      s.includes("savoie") || s.includes("73") ||
-      s.includes("74")) return "Auvergne-Rhône-Alpes";
+  if (
+    s.includes("rhône") ||
+    s.includes("69") ||
+    s.includes("puy-de-dôme") ||
+    s.includes("63") ||
+    s.includes("isère") ||
+    s.includes("38") ||
+    s.includes("ain") ||
+    s.includes("01") ||
+    s.includes("loire") ||
+    s.includes("42") ||
+    s.includes("savoie") ||
+    s.includes("73") ||
+    s.includes("74")
+  )
+    return "Auvergne-Rhône-Alpes";
 
   // Bretagne (29, 56, 35, 22)
-  if (s.includes("finistère") || s.includes("29") || 
-      s.includes("morbihan") || s.includes("56") ||
-      s.includes("ille-et-vilaine") || s.includes("35") ||
-      s.includes("côtes-d'armor") || s.includes("22")) return "Bretagne";
+  if (
+    s.includes("finistère") ||
+    s.includes("29") ||
+    s.includes("morbihan") ||
+    s.includes("56") ||
+    s.includes("ille-et-vilaine") ||
+    s.includes("35") ||
+    s.includes("côtes-d'armor") ||
+    s.includes("22")
+  )
+    return "Bretagne";
 
   // Pays de la Loire (44, 49, 53, 72, 85)
-  if (s.includes("loire-atlantique") || s.includes("44") ||
-      s.includes("maine-et-loire") || s.includes("49") ||
-      s.includes("mayenne") || s.includes("53") ||
-      s.includes("sarthe") || s.includes("72") ||
-      s.includes("vendée") || s.includes("85")) return "Pays de la Loire";
+  if (
+    s.includes("loire-atlantique") ||
+    s.includes("44") ||
+    s.includes("maine-et-loire") ||
+    s.includes("49") ||
+    s.includes("mayenne") ||
+    s.includes("53") ||
+    s.includes("sarthe") ||
+    s.includes("72") ||
+    s.includes("vendée") ||
+    s.includes("85")
+  )
+    return "Pays de la Loire";
 
   // PACA (13, 83, 06, 84, 04, 05)
-  if (s.includes("bouches-du-rhône") || s.includes("13") || 
-      s.includes("var") || s.includes("83") ||
-      s.includes("alpes-maritimes") || s.includes("06") ||
-      s.includes("vaucluse") || s.includes("84")) return "PACA / Sud";
+  if (
+    s.includes("bouches-du-rhône") ||
+    s.includes("13") ||
+    s.includes("var") ||
+    s.includes("83") ||
+    s.includes("alpes-maritimes") ||
+    s.includes("06") ||
+    s.includes("vaucluse") ||
+    s.includes("84")
+  )
+    return "PACA / Sud";
 
   // Grand Est (67, 68, 57, 54, 88, 10, 51, 08, 52, 55)
-  if (s.includes("bas-rhin") || s.includes("67") || 
-      s.includes("haut-rhin") || s.includes("68") ||
-      s.includes("moselle") || s.includes("57") ||
-      s.includes("meurthe-et-moselle") || s.includes("54")) return "Grand Est";
+  if (
+    s.includes("bas-rhin") ||
+    s.includes("67") ||
+    s.includes("haut-rhin") ||
+    s.includes("68") ||
+    s.includes("moselle") ||
+    s.includes("57") ||
+    s.includes("meurthe-et-moselle") ||
+    s.includes("54")
+  )
+    return "Grand Est";
 
   // Centre-Val de Loire (37, 45, 18, 28, 36, 41)
-  if (s.includes("indre-et-loire") || s.includes("37") ||
-      s.includes("loiret") || s.includes("45")) return "Centre-Val de Loire";
+  if (
+    s.includes("indre-et-loire") ||
+    s.includes("37") ||
+    s.includes("loiret") ||
+    s.includes("45")
+  )
+    return "Centre-Val de Loire";
 
   // DOM-TOM (971, 972, 973, 974, 976, 987, 988)
-  if (s.includes("réunion") || s.includes("974") || 
-      s.includes("polynésie") || s.includes("987") ||
-      s.includes("guadeloupe") || s.includes("971") ||
-      s.includes("martinique") || s.includes("972") ||
-      s.includes("guyane") || s.includes("973")) return "DOM-TOM";
+  if (
+    s.includes("réunion") ||
+    s.includes("974") ||
+    s.includes("polynésie") ||
+    s.includes("987") ||
+    s.includes("guadeloupe") ||
+    s.includes("971") ||
+    s.includes("martinique") ||
+    s.includes("972") ||
+    s.includes("guyane") ||
+    s.includes("973")
+  )
+    return "DOM-TOM";
 
   return "Autre Région";
 }
@@ -468,13 +724,13 @@ function normalizeRegion(str) {
 
 async function getAccessToken(clientEmail, privateKey) {
   // Clean up private key if it contains literal \n characters from env vars
-  const pem = privateKey.replace(/\\n/g, '\n');
-  
+  const pem = privateKey.replace(/\\n/g, "\n");
+
   const header = {
     alg: "RS256",
     typ: "JWT",
   };
-  
+
   const now = Math.floor(Date.now() / 1000);
   const claim = {
     iss: clientEmail,
@@ -506,7 +762,7 @@ async function getAccessToken(clientEmail, privateKey) {
   if (!tokenData.access_token) {
     throw new Error(`Failed to get access token: ${JSON.stringify(tokenData)}`);
   }
-  
+
   return tokenData.access_token;
 }
 

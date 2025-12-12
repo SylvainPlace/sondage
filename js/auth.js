@@ -1,20 +1,20 @@
 export function initAuth(apiUrl, onAuthenticated) {
-    const token = localStorage.getItem('auth_token');
-    
-    // Check if we have a token (simple client-side check, real check is API call)
-    if (token) {
-        // Try to fetch data with this token
-        onAuthenticated(token);
-    } else {
-        showLoginModal(apiUrl, onAuthenticated);
-    }
+  const token = localStorage.getItem("auth_token");
+
+  // Check if we have a token (simple client-side check, real check is API call)
+  if (token) {
+    // Try to fetch data with this token
+    onAuthenticated(token);
+  } else {
+    showLoginModal(apiUrl, onAuthenticated);
+  }
 }
 
 function showLoginModal(apiUrl, onSuccess) {
-    // Create Modal HTML
-    const modal = document.createElement('div');
-    modal.id = 'auth-modal';
-    modal.innerHTML = `
+  // Create Modal HTML
+  const modal = document.createElement("div");
+  modal.id = "auth-modal";
+  modal.innerHTML = `
         <div class="auth-container">
             <div class="auth-card">
                 <h2>🔐 Accès Restreint</h2>
@@ -35,52 +35,51 @@ function showLoginModal(apiUrl, onSuccess) {
         </div>
     `;
 
-    document.body.appendChild(modal);
+  document.body.appendChild(modal);
 
-    // Prevent scrolling
-    document.body.style.overflow = 'hidden';
+  // Prevent scrolling
+  document.body.style.overflow = "hidden";
 
-    // Handle Form Submit
-    const form = document.getElementById('auth-form');
-    const errorMsg = document.getElementById('auth-error');
+  // Handle Form Submit
+  const form = document.getElementById("auth-form");
+  const errorMsg = document.getElementById("auth-error");
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const btn = form.querySelector('button');
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const btn = form.querySelector("button");
 
-        btn.disabled = true;
-        btn.textContent = 'Connexion...';
-        errorMsg.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = "Connexion...";
+    errorMsg.style.display = "none";
 
-        try {
-            const response = await fetch(`${apiUrl}login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
+    try {
+      const response = await fetch(`${apiUrl}login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-            const data = await response.json();
+      const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(data.error || 'Erreur de connexion');
-            }
+      if (!response.ok) {
+        throw new Error(data.error || "Erreur de connexion");
+      }
 
-            // Success
-            localStorage.setItem('auth_token', data.token);
-            
-            // Remove modal
-            document.body.removeChild(modal);
-            document.body.style.overflow = '';
-            
-            onSuccess(data.token);
+      // Success
+      localStorage.setItem("auth_token", data.token);
 
-        } catch (err) {
-            errorMsg.textContent = err.message;
-            errorMsg.style.display = 'block';
-            btn.disabled = false;
-            btn.textContent = 'Se connecter';
-        }
-    });
+      // Remove modal
+      document.body.removeChild(modal);
+      document.body.style.overflow = "";
+
+      onSuccess(data.token);
+    } catch (err) {
+      errorMsg.textContent = err.message;
+      errorMsg.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "Se connecter";
+    }
+  });
 }
