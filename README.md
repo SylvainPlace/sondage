@@ -13,6 +13,7 @@ Ce projet est une application web interactive permettant de visualiser et d'expl
   - Multicritères : Année de diplôme, Sexe, Expérience, Secteur, Type de structure, Localisation.
   - Mise à jour dynamique des résultats et des graphiques.
 - **Section qualitative** : Liste des retours d'expérience, conseils et avantages (primes, télétravail, etc.).
+- **Authentification Sécurisée** : Accès restreint par email (Whitelist) et mot de passe.
 - **Responsive Design** : Interface optimisée pour mobiles, tablettes et ordinateurs.
 
 ## 🛠️ Architecture Technique
@@ -22,12 +23,14 @@ Le projet est divisé en deux parties :
 1.  **Frontend (Statique)** :
     *   `index.html` / `style.css` / `js/`
     *   Application Single Page (SPA) sans framework lourd.
+    *   **Authentification** : Gestion des tokens JWT en local storage.
     *   Utilise des modules ES6 (`type="module"`).
     *   Librairies : Chart.js (Graphiques), Leaflet (Cartes).
 
 2.  **Backend (Serverless)** :
     *   Dossier `worker/`.
-    *   **Cloudflare Worker** : Sert d'API intermédiaire.
+    *   **Cloudflare Worker** : Sert d'API sécurisée.
+    *   **Authentification** : Vérification JWT (HS256) + Whitelist Email (Google Sheet).
     *   Récupère les données depuis un **Google Sheet** (via l'API Google Sheets).
     *   **Cache** : Les données sont mises en cache (10h) pour optimiser les performances et limiter les appels à Google.
     *   Normalisation des données (Régions, Secteurs, Expérience) côté serveur.
@@ -64,7 +67,12 @@ Le projet est divisé en deux parties :
 
 Si vous souhaitez modifier la logique backend :
 1.  Installez [Wrangler](https://developers.cloudflare.com/workers/wrangler/install-and-update/).
-2.  Configurez vos secrets (Google Service Account) via `wrangler secret put`.
+2.  Configurez vos secrets :
+    *   `wrangler secret put GCP_SERVICE_ACCOUNT_EMAIL`
+    *   `wrangler secret put GCP_PRIVATE_KEY`
+    *   `wrangler secret put SPREADSHEET_ID`
+    *   `wrangler secret put GLOBAL_PASSWORD` (Mot de passe pour se connecter)
+    *   `wrangler secret put JWT_SECRET` (Clé secrète pour signer les tokens)
 3.  Testez localement avec `wrangler dev` dans le dossier `worker/`.
 4.  **Déploiement Automatique** : Toute modification poussée sur le dépôt (dossier `worker/`) déclenche automatiquement le déploiement sur Cloudflare.
 
