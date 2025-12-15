@@ -7,6 +7,7 @@ import LoginModal from "@/components/LoginModal";
 import { SalaryChart, XpChart, BenefitsList, AnecdotesList } from "@/components/Charts";
 import { formatMoney, parsePrime, parseSalaryRange } from "@/lib/frontend-utils";
 import { SurveyResponse } from "@/lib/types";
+import { DashboardSkeleton } from "@/components/Skeleton";
 
 // Dynamic import for Map to avoid SSR issues with Leaflet
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
@@ -155,10 +156,7 @@ export default function Home() {
 
         <section className="results-panel">
           {isLoading ? (
-            <div className="loader-container">
-              <div className="spinner"></div>
-              <p>Chargement des données...</p>
-            </div>
+            <DashboardSkeleton />
           ) : error ? (
             <div style={{ color: "red", textAlign: "center", padding: "3rem" }}>
                 <p style={{ fontSize: "2rem", marginBottom: "1rem" }}>⚠️</p>
