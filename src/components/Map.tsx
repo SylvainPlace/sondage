@@ -238,12 +238,6 @@ export default function Map({ data, mode }: MapProps) {
 
     const breaks = calculateBreaks(currentValues);
     setCurrentBreaks(breaks);
-    // Note: setting state inside useEffect might trigger re-render, but here we want to update the layer style immediately.
-    // Actually, state update is async. We should pass breaks directly to style function or use ref for breaks.
-    // I used state, but style function uses `currentBreaks`.
-    // I should probably use a Ref for breaks to be accessible in style function immediately, or rely on re-render.
-    // But GeoJSON layer is imperative.
-    // I'll update the layer style manually.
   }
   
   // Use a separate effect to update layer when breaks change (triggered by state update in updateMapData)

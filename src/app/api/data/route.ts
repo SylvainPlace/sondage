@@ -10,6 +10,16 @@ import {
 } from "@/lib/normalization";
 import { SurveyResponse } from "@/lib/types";
 
+// Helper for backend (duplicate logic or import from shared)
+function calculateXpGroup(years: number): string {
+  if (isNaN(years)) return "Non renseigné";
+  if (years <= 1) return "0-1 an";
+  if (years <= 3) return "2-3 ans";
+  if (years <= 5) return "4-5 ans";
+  if (years <= 9) return "6-9 ans";
+  return "10+ ans";
+}
+
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("Authorization");
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -120,6 +130,10 @@ export async function GET(request: NextRequest) {
             }
         }
       }
+
+      // Computed field: xp_group
+      item.xp_group = calculateXpGroup(item.experience);
+
       return item as SurveyResponse;
     });
 
