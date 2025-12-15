@@ -31,8 +31,8 @@ body::before {
   z-index: -1;
   background-image: url('/logo.svg');
   background-repeat: repeat;
-  background-size: 200;
-  opacity: 0.02;
+  background-size: 50;
+  opacity: 0.05;
   pointer-events: none;
 }
 

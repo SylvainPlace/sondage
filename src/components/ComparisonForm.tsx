@@ -30,7 +30,6 @@ export default function ComparisonForm({ onCompare }: ComparisonFormProps) {
         console.error("Failed to parse saved comparison data", e);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {

@@ -9,6 +9,7 @@ import { formatMoney, parsePrime, parseSalaryRange } from "@/lib/frontend-utils"
 import { SurveyResponse } from "@/lib/types";
 import { DashboardSkeleton } from "@/components/Skeleton";
 import ComparisonForm, { UserComparisonData } from "@/components/ComparisonForm";
+import Image from "next/image";
 
 // Dynamic import for Map to avoid SSR issues with Leaflet
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
@@ -131,7 +132,10 @@ export default function Home() {
     return (
       <div className="container">
         <header>
-          <h1>📊 Panorama des Carrières Alumnis</h1>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", marginBottom: "0.5rem" }}>
+            <Image src="/logo.png" alt="Logo" width={40} height={40} />
+            <h1>Panorama des Carrières Alumnis</h1>
+          </div>
           <p>
             Bienvenue sur le Panorama des Carrières...
           </p>
@@ -148,7 +152,10 @@ export default function Home() {
   return (
     <div className="container">
       <header>
-        <h1>📊 Panorama des Carrières Alumnis</h1>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", marginBottom: "0.5rem" }}>
+          <Image src="/logo.png" alt="Logo" width={40} height={40} />
+          <h1>Panorama des Carrières Alumnis</h1>
+        </div>
         <p>
           Bienvenue sur le Panorama des Carrières, fruit de la grande enquête annuelle menée auprès des membres de notre association.
           Cet outil interactif a été conçu pour vous offrir une transparence totale sur le marché de l'emploi au sein de notre communauté.
