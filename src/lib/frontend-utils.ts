@@ -1,4 +1,4 @@
-export function formatMoney(amount) {
+export function formatMoney(amount: number): string {
   return new Intl.NumberFormat("fr-FR", {
     style: "currency",
     currency: "EUR",
@@ -6,7 +6,7 @@ export function formatMoney(amount) {
   }).format(amount);
 }
 
-export function parseSalaryRange(rangeStr) {
+export function parseSalaryRange(rangeStr: string): number {
   if (!rangeStr) return 0;
   const cleanStr = rangeStr
     .toLowerCase()
@@ -28,7 +28,7 @@ export function parseSalaryRange(rangeStr) {
   return 0;
 }
 
-export function parsePrime(primeStr) {
+export function parsePrime(primeStr: string): number {
   if (!primeStr) return 0;
   const cleanStr = primeStr
     .toLowerCase()
@@ -49,8 +49,8 @@ export function parsePrime(primeStr) {
   return 0;
 }
 
-export function getXpGroup(years) {
-  const xp = parseInt(years);
+export function getXpGroup(years: string | number): string {
+  const xp = typeof years === 'string' ? parseInt(years) : years;
   if (isNaN(xp)) return "Non renseigné";
   if (xp <= 1) return "0-1 an";
   if (xp <= 3) return "2-3 ans";

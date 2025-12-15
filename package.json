@@ -1,0 +1,32 @@
+{
+  "name": "sondage-next",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "pages:build": "npx @cloudflare/next-on-pages"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.1",
+    "jose": "^5.2.0",
+    "leaflet": "^1.9.4",
+    "next": "^16.0.10",
+    "react": "^19.2.3",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^19.2.3",
+    "react-leaflet": "^4.2.1"
+  },
+  "devDependencies": {
+    "@cloudflare/next-on-pages": "^1.13.0",
+    "@types/leaflet": "^1.9.8",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^9.39.2",
+    "eslint-config-next": "^16.0.10",
+    "typescript": "^5"
+  }
+}
