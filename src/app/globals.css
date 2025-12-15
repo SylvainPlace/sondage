@@ -1,0 +1,524 @@
+:root {
+  --primary: #be9249;
+  --bg-body: #f8fafc;
+  --bg-card: #ffffff;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+header h1 {
+  font-size: 2rem;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+header p {
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.cta-button {
+  display: inline-block;
+  background-color: var(--primary);
+  color: white;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background-color 0.2s, transform 0.1s;
+  box-shadow: 0 4px 6px rgba(190, 146, 73, 0.2);
+  cursor: pointer;
+  border: none;
+}
+
+.cta-button:hover {
+  background-color: #99763a;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 8px rgba(190, 146, 73, 0.3);
+}
+
+.cta-button:active {
+  transform: translateY(0);
+}
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+      padding: 1rem;
+  }
+
+  .main-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+  }
+
+  /* Afficher les filtres en grille sur tablette/mobile pour gagner de la place */
+  .filters-container-responsive {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+      font-size: 1.5rem;
+  }
+
+  /* Retour à une colonne pour les filtres sur petits écrans */
+  .filters-container-responsive {
+      grid-template-columns: 1fr;
+  }
+
+  .filter-group select {
+      padding: 0.75rem; /* Meilleure cible tactile */
+  }
+
+  .stat-card .value {
+      font-size: 1.5rem;
+  }
+  
+  .charts-section h2, 
+  .benefits-section h2, 
+  .anecdotes-section h2 {
+      font-size: 1.25rem;
+  }
+}
+
+/* Filters */
+.filters-panel {
+  background: var(--bg-card);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  height: fit-content;
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.filter-header h2 {
+  font-size: 1.25rem;
+}
+
+.btn-text {
+  background: none;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 0.875rem;
+  text-decoration: underline;
+}
+
+.filter-group {
+  margin-bottom: 1rem;
+}
+
+.filter-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--text-main);
+}
+
+/* Custom Dropdown UI */
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: white;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--text-main);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-btn::after {
+  content: '▼';
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-left: 0.5rem;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  margin-top: 0.25rem;
+}
+
+.dropdown-content.show {
+  display: block;
+}
+
+.dropdown-content .checkbox-option {
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.1s;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.checkbox-option:hover {
+  background-color: #f1f5f9;
+}
+
+.checkbox-option input {
+  margin: 0 0.75rem 0 0;
+  cursor: pointer;
+  accent-color: var(--primary);
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.checkbox-option .option-text {
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--text-main);
+  font-weight: 400;
+  margin-bottom: 0;
+  flex: 1;
+  user-select: none;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+.stat-card h3 {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.stat-card .value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.stat-card .subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+/* Charts */
+.charts-section {
+  margin-bottom: 2rem;
+}
+
+.charts-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.chart-container {
+  background: var(--bg-card);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  min-height: 300px;
+  position: relative;
+}
+
+/* Benefits Section */
+.benefits-section {
+  margin-bottom: 2rem;
+}
+
+.benefits-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.benefits-list {
+  background: var(--bg-card);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.benefit-row {
+  margin-bottom: 1rem;
+}
+
+.benefit-row:last-child {
+  margin-bottom: 0;
+}
+
+.benefit-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.benefit-bar-bg {
+  height: 8px;
+  background-color: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.benefit-bar-fill {
+  height: 100%;
+  background-color: var(--primary);
+  border-radius: 4px;
+  transition: width 0.5s ease-in-out;
+}
+
+/* Anecdotes */
+.anecdotes-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.anecdote-card {
+  background: var(--bg-card);
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+
+.anecdote-card p {
+  font-style: italic;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.anecdote-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.legend {
+  line-height: 18px;
+  color: #555;
+  background: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+}
+.legend i {
+  width: 18px;
+  height: 18px;
+  float: left;
+  margin-right: 8px;
+  opacity: 0.7;
+}
+
+/* Remove Leaflet default outline on click */
+path.leaflet-interactive:focus {
+  outline: none;
+}
+
+/* Scroll to Top */
+.scroll-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--primary);
+  color: white;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 100;
+}
+
+.scroll-top:hover {
+  background: #99763a;
+  transform: translateY(-2px);
+}
+
+.scroll-top.visible {
+  display: flex;
+}
+
+/* Loader */
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  color: var(--text-muted);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .scroll-top {
+      bottom: 1rem;
+      right: 1rem;
+  }
+}
+
+/* Auth Modal */
+.auth-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-body);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-container {
+  padding: 1rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.auth-card h2 {
+  margin-bottom: 1rem;
+  color: var(--text-main);
+}
+
+.auth-card p {
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+.auth-card .form-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.auth-card label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.auth-card input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.auth-card input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(190, 146, 73, 0.2);
+}

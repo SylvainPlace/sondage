@@ -1,83 +1,51 @@
-# 📊 Observatoire des Salaires Alumni
+# Panorama des Carrières Alumnis (Next.js Migration)
 
-Ce projet est une application web interactive permettant de visualiser et d'explorer les données salariales des anciens élèves (Alumni). Il présente des statistiques détaillées sur les rémunérations, filtrables par divers critères, et alimentées directement depuis un Google Sheet via un Cloudflare Worker.
+Application de visualisation des données de carrière des alumni, migrée vers Next.js pour hébergement sur Cloudflare Pages.
 
-## 🚀 Fonctionnalités
+## Architecture
 
-- **Tableau de bord statistique** : Affichage dynamique du salaire moyen, médian et du nombre de répondants.
-- **Visualisations avancées** :
-  - **Carte interactive (Leaflet)** : Répartition géographique des salaires et des alumni.
-  - **Graphique Salaire vs Expérience** : Analyse de l'évolution salariale selon l'ancienneté.
-  - **Distribution des salaires** : Histogramme interactif.
-- **Système de filtres complet** :
-  - Multicritères : Année de diplôme, Sexe, Expérience, Secteur, Type de structure, Localisation.
-  - Mise à jour dynamique des résultats et des graphiques.
-- **Section qualitative** : Liste des retours d'expérience, conseils et avantages (primes, télétravail, etc.).
-- **Authentification Sécurisée** : Accès restreint par email (Whitelist) et mot de passe.
-- **Responsive Design** : Interface optimisée pour mobiles, tablettes et ordinateurs.
+- **Framework**: Next.js 15 (App Router)
+- **Langage**: TypeScript
+- **Style**: CSS Global (porté de l'existant)
+- **Composants**:
+  - `Map.tsx`: Carte interactive (Leaflet)
+  - `Charts.tsx`: Graphiques (Chart.js)
+  - `Filters.tsx`: Filtres dynamiques
+- **Backend**: API Routes Next.js (`src/app/api/`) exécutées sur le Edge Runtime.
 
-## 🛠️ Architecture Technique
+## Développement Local
 
-Le projet est divisé en deux parties :
+1. Installer les dépendances :
+   ```bash
+   npm install
+   ```
 
-1.  **Frontend (Statique)** :
-    *   `index.html` / `style.css` / `js/`
-    *   Application Single Page (SPA) sans framework lourd.
-    *   **Authentification** : Gestion des tokens JWT en local storage.
-    *   Utilise des modules ES6 (`type="module"`).
-    *   Librairies : Chart.js (Graphiques), Leaflet (Cartes).
+2. Configurer les variables d'environnement dans `.env.local` (demandez à un admin pour les valeurs) :
+   ```
+   GLOBAL_PASSWORD=...
+   JWT_SECRET=...
+   GCP_SERVICE_ACCOUNT_EMAIL=...
+   GCP_PRIVATE_KEY=...
+   SPREADSHEET_ID=...
+   ```
 
-2.  **Backend (Serverless)** :
-    *   Dossier `worker/`.
-    *   **Cloudflare Worker** : Sert d'API sécurisée.
-    *   **Authentification** : Vérification JWT (HS256) + Whitelist Email (Google Sheet).
-    *   Récupère les données depuis un **Google Sheet** (via l'API Google Sheets).
-    *   **Cache** : Les données sont mises en cache (10h) pour optimiser les performances et limiter les appels à Google.
-    *   Normalisation des données (Régions, Secteurs, Expérience) côté serveur.
+3. Lancer le serveur de développement :
+   ```bash
+   npm run dev
+   ```
 
-## 📂 Structure du projet
+## Déploiement sur Cloudflare Pages
 
-- **`index.html`** : Point d'entrée de l'application.
-- **`style.css`** : Styles globaux, variables CSS, layout responsive.
-- **`js/`** : Logique frontend modulaire.
-  - `main.js` : Orchestration, chargement des données.
-  - `filters.js` : Gestion des filtres et de l'UI de filtrage.
-  - `charts.js` : Configuration et mise à jour des graphiques Chart.js.
-  - `map.js` : Gestion de la carte Leaflet.
-  - `utils.js` : Fonctions utilitaires (formatage monétaire, parsing).
-- **`worker/`** : Code du Cloudflare Worker (`worker.js` et `wrangler.toml`).
+1. **Connecter le repository** Git à Cloudflare Pages.
+2. **Configuration du Build** :
+   - **Framework Preset**: Aucun (ou Next.js, mais vérifiez la commande)
+   - **Build command**: `npm run pages:build` (ou `npx @cloudflare/next-on-pages`)
+   - **Build output directory**: `.vercel/output/static`
+   - **Node.js Version**: 20+ (Définir `NODE_VERSION` à `20` ou plus dans les variables d'env si nécessaire)
 
-## ⚙️ Installation et Développement Local
+3. **Variables d'environnement** (Settings -> Environment Variables) :
+   Ajoutez les mêmes variables que pour le développement local (`GLOBAL_PASSWORD`, etc.).
 
-### Prérequis
-
-- Un navigateur web moderne.
-- Un serveur local simple (VS Code Live Server, Python http.server, etc.) est **indispensable** car l'application utilise des modules ES6 qui ne fonctionnent pas via l'ouverture directe du fichier (`file://`).
-
-### Lancer le frontend
-
-1.  Cloner le dépôt.
-2.  Ouvrir le dossier dans votre éditeur (ex: VS Code).
-3.  Lancer un serveur local :
-    *   **Option 1 : Live Server (VS Code)** : Installez l'extension et cliquez sur "Go Live".
-    *   **Option 2 : Python** : Ouvrez un terminal dans le dossier et lancez `python -m http.server 8000`. Ouvrez ensuite `http://localhost:8000` dans votre navigateur.
-4.  L'application chargera les données depuis l'API de production (`https://sondage-api.sy-vain001.workers.dev/`) configurée dans `main.js`.
-
-### Modifier le Worker (Backend)
-
-Si vous souhaitez modifier la logique backend :
-1.  Installez [Wrangler](https://developers.cloudflare.com/workers/wrangler/install-and-update/).
-2.  Configurez vos secrets :
-    *   `wrangler secret put GCP_SERVICE_ACCOUNT_EMAIL`
-    *   `wrangler secret put GCP_PRIVATE_KEY`
-    *   `wrangler secret put SPREADSHEET_ID`
-    *   `wrangler secret put GLOBAL_PASSWORD` (Mot de passe pour se connecter)
-    *   `wrangler secret put JWT_SECRET` (Clé secrète pour signer les tokens)
-3.  Testez localement avec `wrangler dev` dans le dossier `worker/`.
-4.  **Déploiement Automatique** : Toute modification poussée sur le dépôt (dossier `worker/`) déclenche automatiquement le déploiement sur Cloudflare.
-
-## 📦 Technologies utilisées
-
-- **Frontend** : HTML5, CSS3, JavaScript (ES6+), Chart.js, Leaflet.
-- **Backend** : Cloudflare Workers (JavaScript), Google Sheets API.
-- **Outils** : Git, Wrangler (CLI Cloudflare).
+## Note sur la Base de Données
+Les données proviennent d'un Google Sheet via l'API Google Sheets (Service Account).
+L'authentification utilisateur est gérée par un mot de passe global et une whitelist d'emails (dans le Sheet).
