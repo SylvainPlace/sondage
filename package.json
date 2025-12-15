@@ -7,9 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest",
+    "pages:build": "npx @opennextjs/cloudflare build",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "pages:build": "npx @opennextjs/cloudflare build"
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
     "chart.js": "^4.4.1",
@@ -23,13 +24,18 @@
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "^1.14.6",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.1.0",
     "@types/leaflet": "^1.9.8",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9.39.2",
     "eslint-config-next": "^16.0.10",
+    "jsdom": "^25.0.1",
     "typescript": "^5",
+    "vitest": "^2.1.8",
     "wrangler": "^4.54.0"
   }
 }

@@ -10,13 +10,12 @@ export function parseSalaryRange(rangeStr: string): number {
   if (!rangeStr) return 0;
   const cleanStr = rangeStr
     .toLowerCase()
-    .replace(/o/g, "0")
     .replace(/\s/g, "")
     .replace(/[–—]/g, "-")
     .replace("—", "-");
 
-  if (cleanStr.includes("moinsde30")) return 29000;
-  if (cleanStr.includes("plusde100")) return 101000;
+  if (cleanStr.includes("moins")) return 29000;
+  if (cleanStr.includes("plus")) return 101000;
 
   const matches = cleanStr.match(/(\d+)-(\d+)/);
   if (matches) {
@@ -33,12 +32,11 @@ export function parsePrime(primeStr: string): number {
   const cleanStr = primeStr
     .toLowerCase()
     .replace(/\s/g, "")
-    .replace(/[–—]/g, "-")
-    .replace(/o/g, "0");
+    .replace(/[–—]/g, "-");
 
   if (cleanStr.includes("aucune") || cleanStr === "0") return 0;
-  if (cleanStr.includes("moinsde2")) return 1000;
-  if (cleanStr.includes("plusde10")) return 11000;
+  if (cleanStr.includes("moins")) return 1000;
+  if (cleanStr.includes("plus")) return 11000;
 
   const matches = cleanStr.match(/(\d+)-(\d+)/);
   if (matches) {
