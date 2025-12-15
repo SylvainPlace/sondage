@@ -28,11 +28,14 @@ ChartJS.register(
   Filler
 );
 
+import { UserComparisonData } from "./ComparisonForm";
+
 interface ChartsProps {
   data: any[];
+  userComparison?: UserComparisonData | null;
 }
 
-export function SalaryChart({ data }: ChartsProps) {
+export function SalaryChart({ data, userComparison }: ChartsProps) {
   const chartData = useMemo(() => {
     const categories = [
       "Moins de 30k€",
@@ -68,12 +71,36 @@ export function SalaryChart({ data }: ChartsProps) {
         {
           label: "Nombre d'alumni",
           data: counts,
-          backgroundColor: "#be9249",
+          backgroundColor: (context: any) => {
+            if (!userComparison) return "#be9249";
+            
+            const index = context.dataIndex;
+            const label = categories[index];
+            const salary = userComparison.salary;
+            
+            // Simple mapping logic matching parseSalaryRange ranges
+            let isMatch = false;
+            const normalize = (str: string) => str.toLowerCase().replace(/\s/g, "");
+            const catNorm = normalize(label);
+            
+            if (catNorm.includes("moinsde30") && salary < 30000) isMatch = true;
+            else if (catNorm.includes("plusde100") && salary > 100000) isMatch = true;
+            else {
+               const matches = catNorm.match(/(\d+)-(\d+)/);
+               if (matches) {
+                 const min = parseInt(matches[1]) * 1000;
+                 const max = parseInt(matches[2]) * 1000;
+                 if (salary >= min && salary < max) isMatch = true;
+               }
+            }
+            
+            return isMatch ? "#ef4444" : "#be9249"; // Red highlight for user
+          },
           borderRadius: 4,
         },
       ],
     };
-  }, [data]);
+  }, [data, userComparison]);
 
   const options = {
     responsive: true,
@@ -109,7 +136,7 @@ export function SalaryChart({ data }: ChartsProps) {
   return <Bar data={chartData} options={options} />;
 }
 
-export function XpChart({ data }: ChartsProps) {
+export function XpChart({ data, userComparison }: ChartsProps) {
   const chartData = useMemo(() => {
     const xpMap: Record<number, { base: number[]; total: number[] }> = {};
     let maxXp = 0;
@@ -168,9 +195,7 @@ export function XpChart({ data }: ChartsProps) {
       }
     });
 
-    return {
-      labels: labels.map((l) => l + " ans"),
-      datasets: [
+    const datasets: any[] = [
         {
           label: "Moyen (Base)",
           data: meanBaseData,
@@ -209,9 +234,28 @@ export function XpChart({ data }: ChartsProps) {
           tension: 0.3,
           spanGaps: true,
         },
-      ],
+    ];
+
+    if (userComparison) {
+        // Add User Point
+        const userPointData = labels.map(l => l === userComparison.experience ? userComparison.salary : null);
+        datasets.push({
+            label: "Vous",
+            data: userPointData,
+            borderColor: "#ef4444",
+            backgroundColor: "#ef4444",
+            pointRadius: 8,
+            pointHoverRadius: 10,
+            showLine: false,
+            type: 'line' // Treated as scatter on a line chart if only points
+        });
+    }
+
+    return {
+      labels: labels.map((l) => l + " ans"),
+      datasets: datasets,
     };
-  }, [data]);
+  }, [data, userComparison]);
 
   const options = {
     responsive: true,

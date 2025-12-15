@@ -8,6 +8,7 @@ import { SalaryChart, XpChart, BenefitsList, AnecdotesList } from "@/components/
 import { formatMoney, parsePrime, parseSalaryRange } from "@/lib/frontend-utils";
 import { SurveyResponse } from "@/lib/types";
 import { DashboardSkeleton } from "@/components/Skeleton";
+import ComparisonForm, { UserComparisonData } from "@/components/ComparisonForm";
 
 // Dynamic import for Map to avoid SSR issues with Leaflet
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
@@ -20,6 +21,7 @@ export default function Home() {
   const [mapMode, setMapMode] = useState("avg_base");
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [userComparison, setUserComparison] = useState<UserComparisonData | null>(null);
 
   // Initial Auth Check
   useEffect(() => {
@@ -147,12 +149,15 @@ export default function Home() {
       </header>
 
       <main className="main-grid">
-        <Filters
-          data={allData}
-          activeFilters={activeFilters}
-          onChange={setActiveFilters}
-          onReset={() => setActiveFilters({})}
-        />
+        <div>
+          <ComparisonForm onCompare={setUserComparison} />
+          <Filters
+            data={allData}
+            activeFilters={activeFilters}
+            onChange={setActiveFilters}
+            onReset={() => setActiveFilters({})}
+          />
+        </div>
 
         <section className="results-panel">
           {isLoading ? (
@@ -204,14 +209,14 @@ export default function Home() {
               <div className="charts-section">
                 <h2>Distribution des Salaires</h2>
                 <div className="chart-container">
-                  <SalaryChart data={filteredData} />
+                  <SalaryChart data={filteredData} userComparison={userComparison} />
                 </div>
               </div>
 
               <div className="charts-section">
                 <h2>Salaire Moyen par Expérience</h2>
                 <div className="chart-container">
-                  <XpChart data={filteredData} />
+                  <XpChart data={filteredData} userComparison={userComparison} />
                 </div>
               </div>
 
