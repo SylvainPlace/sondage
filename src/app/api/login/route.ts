@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { signUserToken } from "@/lib/jwt";
 import { getWhitelist } from "@/lib/google-auth";
 
-export const runtime = "edge";
-
 export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json();

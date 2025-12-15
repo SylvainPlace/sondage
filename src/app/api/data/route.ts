@@ -9,8 +9,6 @@ import {
   normalizeRegion,
 } from "@/lib/normalization";
 
-export const runtime = "edge";
-
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("Authorization");
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
