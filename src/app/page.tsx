@@ -133,7 +133,7 @@ export default function Home() {
       <div className="container">
         <header>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", marginBottom: "0.5rem" }}>
-            <Image src="/logo.png" alt="Logo" width={40} height={40} />
+            <Image src="/logo.png" alt="Logo" width={60} height={40} />
             <h1>Panorama des Carrières Alumnis</h1>
           </div>
           <p>
@@ -153,7 +153,7 @@ export default function Home() {
     <div className="container">
       <header>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", marginBottom: "0.5rem" }}>
-          <Image src="/logo.png" alt="Logo" width={40} height={40} />
+          <Image src="/logo.png" alt="Logo" width={60} height={40} />
           <h1>Panorama des Carrières Alumnis</h1>
         </div>
         <p>
