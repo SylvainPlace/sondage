@@ -127,6 +127,20 @@ export default function Home() {
     return { mean, median, meanTotal, medianTotal, count: filteredData.length };
   }, [filteredData]);
 
+  if (isLoading) {
+    return (
+      <div className="container">
+        <header>
+          <h1>📊 Panorama des Carrières Alumnis</h1>
+          <p>
+            Bienvenue sur le Panorama des Carrières...
+          </p>
+        </header>
+        <DashboardSkeleton />
+      </div>
+    );
+  }
+
   if (!token) {
     return <LoginModal onSuccess={handleLoginSuccess} />;
   }
