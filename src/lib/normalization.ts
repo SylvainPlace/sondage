@@ -98,14 +98,18 @@ export function normalizeJob(str: string | undefined): string {
 
   if (
     s.includes("product") ||
-    s.includes("po") ||
+    s.includes("po")
+  )
+    return "Product Owner / Product Manager";
+
+  if (
     s.includes("chef de projet") ||
     s.includes("cheffe de projet") ||
     s.includes("projet") ||
     s.includes("agile") ||
     s.includes("scrum")
   )
-    return "Chef de Projet / Product";
+    return "Chef de Projet";
 
   if (
     s.includes("développeur") ||
