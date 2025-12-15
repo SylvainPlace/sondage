@@ -8,6 +8,7 @@ import {
   normalizeJob,
   normalizeRegion,
 } from "@/lib/normalization";
+import { SurveyResponse } from "@/lib/types";
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("Authorization");
@@ -66,7 +67,7 @@ export async function GET(request: NextRequest) {
     const headers: string[] = rawData.values[0];
     const rows: string[][] = rawData.values.slice(1);
 
-    const MAPPING: Record<string, string> = {
+    const MAPPING: Record<Exclude<keyof SurveyResponse, "xp_group">, string> = {
       annee_diplome: "Année de diplôme",
       sexe: "Sexe",
       departement: "Département actuel de travail",
@@ -83,7 +84,7 @@ export async function GET(request: NextRequest) {
     const headerMap: Record<string, number> = {};
     headers.forEach((h, i) => (headerMap[h] = i));
 
-    const formattedData = rows.map((row) => {
+    const formattedData: SurveyResponse[] = rows.map((row) => {
       const item: any = {};
       for (const [jsonKey, sheetColumnName] of Object.entries(MAPPING)) {
         let colIndex = headerMap[sheetColumnName];
@@ -112,10 +113,14 @@ export async function GET(request: NextRequest) {
             item[jsonKey] = String(value).trim();
           }
         } else {
-          item[jsonKey] = "";
+            if (jsonKey === "annee_diplome" || jsonKey === "experience") {
+                item[jsonKey] = 0;
+            } else {
+                item[jsonKey] = "";
+            }
         }
       }
-      return item;
+      return item as SurveyResponse;
     });
 
     return NextResponse.json(formattedData, {

@@ -6,13 +6,14 @@ import Filters from "@/components/Filters";
 import LoginModal from "@/components/LoginModal";
 import { SalaryChart, XpChart, BenefitsList, AnecdotesList } from "@/components/Charts";
 import { formatMoney, parsePrime, parseSalaryRange, getXpGroup } from "@/lib/frontend-utils";
+import { SurveyResponse } from "@/lib/types";
 
 // Dynamic import for Map to avoid SSR issues with Leaflet
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
 
 export default function Home() {
   const [token, setToken] = useState<string | null>(null);
-  const [allData, setAllData] = useState<any[]>([]);
+  const [allData, setAllData] = useState<SurveyResponse[]>([]);
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [mapMode, setMapMode] = useState("avg_base");
@@ -57,6 +58,10 @@ export default function Home() {
       // Add xp_group
       const processedData = rawData.map((item: any) => ({
         ...item,
+        // xp_group is NOT in SurveyResponse interface yet, but frontend uses it heavily.
+        // We should add it to the interface if we want to be strict.
+        // Or cast it. For now, let's keep it but realize it's an extended type.
+        // Let's extend the type locally or globally.
         xp_group: getXpGroup(item.experience),
       }));
 

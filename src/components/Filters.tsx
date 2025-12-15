@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
+import { SurveyResponse } from "@/lib/types";
 
 interface FilterConfig {
   label: string;
-  key: string;
+  key: keyof SurveyResponse;
 }
 
 const filtersConfig: FilterConfig[] = [
@@ -18,7 +19,7 @@ const filtersConfig: FilterConfig[] = [
 ];
 
 interface FiltersProps {
-  data: any[];
+  data: SurveyResponse[];
   activeFilters: Record<string, string[]>;
   onChange: (newFilters: Record<string, string[]>) => void;
   onReset: () => void;
@@ -67,29 +68,38 @@ export default function Filters({ data, activeFilters, onChange, onReset }: Filt
     onChange(newFilters);
   };
 
-  // Calculate counters dynamically
-  const getCounts = (key: string) => {
-    // Filter data based on OTHER active filters
-    const contextFilters = { ...activeFilters };
-    delete contextFilters[key];
+  // Calculate counters dynamically with memoization
+  const allCounts = useMemo(() => {
+    const result: Record<string, Record<string, number>> = {};
 
-    const contextData = data.filter((item) => {
-      for (const k in contextFilters) {
-        const filterValues = contextFilters[k];
-        const itemValue = String(item[k]);
-        if (!filterValues.some((val) => String(val) === itemValue)) {
-          return false;
+    filtersConfig.forEach((config) => {
+      const key = config.key;
+      // Filter data based on OTHER active filters
+      const contextFilters = { ...activeFilters };
+      delete contextFilters[key];
+
+      const contextData = data.filter((item) => {
+        for (const k in contextFilters) {
+          const filterValues = contextFilters[k];
+          // We assume keys in activeFilters are valid keys of SurveyResponse
+          // because they come from filtersConfig
+          const itemValue = String(item[k as keyof SurveyResponse]);
+          if (!filterValues.some((val) => String(val) === itemValue)) {
+            return false;
+          }
         }
-      }
-      return true;
+        return true;
+      });
+
+      result[key] = contextData.reduce((acc: Record<string, number>, item) => {
+        const val = String(item[key]);
+        acc[val] = (acc[val] || 0) + 1;
+        return acc;
+      }, {});
     });
 
-    return contextData.reduce((acc: Record<string, number>, item) => {
-      const val = item[key];
-      acc[val] = (acc[val] || 0) + 1;
-      return acc;
-    }, {});
-  };
+    return result;
+  }, [data, activeFilters]);
 
   return (
     <aside className="filters-panel">
@@ -102,7 +112,7 @@ export default function Filters({ data, activeFilters, onChange, onReset }: Filt
 
       <div className="filters-container-responsive">
         {filtersConfig.map((config) => {
-          const counts = getCounts(config.key);
+          const counts = allCounts[config.key] || {};
           const uniqueValues = Array.from(new Set(data.map((d) => d[config.key]))).sort((a: any, b: any) => {
              const specialValues = ["Autre", "Non renseigné"];
              const isASpecial = specialValues.includes(a);
