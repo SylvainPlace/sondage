@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import dynamic from "next/dynamic";
 import Filters from "@/components/Filters";
 import LoginModal from "@/components/LoginModal";
-import { SalaryChart, XpChart, BenefitsList, AnecdotesList } from "@/components/Charts";
+import { SalaryChart, XpChart, BenefitsList, AnecdotesList, SectorChart } from "@/components/Charts";
 import { formatMoney, parsePrime, parseSalaryRange } from "@/lib/frontend-utils";
 import { SurveyResponse } from "@/lib/types";
 import { DashboardSkeleton } from "@/components/Skeleton";
@@ -232,6 +232,13 @@ export default function Home() {
                 <h2>Distribution des Salaires</h2>
                 <div className="chart-container">
                   <SalaryChart data={filteredData} userComparison={userComparison} />
+                </div>
+              </div>
+
+              <div className="charts-section">
+                <h2>Repartition par Secteur</h2>
+                <div className="chart-container" style={{ height: "350px" }}>
+                  <SectorChart data={filteredData} />
                 </div>
               </div>
 

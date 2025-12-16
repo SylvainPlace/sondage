@@ -11,11 +11,12 @@ import {
   PointElement,
   LineElement,
   Filler,
+  ArcElement,
   type ChartDataset,
   type ScriptableContext,
   type TooltipItem,
 } from "chart.js";
-import { Bar, Line } from "react-chartjs-2";
+import { Bar, Line, Doughnut } from "react-chartjs-2";
 import { parsePrime, parseSalaryRange } from "@/lib/frontend-utils";
 import { useMemo } from "react";
 import { SurveyResponse } from "@/lib/types";
@@ -29,7 +30,8 @@ ChartJS.register(
   Legend,
   PointElement,
   LineElement,
-  Filler
+  Filler,
+  ArcElement
 );
 
 import { UserComparisonData } from "./ComparisonForm";
@@ -415,6 +417,112 @@ export function AnecdotesList({
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+const SECTOR_COLORS = [
+  "#be9249", "#3b82f6", "#10b981", "#f59e0b", "#ef4444",
+  "#8b5cf6", "#ec4899", "#06b6d4", "#84cc16", "#f97316",
+  "#6366f1", "#14b8a6", "#a855f7", "#eab308", "#22c55e",
+];
+
+export function SectorChart({ data }: { data: any[] }) {
+  const chartData = useMemo(() => {
+    const sectorCounts: Record<string, number> = {};
+
+    data.forEach((item) => {
+      const sector = item.secteur || "Non renseigne";
+      sectorCounts[sector] = (sectorCounts[sector] || 0) + 1;
+    });
+
+    const sorted = Object.entries(sectorCounts)
+      .sort((a, b) => b[1] - a[1]);
+
+    const labels = sorted.map(([label]) => label);
+    const counts = sorted.map(([, count]) => count);
+    const total = counts.reduce((a, b) => a + b, 0);
+
+    return {
+      labels,
+      datasets: [
+        {
+          data: counts,
+          backgroundColor: SECTOR_COLORS.slice(0, labels.length),
+          borderWidth: 2,
+          borderColor: "#ffffff",
+        },
+      ],
+      total,
+    };
+  }, [data]);
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: "right" as const,
+        labels: {
+          boxWidth: 12,
+          padding: 12,
+          font: { size: 11 },
+          generateLabels: (chart: any) => {
+            const dataset = chart.data.datasets[0];
+            const total = dataset.data.reduce((a: number, b: number) => a + b, 0);
+            return chart.data.labels.map((label: string, i: number) => {
+              const value = dataset.data[i];
+              const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+              return {
+                text: `${label} (${percentage}%)`,
+                fillStyle: dataset.backgroundColor[i],
+                strokeStyle: dataset.borderColor,
+                lineWidth: dataset.borderWidth,
+                hidden: false,
+                index: i,
+              };
+            });
+          },
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: (context: any) => {
+            const value = context.raw;
+            const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
+            const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+            return `${context.label}: ${value} (${percentage}%)`;
+          },
+        },
+      },
+    },
+  };
+
+  if (data.length === 0) {
+    return <p style={{ color: "var(--text-muted)" }}>Pas de donnees.</p>;
+  }
+
+  return (
+    <div style={{ position: "relative", height: "100%", width: "100%" }}>
+      <Doughnut data={chartData} options={options} />
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "35%",
+          transform: "translate(-50%, -50%)",
+          textAlign: "center",
+          pointerEvents: "none",
+        }}
+      >
+        <div style={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--text-main)" }}>
+          {chartData.total}
+        </div>
+        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+          repondants
+        </div>
+      </div>
     </div>
   );
 }
