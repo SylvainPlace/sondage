@@ -282,7 +282,7 @@ export default function Map({ data, mode }: MapProps) {
       else title = "Salaire Moyen";
       if (mode.includes("total")) title += " (+ Primes)";
 
-      div.innerHTML += `<h4>${title}</h4>`;
+      div.innerHTML += `<div class="legend-title">${title}</div>`;
       const fmt = (v: number) => (mode === "count" ? v : formatMoney(v));
 
       div.innerHTML +=

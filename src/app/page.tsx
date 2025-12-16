@@ -258,10 +258,15 @@ export default function Home() {
                 >
                   <h2>Répartition Géographique</h2>
                   <div className="map-controls">
-                    <label style={{ marginRight: "10px", fontWeight: 500, fontSize: "0.875rem" }}>
+                    <label
+                      htmlFor="map-mode"
+                      style={{ marginRight: "10px", fontWeight: 500, fontSize: "0.875rem" }}
+                    >
                       Afficher :
                     </label>
                     <select
+                      id="map-mode"
+                      name="mapMode"
                       value={mapMode}
                       onChange={(e) => setMapMode(e.target.value)}
                       className="dropdown-btn"

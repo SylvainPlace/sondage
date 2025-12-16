@@ -400,6 +400,11 @@ header p {
   border-radius: 5px;
   box-shadow: 0 0 15px rgba(0,0,0,0.2);
 }
+
+.legend-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
 .legend i {
   width: 18px;
   height: 18px;
