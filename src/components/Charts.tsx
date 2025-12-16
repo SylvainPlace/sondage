@@ -441,7 +441,6 @@ export function SectorChart({ data }: { data: SurveyResponse[] }) {
 
     const labels = sorted.map(([label]) => label);
     const counts = sorted.map(([, count]) => count);
-    const total = counts.reduce((a, b) => a + b, 0);
 
     return {
       labels,
@@ -453,7 +452,6 @@ export function SectorChart({ data }: { data: SurveyResponse[] }) {
           borderColor: "#ffffff",
         },
       ],
-      total,
     };
   }, [data]);
 
@@ -507,26 +505,42 @@ export function SectorChart({ data }: { data: SurveyResponse[] }) {
     return <p style={{ color: "var(--text-muted)" }}>Pas de donnees.</p>;
   }
 
+  const textCenterPlugin = {
+    id: "textCenter",
+    beforeDraw: function (chart: ChartJS) {
+      const { ctx, width, height } = chart;
+      const { top, bottom, left, right } = chart.chartArea;
+      
+      ctx.save();
+      
+      // Calculate center of the chart area (which excludes legend)
+      const x = (left + right) / 2;
+      const y = (top + bottom) / 2;
+      
+      const dataset = chart.data.datasets[0];
+      const data = dataset.data as number[];
+      const total = data.reduce((a, b) => a + b, 0);
+      
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      
+      // Total number
+      ctx.font = "700 1.5rem Inter, sans-serif";
+      ctx.fillStyle = "#1e293b"; // var(--text-main)
+      ctx.fillText(total.toString(), x, y - 10);
+      
+      // Label
+      ctx.font = "0.75rem Inter, sans-serif";
+      ctx.fillStyle = "#64748b"; // var(--text-muted)
+      ctx.fillText("répondants", x, y + 15);
+      
+      ctx.restore();
+    },
+  };
+
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
-      <Doughnut data={chartData} options={options} />
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "35%",
-          transform: "translate(-50%, -50%)",
-          textAlign: "center",
-          pointerEvents: "none",
-        }}
-      >
-        <div style={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--text-main)" }}>
-          {chartData.total}
-        </div>
-        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-          repondants
-        </div>
-      </div>
+      <Doughnut data={chartData} options={options} plugins={[textCenterPlugin]} />
     </div>
   );
 }

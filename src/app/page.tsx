@@ -236,13 +236,6 @@ export default function Home() {
               </div>
 
               <div className="charts-section">
-                <h2>Repartition par Secteur</h2>
-                <div className="chart-container" style={{ height: "350px" }}>
-                  <SectorChart data={filteredData} />
-                </div>
-              </div>
-
-              <div className="charts-section">
                 <h2>Salaire Moyen par Expérience</h2>
                 <div className="chart-container">
                   <XpChart data={filteredData} userComparison={userComparison} />
@@ -289,6 +282,13 @@ export default function Home() {
                 </div>
                 <div className="chart-container" style={{ height: "500px" }}>
                   <Map data={filteredData} mode={mapMode} />
+                </div>
+              </div>
+
+              <div className="charts-section">
+                <h2>Repartition par Secteur</h2>
+                <div className="chart-container" style={{ height: "350px" }}>
+                  <SectorChart data={filteredData} />
                 </div>
               </div>
 
