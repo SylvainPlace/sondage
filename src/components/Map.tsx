@@ -4,7 +4,11 @@ import L from "leaflet";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 
 import "leaflet/dist/leaflet.css";
-import { formatMoney, parsePrime, parseSalaryRange } from "@/lib/frontend-utils";
+import {
+  formatMoney,
+  parsePrime,
+  parseSalaryRange,
+} from "@/lib/frontend-utils";
 import { SurveyResponse } from "@/lib/types";
 
 import type { FeatureCollection, GeoJsonObject } from "geojson";
@@ -18,7 +22,9 @@ interface MapProps {
 const MAP_COLORS = ["#f5eacc", "#dec086", "#be9249", "#8a6322", "#5c4217"];
 
 function normalizeRegionName(name: string) {
-  if (!name) {return "";}
+  if (!name) {
+    return "";
+  }
   return name
     .toLowerCase()
     .normalize("NFD")
@@ -29,11 +35,15 @@ function normalizeRegionName(name: string) {
 }
 
 function calculateBreaks(values: number[]) {
-  if (values.length === 0) {return [0, 0, 0, 0];}
+  if (values.length === 0) {
+    return [0, 0, 0, 0];
+  }
   const sorted = [...values].sort((a, b) => a - b);
   const min = sorted[0];
   const max = sorted[sorted.length - 1];
-  if (min === max) {return [min, min, min, min];}
+  if (min === max) {
+    return [min, min, min, min];
+  }
   const q1 = sorted[Math.floor(sorted.length * 0.2)];
   const q2 = sorted[Math.floor(sorted.length * 0.4)];
   const q3 = sorted[Math.floor(sorted.length * 0.6)];
@@ -51,11 +61,16 @@ export default function Map({ data, mode }: MapProps) {
   const isGeoJsonLoadingRef = useRef(false);
 
   const regionMetrics = useMemo(() => {
-    const regionStats: Record<string, { salaries: number[]; totals: number[] }> = {};
+    const regionStats: Record<
+      string,
+      { salaries: number[]; totals: number[] }
+    > = {};
 
     for (const item of data) {
       const region = item.departement;
-      if (!region) {continue;}
+      if (!region) {
+        continue;
+      }
       const normalizedRegion = normalizeRegionName(region);
 
       if (!regionStats[normalizedRegion]) {
@@ -71,7 +86,9 @@ export default function Map({ data, mode }: MapProps) {
     }
 
     const getStats = (arr: number[]) => {
-      if (arr.length === 0) {return { avg: 0, median: 0 };}
+      if (arr.length === 0) {
+        return { avg: 0, median: 0 };
+      }
       const sum = arr.reduce((a, b) => a + b, 0);
       const avg = Math.round(sum / arr.length);
       const sorted = [...arr].sort((a, b) => a - b);
@@ -85,7 +102,13 @@ export default function Map({ data, mode }: MapProps) {
 
     const metrics: Record<
       string,
-      { avg: number; median: number; avgTotal: number; medianTotal: number; count: number }
+      {
+        avg: number;
+        median: number;
+        avgTotal: number;
+        medianTotal: number;
+        count: number;
+      }
     > = {};
 
     for (const key of Object.keys(regionStats)) {
@@ -119,17 +142,27 @@ export default function Map({ data, mode }: MapProps) {
                 : mode === "count"
                   ? stats.count
                   : 0;
-      if (val > 0) {values.push(val);}
+      if (val > 0) {
+        values.push(val);
+      }
     }
     return values;
   }, [mode, regionMetrics]);
 
-  const currentBreaks = useMemo(() => calculateBreaks(currentValues), [currentValues]);
+  const currentBreaks = useMemo(
+    () => calculateBreaks(currentValues),
+    [currentValues],
+  );
 
   useEffect(() => {
-    if (!mapContainerRef.current || mapInstanceRef.current) {return;}
+    if (!mapContainerRef.current || mapInstanceRef.current) {
+      return;
+    }
 
-    const map = L.map(mapContainerRef.current).setView([46.603354, 1.888334], 6);
+    const map = L.map(mapContainerRef.current).setView(
+      [46.603354, 1.888334],
+      6,
+    );
 
     L.tileLayer(
       "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
@@ -148,11 +181,17 @@ export default function Map({ data, mode }: MapProps) {
       isGeoJsonLoadingRef.current = true;
       fetch("/regions.geojson")
         .then((r) => {
-          if (!r.ok) {throw new Error(`Failed to load regions.geojson: ${r.status}`);}
+          if (!r.ok) {
+            throw new Error(`Failed to load regions.geojson: ${r.status}`);
+          }
           return r.json();
         })
         .then((geo) => {
-          if (geo && geo.type === "FeatureCollection" && Array.isArray(geo.features)) {
+          if (
+            geo &&
+            geo.type === "FeatureCollection" &&
+            Array.isArray(geo.features)
+          ) {
             geoJsonDataRef.current = geo as FeatureCollection;
             renderGeoJsonLayer();
           }
@@ -174,11 +213,21 @@ export default function Map({ data, mode }: MapProps) {
 
   const getColor = useCallback(
     (d: number | null | undefined) => {
-      if (d === undefined || d === null) {return "#f0f0f0";}
-      if (d > currentBreaks[3]) {return MAP_COLORS[4];}
-      if (d > currentBreaks[2]) {return MAP_COLORS[3];}
-      if (d > currentBreaks[1]) {return MAP_COLORS[2];}
-      if (d > currentBreaks[0]) {return MAP_COLORS[1];}
+      if (d === undefined || d === null) {
+        return "#f0f0f0";
+      }
+      if (d > currentBreaks[3]) {
+        return MAP_COLORS[4];
+      }
+      if (d > currentBreaks[2]) {
+        return MAP_COLORS[3];
+      }
+      if (d > currentBreaks[1]) {
+        return MAP_COLORS[2];
+      }
+      if (d > currentBreaks[0]) {
+        return MAP_COLORS[1];
+      }
       return MAP_COLORS[0];
     },
     [currentBreaks],
@@ -186,23 +235,28 @@ export default function Map({ data, mode }: MapProps) {
 
   const style = useCallback(
     (feature?: GeoJSON.Feature) => {
-      const props = feature?.properties as Record<string, unknown> | null | undefined;
+      const props = feature?.properties as
+        | Record<string, unknown>
+        | null
+        | undefined;
       const name = normalizeRegionName(props?.nom ? String(props.nom) : "");
       const stats =
         regionMetrics[name] ??
-        (name.includes("provence alpes cote d azur") ? regionMetrics["paca sud"] : undefined);
+        (name.includes("provence alpes cote d azur")
+          ? regionMetrics["paca sud"]
+          : undefined);
 
       const value =
         mode === "avg_base"
-          ? stats?.avg ?? 0
+          ? (stats?.avg ?? 0)
           : mode === "median_base"
-            ? stats?.median ?? 0
+            ? (stats?.median ?? 0)
             : mode === "avg_total"
-              ? stats?.avgTotal ?? 0
+              ? (stats?.avgTotal ?? 0)
               : mode === "median_total"
-                ? stats?.medianTotal ?? 0
+                ? (stats?.medianTotal ?? 0)
                 : mode === "count"
-                  ? stats?.count ?? 0
+                  ? (stats?.count ?? 0)
                   : 0;
 
       const color = value ? getColor(value) : "#f0f0f0";
@@ -233,7 +287,9 @@ export default function Map({ data, mode }: MapProps) {
   }, []);
 
   const resetHighlight = useCallback((e: L.LeafletMouseEvent) => {
-    if (!geoJsonLayerRef.current) {return;}
+    if (!geoJsonLayerRef.current) {
+      return;
+    }
     geoJsonLayerRef.current.resetStyle(e.target as unknown as L.Path);
   }, []);
 
@@ -244,14 +300,21 @@ export default function Map({ data, mode }: MapProps) {
         mouseout: resetHighlight,
       });
 
-      const props = feature.properties as Record<string, unknown> | null | undefined;
+      const props = feature.properties as
+        | Record<string, unknown>
+        | null
+        | undefined;
       const nom = props?.nom ? String(props.nom) : "";
-      if (!nom) {return;}
+      if (!nom) {
+        return;
+      }
 
       const normalized = normalizeRegionName(nom);
       const stats =
         regionMetrics[normalized] ??
-        (normalized.includes("provence alpes cote d azur") ? regionMetrics["paca sud"] : undefined);
+        (normalized.includes("provence alpes cote d azur")
+          ? regionMetrics["paca sud"]
+          : undefined);
 
       let content = `<strong>${nom}</strong><br/>`;
       if (stats && stats.count > 0) {
@@ -267,10 +330,12 @@ export default function Map({ data, mode }: MapProps) {
     },
     [highlightFeature, regionMetrics, resetHighlight],
   );
-  
+
   // Use a separate effect to update layer when breaks change (triggered by state update in updateMapData)
   const updateLegend = useCallback(() => {
-    if (!mapInstanceRef.current) {return;}
+    if (!mapInstanceRef.current) {
+      return;
+    }
     if (legendControlRef.current) {
       legendControlRef.current.remove();
     }
@@ -279,24 +344,45 @@ export default function Map({ data, mode }: MapProps) {
     legend.onAdd = function () {
       const div = L.DomUtil.create("div", "info legend");
       let title = "Salaire";
-      if (mode === "count") {title = "Répondants";} else if (mode.includes("median")) {title = "Salaire Médian";} else {title = "Salaire Moyen";}
-      if (mode.includes("total")) {title += " (+ Primes)";}
+      if (mode === "count") {
+        title = "Répondants";
+      } else if (mode.includes("median")) {
+        title = "Salaire Médian";
+      } else {
+        title = "Salaire Moyen";
+      }
+      if (mode.includes("total")) {
+        title += " (+ Primes)";
+      }
 
       div.innerHTML += `<div class="legend-title">${title}</div>`;
       const fmt = (v: number) => (mode === "count" ? v : formatMoney(v));
 
       div.innerHTML +=
-        '<i style="background:' + MAP_COLORS[0] + '"></i> ' +
-        "&lt; " + fmt(currentBreaks[0]) + "<br>";
+        '<i style="background:' +
+        MAP_COLORS[0] +
+        '"></i> ' +
+        "&lt; " +
+        fmt(currentBreaks[0]) +
+        "<br>";
 
       for (let i = 0; i < 3; i++) {
         div.innerHTML +=
-          '<i style="background:' + MAP_COLORS[i + 1] + '"></i> ' +
-          fmt(currentBreaks[i]) + " &ndash; " + fmt(currentBreaks[i + 1]) + "<br>";
+          '<i style="background:' +
+          MAP_COLORS[i + 1] +
+          '"></i> ' +
+          fmt(currentBreaks[i]) +
+          " &ndash; " +
+          fmt(currentBreaks[i + 1]) +
+          "<br>";
       }
       div.innerHTML +=
-        '<i style="background:' + MAP_COLORS[4] + '"></i> ' +
-        "&gt; " + fmt(currentBreaks[3]) + "<br>";
+        '<i style="background:' +
+        MAP_COLORS[4] +
+        '"></i> ' +
+        "&gt; " +
+        fmt(currentBreaks[3]) +
+        "<br>";
 
       return div;
     };
@@ -308,7 +394,9 @@ export default function Map({ data, mode }: MapProps) {
   const renderGeoJsonLayer = useCallback(() => {
     const map = mapInstanceRef.current;
     const geo = geoJsonDataRef.current;
-    if (!map || !geo) {return;}
+    if (!map || !geo) {
+      return;
+    }
 
     if (geoJsonLayerRef.current) {
       map.removeLayer(geoJsonLayerRef.current);
@@ -326,5 +414,7 @@ export default function Map({ data, mode }: MapProps) {
     renderGeoJsonLayer();
   }, [renderGeoJsonLayer]);
 
-  return <div ref={mapContainerRef} style={{ height: "100%", width: "100%" }} />;
+  return (
+    <div ref={mapContainerRef} style={{ height: "100%", width: "100%" }} />
+  );
 }

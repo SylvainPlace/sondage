@@ -1,8 +1,12 @@
 // Logic for converting ranges (e.g., "2-5" -> average) and handling strings like "10+".
 export function parseExperience(str: string | undefined): number {
-  if (!str) {return 0;}
+  if (!str) {
+    return 0;
+  }
   str = String(str).trim();
-  if (str.includes("+")) {return parseInt(str);}
+  if (str.includes("+")) {
+    return parseInt(str);
+  }
 
   const parts = str.match(/(\d+)-(\d+)/);
   if (parts) {
@@ -56,13 +60,7 @@ const SECTOR_RULES: NormalizationRule[] = [
   },
   {
     label: "Banque / Assurance",
-    keywords: [
-      "banque",
-      "bancaire",
-      "assurance",
-      "insurtech",
-      "finance",
-    ],
+    keywords: ["banque", "bancaire", "assurance", "insurtech", "finance"],
   },
   {
     label: "Éditeur Logiciel (Autre)",
@@ -95,7 +93,13 @@ const JOB_RULES: NormalizationRule[] = [
   },
   {
     label: "Chef de Projet",
-    keywords: ["chef de projet", "cheffe de projet", "projet", "agile", "scrum"],
+    keywords: [
+      "chef de projet",
+      "cheffe de projet",
+      "projet",
+      "agile",
+      "scrum",
+    ],
   },
   {
     label: "Développeur / Ingénieur",
@@ -187,60 +191,142 @@ const REGION_RULES: NormalizationRule[] = [
   {
     label: "Occitanie",
     keywords: [
-      "haute-garonne", "31", "tarn", "81", "ariège", "09", "gers", "32",
-      "hérault", "34", "lot", "46", "hautes-pyrenées", "65",
-      "pyrenées-orientales", "66", "tarn-et-garonne", "82",
-      "aveyron", "12", "lozère", "48", "aude", "11", "gard", "30",
+      "haute-garonne",
+      "31",
+      "tarn",
+      "81",
+      "ariège",
+      "09",
+      "gers",
+      "32",
+      "hérault",
+      "34",
+      "lot",
+      "46",
+      "hautes-pyrenées",
+      "65",
+      "pyrenées-orientales",
+      "66",
+      "tarn-et-garonne",
+      "82",
+      "aveyron",
+      "12",
+      "lozère",
+      "48",
+      "aude",
+      "11",
+      "gard",
+      "30",
     ],
   },
   {
     label: "Île-de-France",
     keywords: [
-      "paris", "75", "hauts-de-seine", "92", "seine-saint-denis", "93",
-      "val-de-marne", "94", "seine-et-marne", "77", "yvelines", "78",
-      "essonne", "91", "val-d'oise", "95",
+      "paris",
+      "75",
+      "hauts-de-seine",
+      "92",
+      "seine-saint-denis",
+      "93",
+      "val-de-marne",
+      "94",
+      "seine-et-marne",
+      "77",
+      "yvelines",
+      "78",
+      "essonne",
+      "91",
+      "val-d'oise",
+      "95",
     ],
   },
   {
     label: "Nouvelle-Aquitaine",
     keywords: [
-      "gironde", "33", "haute-vienne", "87", "pyrénées-atlantiques", "64",
-      "landes", "40", "dordogne", "24", "lot-et-garonne", "47",
+      "gironde",
+      "33",
+      "haute-vienne",
+      "87",
+      "pyrénées-atlantiques",
+      "64",
+      "landes",
+      "40",
+      "dordogne",
+      "24",
+      "lot-et-garonne",
+      "47",
     ],
   },
   {
     label: "Auvergne-Rhône-Alpes",
     keywords: [
-      "rhône", "69", "puy-de-dôme", "63", "isère", "38", "ain", "01",
-      "loire", "42", "savoie", "73", "74",
+      "rhône",
+      "69",
+      "puy-de-dôme",
+      "63",
+      "isère",
+      "38",
+      "ain",
+      "01",
+      "loire",
+      "42",
+      "savoie",
+      "73",
+      "74",
     ],
   },
   {
     label: "Bretagne",
     keywords: [
-      "finistère", "29", "morbihan", "56", "ille-et-vilaine", "35",
-      "côtes-d'armor", "22",
+      "finistère",
+      "29",
+      "morbihan",
+      "56",
+      "ille-et-vilaine",
+      "35",
+      "côtes-d'armor",
+      "22",
     ],
   },
   {
     label: "Pays de la Loire",
     keywords: [
-      "loire-atlantique", "44", "maine-et-loire", "49", "mayenne", "53",
-      "sarthe", "72", "vendée", "85",
+      "loire-atlantique",
+      "44",
+      "maine-et-loire",
+      "49",
+      "mayenne",
+      "53",
+      "sarthe",
+      "72",
+      "vendée",
+      "85",
     ],
   },
   {
     label: "PACA / Sud",
     keywords: [
-      "bouches-du-rhône", "13", "var", "83", "alpes-maritimes", "06",
-      "vaucluse", "84",
+      "bouches-du-rhône",
+      "13",
+      "var",
+      "83",
+      "alpes-maritimes",
+      "06",
+      "vaucluse",
+      "84",
     ],
   },
   {
     label: "Grand Est",
     keywords: [
-      "bas-rhin", "67", "haut-rhin", "68", "moselle", "57",
-      "meurthe-et-moselle", "54",
+      "bas-rhin",
+      "67",
+      "haut-rhin",
+      "68",
+      "moselle",
+      "57",
+      "meurthe-et-moselle",
+      "54",
     ],
   },
   {
@@ -250,8 +336,16 @@ const REGION_RULES: NormalizationRule[] = [
   {
     label: "DOM-TOM",
     keywords: [
-      "réunion", "974", "polynésie", "987", "guadeloupe", "971",
-      "martinique", "972", "guyane", "973",
+      "réunion",
+      "974",
+      "polynésie",
+      "987",
+      "guadeloupe",
+      "971",
+      "martinique",
+      "972",
+      "guyane",
+      "973",
     ],
   },
 ];
@@ -261,12 +355,19 @@ function normalizeWithRules(
   rules: NormalizationRule[],
   defaultLabel: string = "Autre",
 ): string {
-  if (!str) {return "Non renseigné";}
+  if (!str) {
+    return "Non renseigné";
+  }
   const s = str.toLowerCase().trim();
 
   for (const rule of rules) {
-    if (rule.keywords.some((k) => s.includes(k) || (k.startsWith(" ") && s.endsWith(k.trim())))) { // Handle " endsWith" via space prefix hack or explicit check
-        return rule.label;
+    if (
+      rule.keywords.some(
+        (k) => s.includes(k) || (k.startsWith(" ") && s.endsWith(k.trim())),
+      )
+    ) {
+      // Handle " endsWith" via space prefix hack or explicit check
+      return rule.label;
     }
   }
 
@@ -275,7 +376,7 @@ function normalizeWithRules(
 
 // Specialized wrapper for regions to handle specific default
 function normalizeRegionWithRules(str: string | undefined): string {
-    return normalizeWithRules(str, REGION_RULES, "Autre Région");
+  return normalizeWithRules(str, REGION_RULES, "Autre Région");
 }
 
 export function normalizeSector(str: string | undefined): string {

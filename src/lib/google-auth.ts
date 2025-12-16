@@ -54,7 +54,7 @@ export async function getGoogleAccessToken(
   const pkcs8 = await importPKCS8(pem, alg);
 
   const now = Math.floor(Date.now() / 1000);
-  
+
   const jwt = await new SignJWT({
     iss: clientEmail,
     scope: "https://www.googleapis.com/auth/spreadsheets.readonly",
@@ -80,7 +80,8 @@ export async function getGoogleAccessToken(
     throw new Error(`Failed to get access token: ${JSON.stringify(tokenData)}`);
   }
 
-  const expiresInSec = typeof tokenData.expires_in === "number" ? tokenData.expires_in : 3600;
+  const expiresInSec =
+    typeof tokenData.expires_in === "number" ? tokenData.expires_in : 3600;
   const refreshSkewSec = 60;
   cachedAccessToken = {
     token: tokenData.access_token,
@@ -91,9 +92,11 @@ export async function getGoogleAccessToken(
   return cachedAccessToken.token;
 }
 
-export async function getWhitelist(
-  env: { GCP_SERVICE_ACCOUNT_EMAIL: string; GCP_PRIVATE_KEY: string; SPREADSHEET_ID: string },
-): Promise<string[]> {
+export async function getWhitelist(env: {
+  GCP_SERVICE_ACCOUNT_EMAIL: string;
+  GCP_PRIVATE_KEY: string;
+  SPREADSHEET_ID: string;
+}): Promise<string[]> {
   try {
     const nowMs = Date.now();
     if (
@@ -115,10 +118,14 @@ export async function getWhitelist(
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    if (!response.ok) {return [];}
+    if (!response.ok) {
+      return [];
+    }
 
-  const data = (await response.json()) as SheetsValuesResponse;
-    if (!data.values) {return [];}
+    const data = (await response.json()) as SheetsValuesResponse;
+    if (!data.values) {
+      return [];
+    }
 
     const emails = data.values
       .flat()

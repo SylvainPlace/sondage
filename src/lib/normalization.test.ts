@@ -1,10 +1,14 @@
 import { describe, it, expect } from "vitest";
 
 import { parseSalaryRange, parsePrime } from "./frontend-utils";
-import { normalizeJob, normalizeSector, normalizeRegion, parseExperience } from "./normalization";
+import {
+  normalizeJob,
+  normalizeSector,
+  normalizeRegion,
+  parseExperience,
+} from "./normalization";
 
 describe("Normalization Logic", () => {
-  
   describe("parseExperience", () => {
     it("should parse simple numbers", () => {
       expect(parseExperience("5")).toBe(5);
@@ -42,29 +46,31 @@ describe("Normalization Logic", () => {
     });
 
     it("should return 0 for invalid input", () => {
-        expect(parseSalaryRange("")).toBe(0);
-        expect(parseSalaryRange("N/A")).toBe(0);
+      expect(parseSalaryRange("")).toBe(0);
+      expect(parseSalaryRange("N/A")).toBe(0);
     });
   });
 
   describe("parsePrime", () => {
     it('should parse "Aucune"', () => {
-        expect(parsePrime("Aucune")).toBe(0);
-        expect(parsePrime("0")).toBe(0);
+      expect(parsePrime("Aucune")).toBe(0);
+      expect(parsePrime("0")).toBe(0);
     });
 
     it('should parse "Moins de 2k€"', () => {
-        expect(parsePrime("Moins de 2k€")).toBe(1000);
+      expect(parsePrime("Moins de 2k€")).toBe(1000);
     });
 
     it('should parse ranges like "2-5k€"', () => {
-        expect(parsePrime("2-5 k€")).toBe(3500);
+      expect(parsePrime("2-5 k€")).toBe(3500);
     });
   });
 
   describe("normalizeJob", () => {
     it("should normalize Product Owner roles", () => {
-      expect(normalizeJob("Product Owner")).toBe("Product Owner / Product Manager");
+      expect(normalizeJob("Product Owner")).toBe(
+        "Product Owner / Product Manager",
+      );
       expect(normalizeJob("PO")).toBe("Product Owner / Product Manager");
       expect(normalizeJob("PM")).toBe("Autre"); // Unless PM is added to keywords
     });
@@ -75,7 +81,9 @@ describe("Normalization Logic", () => {
     });
 
     it("should normalize Developers", () => {
-      expect(normalizeJob("Développeur Fullstack")).toBe("Développeur / Ingénieur");
+      expect(normalizeJob("Développeur Fullstack")).toBe(
+        "Développeur / Ingénieur",
+      );
       expect(normalizeJob("Software Engineer")).toBe("Développeur / Ingénieur");
     });
 
@@ -87,11 +95,15 @@ describe("Normalization Logic", () => {
 
   describe("normalizeSector", () => {
     it("should normalize Health Software", () => {
-      expect(normalizeSector("Éditeur logiciel médical")).toBe("Éditeur Logiciel Santé");
+      expect(normalizeSector("Éditeur logiciel médical")).toBe(
+        "Éditeur Logiciel Santé",
+      );
     });
 
     it("should normalize Public Institutions", () => {
-      expect(normalizeSector("Ministère de la Santé")).toBe("Institution Publique");
+      expect(normalizeSector("Ministère de la Santé")).toBe(
+        "Institution Publique",
+      );
     });
   });
 
@@ -108,5 +120,4 @@ describe("Normalization Logic", () => {
       expect(normalizeRegion("Canada")).toBe("International");
     });
   });
-
 });

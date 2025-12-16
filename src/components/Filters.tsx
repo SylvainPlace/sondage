@@ -26,13 +26,22 @@ interface FiltersProps {
   onReset: () => void;
 }
 
-export default function Filters({ data, activeFilters, onChange, onReset }: FiltersProps) {
+export default function Filters({
+  data,
+  activeFilters,
+  onChange,
+  onReset,
+}: FiltersProps) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const dropdownRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (openDropdown && dropdownRefs.current[openDropdown] && !dropdownRefs.current[openDropdown]?.contains(event.target as Node)) {
+      if (
+        openDropdown &&
+        dropdownRefs.current[openDropdown] &&
+        !dropdownRefs.current[openDropdown]?.contains(event.target as Node)
+      ) {
         setOpenDropdown(null);
       }
     }
@@ -114,23 +123,40 @@ export default function Filters({ data, activeFilters, onChange, onReset }: Filt
       <div className="filters-container-responsive">
         {filtersConfig.map((config) => {
           const counts = allCounts[config.key] || {};
-          const uniqueValues = Array.from(new Set(data.map((d) => d[config.key]))).sort((a: unknown, b: unknown) => {
-             const specialValues = ["Autre", "Non renseigné"];
-             const aStr = String(a);
-             const bStr = String(b);
-             const isASpecial = specialValues.includes(aStr);
-             const isBSpecial = specialValues.includes(bStr);
-             if (isASpecial && !isBSpecial) {return 1;}
-             if (!isASpecial && isBSpecial) {return -1;}
-             if (isASpecial && isBSpecial) {return aStr.localeCompare(bStr);}
+          const uniqueValues = Array.from(
+            new Set(data.map((d) => d[config.key])),
+          ).sort((a: unknown, b: unknown) => {
+            const specialValues = ["Autre", "Non renseigné"];
+            const aStr = String(a);
+            const bStr = String(b);
+            const isASpecial = specialValues.includes(aStr);
+            const isBSpecial = specialValues.includes(bStr);
+            if (isASpecial && !isBSpecial) {
+              return 1;
+            }
+            if (!isASpecial && isBSpecial) {
+              return -1;
+            }
+            if (isASpecial && isBSpecial) {
+              return aStr.localeCompare(bStr);
+            }
 
-             if (config.key === "xp_group") {
-                const order = ["0-1 an", "2-3 ans", "4-5 ans", "6-9 ans", "10+ ans", "Non renseigné"];
-                return order.indexOf(aStr) - order.indexOf(bStr);
-             }
-             const aNum = Number(aStr);
-             const bNum = Number(bStr);
-             return !Number.isNaN(aNum) && !Number.isNaN(bNum) ? aNum - bNum : aStr.localeCompare(bStr);
+            if (config.key === "xp_group") {
+              const order = [
+                "0-1 an",
+                "2-3 ans",
+                "4-5 ans",
+                "6-9 ans",
+                "10+ ans",
+                "Non renseigné",
+              ];
+              return order.indexOf(aStr) - order.indexOf(bStr);
+            }
+            const aNum = Number(aStr);
+            const bNum = Number(bStr);
+            return !Number.isNaN(aNum) && !Number.isNaN(bNum)
+              ? aNum - bNum
+              : aStr.localeCompare(bStr);
           });
 
           const selected = activeFilters[config.key] || [];
@@ -141,7 +167,11 @@ export default function Filters({ data, activeFilters, onChange, onReset }: Filt
               <label>{config.label}</label>
               <div
                 className="custom-dropdown"
-                ref={(el) => { if (el) {dropdownRefs.current[config.key] = el;} }}
+                ref={(el) => {
+                  if (el) {
+                    dropdownRefs.current[config.key] = el;
+                  }
+                }}
               >
                 <button
                   className="dropdown-btn"
@@ -150,10 +180,12 @@ export default function Filters({ data, activeFilters, onChange, onReset }: Filt
                   {isAll
                     ? "Tous"
                     : selected.length === 1
-                    ? selected[0]
-                    : `${selected.length} sélectionnés`}
+                      ? selected[0]
+                      : `${selected.length} sélectionnés`}
                 </button>
-                <div className={`dropdown-content ${openDropdown === config.key ? "show" : ""}`}>
+                <div
+                  className={`dropdown-content ${openDropdown === config.key ? "show" : ""}`}
+                >
                   <label className="checkbox-option">
                     <input
                       type="checkbox"
@@ -163,19 +195,27 @@ export default function Filters({ data, activeFilters, onChange, onReset }: Filt
                     <span className="option-text">Tous</span>
                   </label>
                   {uniqueValues.map((val: unknown) => {
-                     if (val === undefined || val === null || val === "") {return null;}
-                     return (
-                        <label key={String(val)} className="checkbox-option">
-                          <input
-                            type="checkbox"
-                            checked={selected.includes(String(val))}
-                            onChange={(e) => handleFilterChange(config.key, String(val), e.target.checked)}
-                          />
-                          <span className="option-text">
-                            {String(val)} ({counts[String(val)] || 0})
-                          </span>
-                        </label>
-                     );
+                    if (val === undefined || val === null || val === "") {
+                      return null;
+                    }
+                    return (
+                      <label key={String(val)} className="checkbox-option">
+                        <input
+                          type="checkbox"
+                          checked={selected.includes(String(val))}
+                          onChange={(e) =>
+                            handleFilterChange(
+                              config.key,
+                              String(val),
+                              e.target.checked,
+                            )
+                          }
+                        />
+                        <span className="option-text">
+                          {String(val)} ({counts[String(val)] || 0})
+                        </span>
+                      </label>
+                    );
                   })}
                 </div>
               </div>

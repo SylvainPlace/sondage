@@ -40,12 +40,12 @@ export async function GET(request: NextRequest) {
 
     const gToken = await getGoogleAccessToken(
       GCP_SERVICE_ACCOUNT_EMAIL,
-      GCP_PRIVATE_KEY,
+      GCP_PRIVATE_KEY
     );
 
     const sheetName = "Réponses au formulaire 1";
     const googleUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(
-      sheetName,
+      sheetName
     )}`;
 
     const sheetResponse = await fetch(googleUrl, {
@@ -80,7 +80,8 @@ export async function GET(request: NextRequest) {
       salaire_brut: "Salaire brut annuel actuel (hors primes)",
       primes: "Primes / variable annuel",
       avantages: "Avantages particuliers (optionnel)",
-      conseil: "Un conseil, un retour d’expérience, une anecdote ? (facultatif)",
+      conseil:
+        "Un conseil, un retour d’expérience, une anecdote ? (facultatif)",
     };
 
     const headerMap: Record<string, number> = {};
@@ -107,10 +108,14 @@ export async function GET(request: NextRequest) {
 
         if (colIndex === undefined) {
           const foundHeader = headers.find((h) => h.includes(sheetColumnName));
-          if (foundHeader) {colIndex = headerMap[foundHeader];}
+          if (foundHeader) {
+            colIndex = headerMap[foundHeader];
+          }
         }
 
-        if (colIndex === undefined || row[colIndex] === undefined) {continue;}
+        if (colIndex === undefined || row[colIndex] === undefined) {
+          continue;
+        }
 
         const value = row[colIndex];
         switch (jsonKey) {

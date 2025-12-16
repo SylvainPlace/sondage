@@ -33,7 +33,8 @@ export default function LoginModal({ onSuccess }: LoginModalProps) {
       localStorage.setItem("auth_token", data.token);
       onSuccess(data.token);
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Erreur inconnue";
+      const message =
+        error instanceof Error ? error.message : "Erreur inconnue";
       setError(message);
     } finally {
       setLoading(false);
@@ -78,7 +79,13 @@ export default function LoginModal({ onSuccess }: LoginModalProps) {
               {loading ? "Connexion..." : "Se connecter"}
             </button>
             {error && (
-              <p style={{ color: "red", fontSize: "0.875rem", marginTop: "1rem" }}>
+              <p
+                style={{
+                  color: "red",
+                  fontSize: "0.875rem",
+                  marginTop: "1rem",
+                }}
+              >
                 {error}
               </p>
             )}

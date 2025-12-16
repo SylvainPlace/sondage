@@ -17,7 +17,7 @@ export async function signUserToken(email: string): Promise<string> {
 
 export async function verifyUserToken(token: string): Promise<JWTPayload> {
   const secret = new TextEncoder().encode(SECRET_KEY);
-  
+
   try {
     const { payload } = await jwtVerify(token, secret);
     return payload;

@@ -61,7 +61,9 @@ export function SalaryChart({ data, userComparison }: ChartsProps) {
     const counts = categories.map((cat) => {
       return data.filter((d) => {
         const normalize = (str: string) => {
-          if (!str) {return "";}
+          if (!str) {
+            return "";
+          }
           return str.toLowerCase().replace(/\s/g, "").replace(/[–—]/g, "-");
         };
 
@@ -79,26 +81,35 @@ export function SalaryChart({ data, userComparison }: ChartsProps) {
           label: "Nombre d'alumni",
           data: counts,
           backgroundColor: (context: ScriptableContext<"bar">) => {
-            if (!userComparison) {return "#be9249";}
-            
+            if (!userComparison) {
+              return "#be9249";
+            }
+
             const index = context.dataIndex;
             const label = categories[index];
             const salary = userComparison.salary;
-            
+
             // Simple mapping logic matching parseSalaryRange ranges
             let isMatch = false;
-            const normalize = (str: string) => str.toLowerCase().replace(/\s/g, "");
+            const normalize = (str: string) =>
+              str.toLowerCase().replace(/\s/g, "");
             const catNorm = normalize(label);
-            
-            if (catNorm.includes("moinsde30") && salary < 30000) {isMatch = true;} else if (catNorm.includes("plusde100") && salary > 100000) {isMatch = true;} else {
-               const matches = catNorm.match(/(\d+)-(\d+)/);
-               if (matches) {
-                 const min = parseInt(matches[1]) * 1000;
-                 const max = parseInt(matches[2]) * 1000;
-                 if (salary >= min && salary < max) {isMatch = true;}
-               }
+
+            if (catNorm.includes("moinsde30") && salary < 30000) {
+              isMatch = true;
+            } else if (catNorm.includes("plusde100") && salary > 100000) {
+              isMatch = true;
+            } else {
+              const matches = catNorm.match(/(\d+)-(\d+)/);
+              if (matches) {
+                const min = parseInt(matches[1]) * 1000;
+                const max = parseInt(matches[2]) * 1000;
+                if (salary >= min && salary < max) {
+                  isMatch = true;
+                }
+              }
             }
-            
+
             return isMatch ? "#ef4444" : "#be9249"; // Red highlight for user
           },
           borderRadius: 4,
@@ -116,7 +127,8 @@ export function SalaryChart({ data, userComparison }: ChartsProps) {
       },
       tooltip: {
         callbacks: {
-          title: (items: TooltipItem<"bar">[]) => `Tranche : ${items[0]?.label ?? ""}`,
+          title: (items: TooltipItem<"bar">[]) =>
+            `Tranche : ${items[0]?.label ?? ""}`,
         },
       },
     },
@@ -149,8 +161,12 @@ export function XpChart({ data, userComparison }: ChartsProps) {
     data.forEach((item) => {
       const xp = Number(item.experience);
       if (!isNaN(xp)) {
-        if (xp > maxXp) {maxXp = xp;}
-        if (!xpMap[xp]) {xpMap[xp] = { base: [], total: [] };}
+        if (xp > maxXp) {
+          maxXp = xp;
+        }
+        if (!xpMap[xp]) {
+          xpMap[xp] = { base: [], total: [] };
+        }
 
         const base = parseSalaryRange(item.salaire_brut);
         const prime = parsePrime(item.primes);
@@ -163,10 +179,14 @@ export function XpChart({ data, userComparison }: ChartsProps) {
     });
 
     const labels: number[] = [];
-    for (let i = 0; i <= maxXp; i++) {labels.push(i);}
+    for (let i = 0; i <= maxXp; i++) {
+      labels.push(i);
+    }
 
     const getStats = (arr: number[]) => {
-      if (!arr || arr.length === 0) {return null;}
+      if (!arr || arr.length === 0) {
+        return null;
+      }
       const sum = arr.reduce((a, b) => a + b, 0);
       const mean = Math.round(sum / arr.length);
       const sorted = [...arr].sort((a, b) => a - b);
@@ -201,59 +221,61 @@ export function XpChart({ data, userComparison }: ChartsProps) {
     });
 
     const datasets: Array<ChartDataset<"line", (number | null)[]>> = [
-        {
-          label: "Moyen (Base)",
-          data: meanBaseData,
-          borderColor: "#3b82f6",
-          backgroundColor: "#3b82f6",
-          borderWidth: 2,
-          tension: 0.3,
-          spanGaps: true,
-        },
-        {
-          label: "Médian (Base)",
-          data: medianBaseData,
-          borderColor: "#3b82f6",
-          backgroundColor: "#3b82f6",
-          borderWidth: 2,
-          borderDash: [5, 5],
-          tension: 0.3,
-          spanGaps: true,
-        },
-        {
-          label: "Moyen (Total)",
-          data: meanTotalData,
-          borderColor: "#be9249",
-          backgroundColor: "#be9249",
-          borderWidth: 2,
-          tension: 0.3,
-          spanGaps: true,
-        },
-        {
-          label: "Médian (Total)",
-          data: medianTotalData,
-          borderColor: "#be9249",
-          backgroundColor: "#be9249",
-          borderWidth: 2,
-          borderDash: [5, 5],
-          tension: 0.3,
-          spanGaps: true,
-        },
+      {
+        label: "Moyen (Base)",
+        data: meanBaseData,
+        borderColor: "#3b82f6",
+        backgroundColor: "#3b82f6",
+        borderWidth: 2,
+        tension: 0.3,
+        spanGaps: true,
+      },
+      {
+        label: "Médian (Base)",
+        data: medianBaseData,
+        borderColor: "#3b82f6",
+        backgroundColor: "#3b82f6",
+        borderWidth: 2,
+        borderDash: [5, 5],
+        tension: 0.3,
+        spanGaps: true,
+      },
+      {
+        label: "Moyen (Total)",
+        data: meanTotalData,
+        borderColor: "#be9249",
+        backgroundColor: "#be9249",
+        borderWidth: 2,
+        tension: 0.3,
+        spanGaps: true,
+      },
+      {
+        label: "Médian (Total)",
+        data: medianTotalData,
+        borderColor: "#be9249",
+        backgroundColor: "#be9249",
+        borderWidth: 2,
+        borderDash: [5, 5],
+        tension: 0.3,
+        spanGaps: true,
+      },
     ];
 
     if (userComparison) {
-        // Add User Point
-        const userPointData = labels.map(l => l === userComparison.experience ? userComparison.salary : null);
-        datasets.push({
-            label: "Vous",
-            data: userPointData,
-            borderColor: "#ef4444",
-            backgroundColor: "#ef4444",
-            pointRadius: 8,
-            pointHoverRadius: 10,
-            showLine: false,
-            type: "line", // Treated as scatter on a line chart if only points
-        });
+      // Add User Point
+      const userPointData = labels.map((l) =>
+        l === userComparison.experience ? userComparison.salary : null,
+      );
+      datasets.push({
+        label: "Vous",
+        data: userPointData,
+        borderColor: "#ef4444",
+        backgroundColor: "#ef4444",
+        pointRadius: 8,
+        pointHoverRadius: 10,
+        showLine: false,
+        type: "line", // Treated as scatter on a line chart if only points
+      });
     }
 
     return {
@@ -278,10 +300,14 @@ export function XpChart({ data, userComparison }: ChartsProps) {
         callbacks: {
           label: (context: TooltipItem<"line">) => {
             const raw = context.raw;
-            if (raw === null || raw === undefined) {return "";}
+            if (raw === null || raw === undefined) {
+              return "";
+            }
 
             const value = typeof raw === "number" ? raw : Number(raw);
-            if (!Number.isFinite(value)) {return "";}
+            if (!Number.isFinite(value)) {
+              return "";
+            }
             return `${context.dataset.label}: ${new Intl.NumberFormat("fr-FR", {
               style: "currency",
               currency: "EUR",
@@ -297,7 +323,8 @@ export function XpChart({ data, userComparison }: ChartsProps) {
         min: 30000,
         ticks: {
           callback: function (value: string | number) {
-            const n = typeof value === "number" ? value : Number.parseFloat(value);
+            const n =
+              typeof value === "number" ? value : Number.parseFloat(value);
             return `${Math.round(n / 1000)}k€`;
           },
         },
@@ -323,11 +350,16 @@ export function XpChart({ data, userComparison }: ChartsProps) {
 export function BenefitsList({ data }: ChartsProps) {
   const stats = useMemo(() => {
     const count = data.length;
-    if (count === 0) {return [];}
+    if (count === 0) {
+      return [];
+    }
 
     const keywords = [
       { label: "Télétravail", terms: ["télétravail", "teletravail", "remote"] },
-      { label: "Tickets Resto", terms: ["ticket", "restaurant", "tr", "panier"] },
+      {
+        label: "Tickets Resto",
+        terms: ["ticket", "restaurant", "tr", "panier"],
+      },
       { label: "Voiture", terms: ["voiture", "véhicule"] },
       { label: "RTT / Congés", terms: ["rtt", "congés", "vacances"] },
       {
@@ -337,8 +369,10 @@ export function BenefitsList({ data }: ChartsProps) {
     ];
 
     const s = keywords.map((k) => {
-          const matchCount = data.filter((d) => {
-        if (!d.avantages) {return false;}
+      const matchCount = data.filter((d) => {
+        if (!d.avantages) {
+          return false;
+        }
         const text = d.avantages.toLowerCase();
         return k.terms.some((term) => text.includes(term));
       }).length;
@@ -352,7 +386,9 @@ export function BenefitsList({ data }: ChartsProps) {
     return s.sort((a, b) => b.percentage - a.percentage);
   }, [data]);
 
-  if (data.length === 0) {return <p style={{ color: "var(--text-muted)" }}>Pas de données.</p>;}
+  if (data.length === 0) {
+    return <p style={{ color: "var(--text-muted)" }}>Pas de données.</p>;
+  }
 
   return (
     <div className="benefits-list">
@@ -385,8 +421,8 @@ export function AnecdotesList({
 }) {
   const withConseil = useMemo(() => {
     return data.filter((d) => {
-        const conseil = d.conseil;
-        return conseil && conseil.trim() !== "";
+      const conseil = d.conseil;
+      return conseil && conseil.trim() !== "";
     });
   }, [data]);
 
@@ -421,9 +457,21 @@ export function AnecdotesList({
 }
 
 const SECTOR_COLORS = [
-  "#be9249", "#3b82f6", "#10b981", "#f59e0b", "#ef4444",
-  "#8b5cf6", "#ec4899", "#06b6d4", "#84cc16", "#f97316",
-  "#6366f1", "#14b8a6", "#a855f7", "#eab308", "#22c55e",
+  "#be9249",
+  "#3b82f6",
+  "#10b981",
+  "#f59e0b",
+  "#ef4444",
+  "#8b5cf6",
+  "#ec4899",
+  "#06b6d4",
+  "#84cc16",
+  "#f97316",
+  "#6366f1",
+  "#14b8a6",
+  "#a855f7",
+  "#eab308",
+  "#22c55e",
 ];
 
 export function SectorChart({ data }: { data: SurveyResponse[] }) {
@@ -435,8 +483,7 @@ export function SectorChart({ data }: { data: SurveyResponse[] }) {
       sectorCounts[sector] = (sectorCounts[sector] || 0) + 1;
     });
 
-    const sorted = Object.entries(sectorCounts)
-      .sort((a, b) => b[1] - a[1]);
+    const sorted = Object.entries(sectorCounts).sort((a, b) => b[1] - a[1]);
 
     const labels = sorted.map(([label]) => label);
     const counts = sorted.map(([, count]) => count);
@@ -473,7 +520,8 @@ export function SectorChart({ data }: { data: SurveyResponse[] }) {
             const bgColors = dataset.backgroundColor as string[];
             return labels.map((label, i) => {
               const value = dataArr[i];
-              const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+              const percentage =
+                total > 0 ? Math.round((value / total) * 100) : 0;
               return {
                 text: `${label} (${percentage}%)`,
                 fillStyle: bgColors[i],
@@ -492,7 +540,8 @@ export function SectorChart({ data }: { data: SurveyResponse[] }) {
             const value = context.raw as number;
             const dataArr = context.dataset.data as number[];
             const total = dataArr.reduce((a, b) => a + b, 0);
-            const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+            const percentage =
+              total > 0 ? Math.round((value / total) * 100) : 0;
             return `${context.label}: ${value} (${percentage}%)`;
           },
         },
@@ -509,37 +558,41 @@ export function SectorChart({ data }: { data: SurveyResponse[] }) {
     beforeDraw: function (chart: ChartJS) {
       const { ctx } = chart;
       const { top, bottom, left, right } = chart.chartArea;
-      
+
       ctx.save();
-      
+
       // Calculate center of the chart area (which excludes legend)
       const x = (left + right) / 2;
       const y = (top + bottom) / 2;
-      
+
       const dataset = chart.data.datasets[0];
       const data = dataset.data as number[];
       const total = data.reduce((a, b) => a + b, 0);
-      
+
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      
+
       // Total number
       ctx.font = "700 1.5rem Inter, sans-serif";
       ctx.fillStyle = "#1e293b"; // var(--text-main)
       ctx.fillText(total.toString(), x, y - 10);
-      
+
       // Label
       ctx.font = "0.75rem Inter, sans-serif";
       ctx.fillStyle = "#64748b"; // var(--text-muted)
       ctx.fillText("répondants", x, y + 15);
-      
+
       ctx.restore();
     },
   };
 
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
-      <Doughnut data={chartData} options={options} plugins={[textCenterPlugin]} />
+      <Doughnut
+        data={chartData}
+        options={options}
+        plugins={[textCenterPlugin]}
+      />
     </div>
   );
 }

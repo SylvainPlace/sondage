@@ -56,10 +56,14 @@ export default function ComparisonForm({ onCompare }: ComparisonFormProps) {
 
   if (active) {
     return (
-      <div className="filters-panel" style={{ marginBottom: "2rem", textAlign: "center" }}>
+      <div
+        className="filters-panel"
+        style={{ marginBottom: "2rem", textAlign: "center" }}
+      >
         <h3>Mode Comparaison Activé</h3>
         <p style={{ color: "var(--text-muted)", marginBottom: "1rem" }}>
-          Vous visualisez votre position ({salary} €, {experience} ans) sur les graphiques.
+          Vous visualisez votre position ({salary} €, {experience} ans) sur les
+          graphiques.
         </p>
         <button className="btn-text" onClick={handleReset}>
           Arrêter la comparaison
@@ -114,7 +118,8 @@ export default function ComparisonForm({ onCompare }: ComparisonFormProps) {
                   pointerEvents: "none",
                 }}
               >
-                Vos données sont stockées uniquement dans votre navigateur et ne sont jamais envoyées à nos serveurs.
+                Vos données sont stockées uniquement dans votre navigateur et ne
+                sont jamais envoyées à nos serveurs.
                 <div
                   style={{
                     position: "absolute",
@@ -131,8 +136,19 @@ export default function ComparisonForm({ onCompare }: ComparisonFormProps) {
           </div>
         </h2>
       </div>
-      <form onSubmit={handleSubmit} style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "flex-end" }}>
-        <div className="filter-group" style={{ flex: 1, minWidth: "200px", marginBottom: 0 }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          display: "flex",
+          gap: "1rem",
+          flexWrap: "wrap",
+          alignItems: "flex-end",
+        }}
+      >
+        <div
+          className="filter-group"
+          style={{ flex: 1, minWidth: "200px", marginBottom: 0 }}
+        >
           <label htmlFor="comp-salary">Salaire Brut Annuel (€)</label>
           <input
             id="comp-salary"
@@ -150,7 +166,10 @@ export default function ComparisonForm({ onCompare }: ComparisonFormProps) {
             required
           />
         </div>
-        <div className="filter-group" style={{ flex: 1, minWidth: "200px", marginBottom: 0 }}>
+        <div
+          className="filter-group"
+          style={{ flex: 1, minWidth: "200px", marginBottom: 0 }}
+        >
           <label htmlFor="comp-xp">Années d&apos;expérience</label>
           <input
             id="comp-xp"
@@ -171,7 +190,11 @@ export default function ComparisonForm({ onCompare }: ComparisonFormProps) {
         <button
           type="submit"
           className="cta-button"
-          style={{ padding: "0.75rem 1.5rem", borderRadius: "4px", fontSize: "0.875rem" }}
+          style={{
+            padding: "0.75rem 1.5rem",
+            borderRadius: "4px",
+            fontSize: "0.875rem",
+          }}
         >
           Comparer
         </button>
