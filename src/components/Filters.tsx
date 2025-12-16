@@ -113,19 +113,23 @@ export default function Filters({ data, activeFilters, onChange, onReset }: Filt
       <div className="filters-container-responsive">
         {filtersConfig.map((config) => {
           const counts = allCounts[config.key] || {};
-          const uniqueValues = Array.from(new Set(data.map((d) => d[config.key]))).sort((a: any, b: any) => {
+          const uniqueValues = Array.from(new Set(data.map((d) => d[config.key]))).sort((a: unknown, b: unknown) => {
              const specialValues = ["Autre", "Non renseigné"];
-             const isASpecial = specialValues.includes(a);
-             const isBSpecial = specialValues.includes(b);
+             const aStr = String(a);
+             const bStr = String(b);
+             const isASpecial = specialValues.includes(aStr);
+             const isBSpecial = specialValues.includes(bStr);
              if (isASpecial && !isBSpecial) return 1;
              if (!isASpecial && isBSpecial) return -1;
-             if (isASpecial && isBSpecial) return String(a).localeCompare(String(b));
+             if (isASpecial && isBSpecial) return aStr.localeCompare(bStr);
 
              if (config.key === "xp_group") {
                 const order = ["0-1 an", "2-3 ans", "4-5 ans", "6-9 ans", "10+ ans", "Non renseigné"];
-                return order.indexOf(a) - order.indexOf(b);
+                return order.indexOf(aStr) - order.indexOf(bStr);
              }
-             return !isNaN(Number(a)) && !isNaN(Number(b)) ? Number(a) - Number(b) : String(a).localeCompare(String(b));
+             const aNum = Number(aStr);
+             const bNum = Number(bStr);
+             return !Number.isNaN(aNum) && !Number.isNaN(bNum) ? aNum - bNum : aStr.localeCompare(bStr);
           });
 
           const selected = activeFilters[config.key] || [];
@@ -157,17 +161,17 @@ export default function Filters({ data, activeFilters, onChange, onReset }: Filt
                     />
                     <span className="option-text">Tous</span>
                   </label>
-                  {uniqueValues.map((val: any) => {
+                  {uniqueValues.map((val: unknown) => {
                      if (val === undefined || val === null || val === "") return null;
                      return (
                         <label key={String(val)} className="checkbox-option">
                           <input
                             type="checkbox"
-                            checked={selected.includes(val)}
-                            onChange={(e) => handleFilterChange(config.key, val, e.target.checked)}
+                            checked={selected.includes(String(val))}
+                            onChange={(e) => handleFilterChange(config.key, String(val), e.target.checked)}
                           />
                           <span className="option-text">
-                            {val} ({counts[val] || 0})
+                            {String(val)} ({counts[String(val)] || 0})
                           </span>
                         </label>
                      );

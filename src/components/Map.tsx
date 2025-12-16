@@ -1,25 +1,128 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { regionsData } from "@/lib/regions-data";
 import { formatMoney, parsePrime, parseSalaryRange } from "@/lib/frontend-utils";
+import { SurveyResponse } from "@/lib/types";
+import type { FeatureCollection, GeoJsonObject } from "geojson";
 
 interface MapProps {
-  data: any[];
+  data: SurveyResponse[];
   mode: string;
 }
 
 // [Lightest -> Darkest]
 const MAP_COLORS = ["#f5eacc", "#dec086", "#be9249", "#8a6322", "#5c4217"];
 
+function normalizeRegionName(name: string) {
+  if (!name) return "";
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function calculateBreaks(values: number[]) {
+  if (values.length === 0) return [0, 0, 0, 0];
+  const sorted = [...values].sort((a, b) => a - b);
+  const min = sorted[0];
+  const max = sorted[sorted.length - 1];
+  if (min === max) return [min, min, min, min];
+  const q1 = sorted[Math.floor(sorted.length * 0.2)];
+  const q2 = sorted[Math.floor(sorted.length * 0.4)];
+  const q3 = sorted[Math.floor(sorted.length * 0.6)];
+  const q4 = sorted[Math.floor(sorted.length * 0.8)];
+  return [q1, q2, q3, q4];
+}
+
 export default function Map({ data, mode }: MapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const geoJsonLayerRef = useRef<L.GeoJSON | null>(null);
   const legendControlRef = useRef<L.Control | null>(null);
-  const [currentBreaks, setCurrentBreaks] = useState<number[]>([0, 0, 0, 0]);
+
+  const geoJsonDataRef = useRef<FeatureCollection | null>(null);
+  const isGeoJsonLoadingRef = useRef(false);
+
+  const regionMetrics = useMemo(() => {
+    const regionStats: Record<string, { salaries: number[]; totals: number[] }> = {};
+
+    for (const item of data) {
+      const region = item.departement;
+      if (!region) continue;
+      const normalizedRegion = normalizeRegionName(region);
+
+      if (!regionStats[normalizedRegion]) {
+        regionStats[normalizedRegion] = { salaries: [], totals: [] };
+      }
+
+      const salary = parseSalaryRange(item.salaire_brut);
+      if (salary > 0) {
+        regionStats[normalizedRegion].salaries.push(salary);
+        const prime = parsePrime(item.primes);
+        regionStats[normalizedRegion].totals.push(salary + prime);
+      }
+    }
+
+    const getStats = (arr: number[]) => {
+      if (arr.length === 0) return { avg: 0, median: 0 };
+      const sum = arr.reduce((a, b) => a + b, 0);
+      const avg = Math.round(sum / arr.length);
+      const sorted = [...arr].sort((a, b) => a - b);
+      const mid = Math.floor(sorted.length / 2);
+      const median =
+        sorted.length % 2 !== 0
+          ? sorted[mid]
+          : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
+      return { avg, median };
+    };
+
+    const metrics: Record<
+      string,
+      { avg: number; median: number; avgTotal: number; medianTotal: number; count: number }
+    > = {};
+
+    for (const key of Object.keys(regionStats)) {
+      const group = regionStats[key];
+      const baseStats = getStats(group.salaries);
+      const totalStats = getStats(group.totals);
+      metrics[key] = {
+        avg: baseStats.avg,
+        median: baseStats.median,
+        avgTotal: totalStats.avg,
+        medianTotal: totalStats.median,
+        count: group.salaries.length,
+      };
+    }
+
+    return metrics;
+  }, [data]);
+
+  const currentValues = useMemo(() => {
+    const values: number[] = [];
+    for (const stats of Object.values(regionMetrics)) {
+      const val =
+        mode === "avg_base"
+          ? stats.avg
+          : mode === "median_base"
+            ? stats.median
+            : mode === "avg_total"
+              ? stats.avgTotal
+              : mode === "median_total"
+                ? stats.medianTotal
+                : mode === "count"
+                  ? stats.count
+                  : 0;
+      if (val > 0) values.push(val);
+    }
+    return values;
+  }, [mode, regionMetrics]);
+
+  const currentBreaks = useMemo(() => calculateBreaks(currentValues), [currentValues]);
 
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return;
@@ -38,86 +141,84 @@ export default function Map({ data, mode }: MapProps) {
 
     mapInstanceRef.current = map;
 
+    // Lazy-load the GeoJSON so it doesn't inflate the main JS bundle.
+    if (!geoJsonDataRef.current && !isGeoJsonLoadingRef.current) {
+      isGeoJsonLoadingRef.current = true;
+      fetch("/regions.geojson")
+        .then((r) => {
+          if (!r.ok) throw new Error(`Failed to load regions.geojson: ${r.status}`);
+          return r.json();
+        })
+        .then((geo) => {
+          if (geo && geo.type === "FeatureCollection" && Array.isArray(geo.features)) {
+            geoJsonDataRef.current = geo as FeatureCollection;
+            renderGeoJsonLayer();
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        })
+        .finally(() => {
+          isGeoJsonLoadingRef.current = false;
+        });
+    }
+
     return () => {
       map.remove();
       mapInstanceRef.current = null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (!mapInstanceRef.current) return;
-    updateMapData();
-  }, [data, mode]); // Re-run when data or mode changes
+  const getColor = useCallback(
+    (d: number | null | undefined) => {
+      if (d === undefined || d === null) return "#f0f0f0";
+      if (d > currentBreaks[3]) return MAP_COLORS[4];
+      if (d > currentBreaks[2]) return MAP_COLORS[3];
+      if (d > currentBreaks[1]) return MAP_COLORS[2];
+      if (d > currentBreaks[0]) return MAP_COLORS[1];
+      return MAP_COLORS[0];
+    },
+    [currentBreaks]
+  );
 
-  // Update breaks when data/mode changes, but we do it inside updateMapData to synchronize with layer style update.
+  const style = useCallback(
+    (feature?: GeoJSON.Feature) => {
+      const props = feature?.properties as Record<string, unknown> | null | undefined;
+      const name = normalizeRegionName(props?.nom ? String(props.nom) : "");
+      const stats =
+        regionMetrics[name] ??
+        (name.includes("provence alpes cote d azur") ? regionMetrics["paca sud"] : undefined);
 
-  function getColor(d: number) {
-    if (d === undefined || d === null) return "#f0f0f0";
-    if (d > currentBreaks[3]) return MAP_COLORS[4];
-    if (d > currentBreaks[2]) return MAP_COLORS[3];
-    if (d > currentBreaks[1]) return MAP_COLORS[2];
-    if (d > currentBreaks[0]) return MAP_COLORS[1];
-    return MAP_COLORS[0];
-  }
+      const value =
+        mode === "avg_base"
+          ? stats?.avg ?? 0
+          : mode === "median_base"
+            ? stats?.median ?? 0
+            : mode === "avg_total"
+              ? stats?.avgTotal ?? 0
+              : mode === "median_total"
+                ? stats?.medianTotal ?? 0
+                : mode === "count"
+                  ? stats?.count ?? 0
+                  : 0;
 
-  function style(feature: any) {
-    const props = feature.properties;
-    let value = 0;
+      const color = value ? getColor(value) : "#f0f0f0";
 
-    switch (mode) {
-      case "avg_base":
-        value = props.avgSalary;
-        break;
-      case "median_base":
-        value = props.medianSalary;
-        break;
-      case "avg_total":
-        value = props.avgTotal;
-        break;
-      case "median_total":
-        value = props.medianTotal;
-        break;
-      case "count":
-        value = props.count;
-        break;
-    }
+      return {
+        fillColor: color,
+        weight: 2,
+        opacity: 1,
+        color: "white",
+        dashArray: "3",
+        fillOpacity: 0.7,
+      };
+    },
+    [getColor, mode, regionMetrics]
+  );
 
-    const color = value ? getColor(value) : "#f0f0f0";
-
-    return {
-      fillColor: color,
-      weight: 2,
-      opacity: 1,
-      color: "white",
-      dashArray: "3",
-      fillOpacity: 0.7,
-    };
-  }
-
-  function onEachFeature(feature: any, layer: L.Layer) {
-    layer.on({
-      mouseover: highlightFeature,
-      mouseout: resetHighlight,
-    });
-
-    const props = feature.properties;
-    if (props && props.nom) {
-      let content = `<strong>${props.nom}</strong><br/>`;
-      if (props.avgSalary) {
-        content += `Moyen: ${formatMoney(props.avgSalary)}<br/>`;
-        content += `Médian: ${formatMoney(props.medianSalary)}<br/>`;
-        content += `Moyen (+Primes): ${formatMoney(props.avgTotal)}<br/>`;
-        content += `Médian (+Primes): ${formatMoney(props.medianTotal)}<br/>`;
-        content += `Répondants: ${props.count}`;
-      } else {
-        content += "Pas de données";
-      }
-      layer.bindTooltip(content);
-    }
-  }
-
-  function highlightFeature(e: L.LeafletMouseEvent) {
-    const layer = e.target;
+  const highlightFeature = useCallback((e: L.LeafletMouseEvent) => {
+    const layer = e.target as unknown as L.Path;
     layer.setStyle({
       weight: 3,
       color: "#666",
@@ -127,142 +228,52 @@ export default function Map({ data, mode }: MapProps) {
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
       layer.bringToFront();
     }
-  }
+  }, []);
 
-  function resetHighlight(e: L.LeafletMouseEvent) {
-    if (geoJsonLayerRef.current) {
-        geoJsonLayerRef.current.resetStyle(e.target);
-    }
-  }
+  const resetHighlight = useCallback((e: L.LeafletMouseEvent) => {
+    if (!geoJsonLayerRef.current) return;
+    geoJsonLayerRef.current.resetStyle(e.target as unknown as L.Path);
+  }, []);
 
-  function normalizeRegionName(name: string) {
-    if (!name) return "";
-    return name
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9\s]/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-  }
+  const onEachFeature = useCallback(
+    (feature: GeoJSON.Feature, layer: L.Layer) => {
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+      });
 
-  function calculateBreaks(values: number[]) {
-    if (!values || values.length === 0) return [0, 0, 0, 0];
-    const sorted = [...values].sort((a, b) => a - b);
-    const min = sorted[0];
-    const max = sorted[sorted.length - 1];
-    if (min === max) return [min, min, min, min];
-    const q1 = sorted[Math.floor(sorted.length * 0.2)];
-    const q2 = sorted[Math.floor(sorted.length * 0.4)];
-    const q3 = sorted[Math.floor(sorted.length * 0.6)];
-    const q4 = sorted[Math.floor(sorted.length * 0.8)];
-    return [q1, q2, q3, q4];
-  }
+      const props = feature.properties as Record<string, unknown> | null | undefined;
+      const nom = props?.nom ? String(props.nom) : "";
+      if (!nom) return;
 
-  function updateMapData() {
-    // Process data
-    const regionStats: any = {};
-    data.forEach((item) => {
-      const region = item.departement; 
-      
-      if (!region) return;
-      const normalizedRegion = normalizeRegionName(region);
+      const normalized = normalizeRegionName(nom);
+      const stats =
+        regionMetrics[normalized] ??
+        (normalized.includes("provence alpes cote d azur") ? regionMetrics["paca sud"] : undefined);
 
-      if (!regionStats[normalizedRegion]) {
-        regionStats[normalizedRegion] = { salaries: [], totals: [] };
-      }
-
-      const salary = parseSalaryRange(item.salaire_brut);
-      if (salary > 0) {
-        regionStats[normalizedRegion].salaries.push(salary);
-        const prime = parsePrime(item.primes);
-        regionStats[normalizedRegion].totals.push(salary + prime);
-      }
-    });
-
-    const regionMetrics: any = {};
-    Object.keys(regionStats).forEach((key) => {
-      const group = regionStats[key];
-      const getStats = (arr: number[]) => {
-        if (!arr.length) return { avg: 0, median: 0 };
-        const sum = arr.reduce((a, b) => a + b, 0);
-        const avg = Math.round(sum / arr.length);
-        const sorted = [...arr].sort((a, b) => a - b);
-        const mid = Math.floor(sorted.length / 2);
-        const median = sorted.length % 2 !== 0 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
-        return { avg, median };
-      };
-      const baseStats = getStats(group.salaries);
-      const totalStats = getStats(group.totals);
-      regionMetrics[key] = {
-        avg: baseStats.avg,
-        median: baseStats.median,
-        avgTotal: totalStats.avg,
-        medianTotal: totalStats.median,
-        count: group.salaries.length,
-      };
-    });
-
-    const currentValues: number[] = [];
-    // Update GeoJSON properties
-    (regionsData as any).features.forEach((feature: any) => {
-      const name = normalizeRegionName(feature.properties.nom);
-      let stats = regionMetrics[name];
-      if (!stats) {
-        if (name.includes("provence alpes cote d azur") && regionMetrics["paca sud"]) stats = regionMetrics["paca sud"];
-      }
-      if (stats) {
-        feature.properties.avgSalary = stats.avg;
-        feature.properties.medianSalary = stats.median;
-        feature.properties.avgTotal = stats.avgTotal;
-        feature.properties.medianTotal = stats.medianTotal;
-        feature.properties.count = stats.count;
-
-        let val = 0;
-        switch (mode) {
-            case "avg_base": val = stats.avg; break;
-            case "median_base": val = stats.median; break;
-            case "avg_total": val = stats.avgTotal; break;
-            case "median_total": val = stats.medianTotal; break;
-            case "count": val = stats.count; break;
-        }
-        if (val > 0) currentValues.push(val);
+      let content = `<strong>${nom}</strong><br/>`;
+      if (stats && stats.count > 0) {
+        content += `Moyen: ${formatMoney(stats.avg)}<br/>`;
+        content += `Médian: ${formatMoney(stats.median)}<br/>`;
+        content += `Moyen (+Primes): ${formatMoney(stats.avgTotal)}<br/>`;
+        content += `Médian (+Primes): ${formatMoney(stats.medianTotal)}<br/>`;
+        content += `Répondants: ${stats.count}`;
       } else {
-        feature.properties.avgSalary = null;
-        feature.properties.medianSalary = null;
-        feature.properties.avgTotal = null;
-        feature.properties.medianTotal = null;
-        feature.properties.count = 0;
+        content += "Pas de données";
       }
-    });
-
-    const breaks = calculateBreaks(currentValues);
-    setCurrentBreaks(breaks);
-  }
+      layer.bindTooltip(content);
+    },
+    [highlightFeature, regionMetrics, resetHighlight]
+  );
   
   // Use a separate effect to update layer when breaks change (triggered by state update in updateMapData)
-  useEffect(() => {
+  const updateLegend = useCallback(() => {
     if (!mapInstanceRef.current) return;
-
-    if (geoJsonLayerRef.current) {
-        mapInstanceRef.current.removeLayer(geoJsonLayerRef.current);
-    }
-
-    geoJsonLayerRef.current = L.geoJSON(regionsData as any, {
-        style: style,
-        onEachFeature: onEachFeature
-    }).addTo(mapInstanceRef.current);
-    
-    updateLegend();
-  }, [currentBreaks, mode]); // Re-render layer when breaks (data processed) or mode changes.
-
-  function updateLegend() {
     if (legendControlRef.current) {
-        legendControlRef.current.remove();
+      legendControlRef.current.remove();
     }
 
     const legend = new L.Control({ position: "bottomright" });
-
     legend.onAdd = function () {
       const div = L.DomUtil.create("div", "info legend");
       let title = "Salaire";
@@ -290,9 +301,30 @@ export default function Map({ data, mode }: MapProps) {
       return div;
     };
 
-    legend.addTo(mapInstanceRef.current!);
+    legend.addTo(mapInstanceRef.current);
     legendControlRef.current = legend;
-  }
+  }, [currentBreaks, mode]);
+
+  const renderGeoJsonLayer = useCallback(() => {
+    const map = mapInstanceRef.current;
+    const geo = geoJsonDataRef.current;
+    if (!map || !geo) return;
+
+    if (geoJsonLayerRef.current) {
+      map.removeLayer(geoJsonLayerRef.current);
+    }
+
+    geoJsonLayerRef.current = L.geoJSON(geo as unknown as GeoJsonObject, {
+      style,
+      onEachFeature,
+    }).addTo(map);
+
+    updateLegend();
+  }, [onEachFeature, style, updateLegend]);
+
+  useEffect(() => {
+    renderGeoJsonLayer();
+  }, [renderGeoJsonLayer]);
 
   return <div ref={mapContainerRef} style={{ height: "100%", width: "100%" }} />;
 }

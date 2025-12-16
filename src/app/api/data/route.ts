@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyUserToken } from "@/lib/jwt";
 import { getGoogleAccessToken } from "@/lib/google-auth";
+import { getXpGroup } from "@/lib/xp";
 import {
   parseExperience,
   normalizeSector,
@@ -9,16 +10,6 @@ import {
   normalizeRegion,
 } from "@/lib/normalization";
 import { SurveyResponse } from "@/lib/types";
-
-// Helper for backend (duplicate logic or import from shared)
-function calculateXpGroup(years: number): string {
-  if (isNaN(years)) return "Non renseigné";
-  if (years <= 1) return "0-1 an";
-  if (years <= 3) return "2-3 ans";
-  if (years <= 5) return "4-5 ans";
-  if (years <= 9) return "6-9 ans";
-  return "10+ ans";
-}
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("Authorization");
@@ -29,7 +20,7 @@ export async function GET(request: NextRequest) {
   const token = authHeader.split(" ")[1];
   try {
     await verifyUserToken(token);
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Invalid Token" }, { status: 403 });
   }
 
@@ -68,7 +59,7 @@ export async function GET(request: NextRequest) {
       throw new Error(`Google API Error: ${err}`);
     }
 
-    const rawData = await sheetResponse.json() as any;
+    const rawData = (await sheetResponse.json()) as { values?: string[][] };
 
     if (!rawData.values || rawData.values.length < 2) {
       throw new Error("No data found in sheet.");
@@ -95,7 +86,21 @@ export async function GET(request: NextRequest) {
     headers.forEach((h, i) => (headerMap[h] = i));
 
     const formattedData: SurveyResponse[] = rows.map((row) => {
-      const item: any = {};
+      const item: SurveyResponse = {
+        annee_diplome: 0,
+        sexe: "",
+        departement: "",
+        secteur: "",
+        type_structure: "",
+        poste: "",
+        experience: 0,
+        salaire_brut: "",
+        primes: "",
+        avantages: "",
+        conseil: "",
+        xp_group: "Non renseigné",
+      };
+
       for (const [jsonKey, sheetColumnName] of Object.entries(MAPPING)) {
         let colIndex = headerMap[sheetColumnName];
 
@@ -104,37 +109,52 @@ export async function GET(request: NextRequest) {
           if (foundHeader) colIndex = headerMap[foundHeader];
         }
 
-        if (colIndex !== undefined && row[colIndex] !== undefined) {
-          let value = row[colIndex];
-          if (jsonKey === "experience") {
-            item[jsonKey] = parseExperience(value);
-          } else if (jsonKey === "annee_diplome") {
+        if (colIndex === undefined || row[colIndex] === undefined) continue;
+
+        const value = row[colIndex];
+        switch (jsonKey) {
+          case "experience":
+            item.experience = parseExperience(value);
+            break;
+          case "annee_diplome": {
             const num = parseInt(value, 10);
-            item[jsonKey] = isNaN(num) ? 0 : num;
-          } else if (jsonKey === "secteur") {
-            item[jsonKey] = normalizeSector(value);
-          } else if (jsonKey === "type_structure") {
-            item[jsonKey] = normalizeStructure(value);
-          } else if (jsonKey === "poste") {
-            item[jsonKey] = normalizeJob(value);
-          } else if (jsonKey === "departement") {
-            item[jsonKey] = normalizeRegion(value);
-          } else {
-            item[jsonKey] = String(value).trim();
+            item.annee_diplome = Number.isNaN(num) ? 0 : num;
+            break;
           }
-        } else {
-            if (jsonKey === "annee_diplome" || jsonKey === "experience") {
-                item[jsonKey] = 0;
-            } else {
-                item[jsonKey] = "";
-            }
+          case "secteur":
+            item.secteur = normalizeSector(value);
+            break;
+          case "type_structure":
+            item.type_structure = normalizeStructure(value);
+            break;
+          case "poste":
+            item.poste = normalizeJob(value);
+            break;
+          case "departement":
+            item.departement = normalizeRegion(value);
+            break;
+          case "sexe":
+            item.sexe = String(value).trim();
+            break;
+          case "salaire_brut":
+            item.salaire_brut = String(value).trim();
+            break;
+          case "primes":
+            item.primes = String(value).trim();
+            break;
+          case "avantages":
+            item.avantages = String(value).trim();
+            break;
+          case "conseil":
+            item.conseil = String(value).trim();
+            break;
         }
       }
 
       // Computed field: xp_group
-      item.xp_group = calculateXpGroup(item.experience);
+      item.xp_group = getXpGroup(item.experience);
 
-      return item as SurveyResponse;
+      return item;
     });
 
     return NextResponse.json(formattedData, {
@@ -142,7 +162,8 @@ export async function GET(request: NextRequest) {
         "Cache-Control": "public, max-age=3600, s-maxage=3600",
       },
     });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -58,11 +58,12 @@ export default function Home() {
         throw new Error("Erreur lors du chargement des données");
       }
 
-      const rawData = await res.json();
+      const rawData = (await res.json()) as SurveyResponse[];
       // Add xp_group is now handled by the API
       setAllData(rawData);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Erreur inconnue";
+      setError(message);
     } finally {
       setIsLoading(false);
     }
@@ -158,7 +159,7 @@ export default function Home() {
         </div>
         <p>
           Bienvenue sur le Panorama des Carrières, fruit de la grande enquête annuelle menée auprès des membres de notre association.
-          Cet outil interactif a été conçu pour vous offrir une transparence totale sur le marché de l'emploi au sein de notre communauté.
+          Cet outil interactif a été conçu pour vous offrir une transparence totale sur le marché de l&apos;emploi au sein de notre communauté.
         </p>
         <a
           href="https://docs.google.com/forms/d/e/1FAIpQLSdnh6qcQjVctVYsgcjOOlVwCO_4PtFGHSzmZ7lP0f6rw3krWA/viewform"
@@ -280,7 +281,7 @@ export default function Home() {
               </div>
 
               <div className="anecdotes-section">
-                <h2>Conseils & Retours d'expérience</h2>
+                <h2>Conseils & Retours d&apos;expérience</h2>
                 <AnecdotesList data={filteredData} hasActiveFilters={Object.keys(activeFilters).length > 0} />
               </div>
             </div>

@@ -22,6 +22,7 @@ export default function ComparisonForm({ onCompare }: ComparisonFormProps) {
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData) as UserComparisonData;
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSalary(parsed.salary.toString());
         setExperience(parsed.experience.toString());
         setActive(true);
@@ -30,7 +31,7 @@ export default function ComparisonForm({ onCompare }: ComparisonFormProps) {
         console.error("Failed to parse saved comparison data", e);
       }
     }
-  }, []);
+  }, [onCompare]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,7 +151,7 @@ export default function ComparisonForm({ onCompare }: ComparisonFormProps) {
           />
         </div>
         <div className="filter-group" style={{ flex: 1, minWidth: "200px", marginBottom: 0 }}>
-          <label htmlFor="comp-xp">Années d'expérience</label>
+          <label htmlFor="comp-xp">Années d&apos;expérience</label>
           <input
             id="comp-xp"
             type="number"
