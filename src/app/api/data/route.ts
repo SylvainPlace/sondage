@@ -40,12 +40,12 @@ export async function GET(request: NextRequest) {
 
     const gToken = await getGoogleAccessToken(
       GCP_SERVICE_ACCOUNT_EMAIL,
-      GCP_PRIVATE_KEY
+      GCP_PRIVATE_KEY,
     );
 
     const sheetName = "Réponses au formulaire 1";
     const googleUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(
-      sheetName
+      sheetName,
     )}`;
 
     const sheetResponse = await fetch(googleUrl, {
