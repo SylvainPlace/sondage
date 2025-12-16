@@ -47,12 +47,4 @@ export function parsePrime(primeStr: string): number {
   return 0;
 }
 
-export function getXpGroup(years: string | number): string {
-  const xp = typeof years === 'string' ? parseInt(years) : years;
-  if (isNaN(xp)) return "Non renseigné";
-  if (xp <= 1) return "0-1 an";
-  if (xp <= 3) return "2-3 ans";
-  if (xp <= 5) return "4-5 ans";
-  if (xp <= 9) return "6-9 ans";
-  return "10+ ans";
-}
+export { getXpGroup } from "./xp";

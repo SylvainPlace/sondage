@@ -1,4 +1,4 @@
-import { SignJWT, jwtVerify } from "jose";
+import { SignJWT, jwtVerify, type JWTPayload } from "jose";
 
 const SECRET_KEY = process.env.JWT_SECRET || "default_secret_dev_only";
 
@@ -15,13 +15,13 @@ export async function signUserToken(email: string): Promise<string> {
   return jwt;
 }
 
-export async function verifyUserToken(token: string): Promise<any> {
+export async function verifyUserToken(token: string): Promise<JWTPayload> {
   const secret = new TextEncoder().encode(SECRET_KEY);
   
   try {
     const { payload } = await jwtVerify(token, secret);
     return payload;
-  } catch (e) {
+  } catch {
     throw new Error("Invalid Token");
   }
 }

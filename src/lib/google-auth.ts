@@ -4,10 +4,49 @@
 
 import { importPKCS8, SignJWT } from "jose";
 
+type GoogleTokenResponse = {
+  access_token?: string;
+  expires_in?: number;
+  token_type?: string;
+  scope?: string;
+  error?: string;
+  error_description?: string;
+};
+
+type SheetsValuesResponse = {
+  values?: unknown[][];
+};
+
+type CachedAccessToken = {
+  token: string;
+  expiresAtMs: number;
+  clientEmail: string;
+};
+
+let cachedAccessToken: CachedAccessToken | null = null;
+
+type CachedWhitelist = {
+  emails: string[];
+  expiresAtMs: number;
+  spreadsheetId: string;
+  clientEmail: string;
+};
+
+let cachedWhitelist: CachedWhitelist | null = null;
+
 export async function getGoogleAccessToken(
   clientEmail: string,
   privateKey: string
 ): Promise<string> {
+  const nowMs = Date.now();
+  if (
+    cachedAccessToken &&
+    cachedAccessToken.clientEmail === clientEmail &&
+    cachedAccessToken.expiresAtMs > nowMs
+  ) {
+    return cachedAccessToken.token;
+  }
+
   const pem = privateKey.replace(/\\n/g, "\n");
 
   // Using jose to sign the JWT for Google Auth
@@ -36,18 +75,36 @@ export async function getGoogleAccessToken(
     body: params,
   });
 
-  const tokenData = await tokenResponse.json() as any;
+  const tokenData = (await tokenResponse.json()) as GoogleTokenResponse;
   if (!tokenData.access_token) {
     throw new Error(`Failed to get access token: ${JSON.stringify(tokenData)}`);
   }
 
-  return tokenData.access_token;
+  const expiresInSec = typeof tokenData.expires_in === "number" ? tokenData.expires_in : 3600;
+  const refreshSkewSec = 60;
+  cachedAccessToken = {
+    token: tokenData.access_token,
+    clientEmail,
+    expiresAtMs: nowMs + Math.max(0, expiresInSec - refreshSkewSec) * 1000,
+  };
+
+  return cachedAccessToken.token;
 }
 
 export async function getWhitelist(
   env: { GCP_SERVICE_ACCOUNT_EMAIL: string; GCP_PRIVATE_KEY: string; SPREADSHEET_ID: string }
 ): Promise<string[]> {
   try {
+    const nowMs = Date.now();
+    if (
+      cachedWhitelist &&
+      cachedWhitelist.clientEmail === env.GCP_SERVICE_ACCOUNT_EMAIL &&
+      cachedWhitelist.spreadsheetId === env.SPREADSHEET_ID &&
+      cachedWhitelist.expiresAtMs > nowMs
+    ) {
+      return cachedWhitelist.emails;
+    }
+
     const token = await getGoogleAccessToken(
       env.GCP_SERVICE_ACCOUNT_EMAIL,
       env.GCP_PRIVATE_KEY
@@ -60,12 +117,24 @@ export async function getWhitelist(
 
     if (!response.ok) return [];
 
-    const data = await response.json() as any;
+  const data = (await response.json()) as SheetsValuesResponse;
     if (!data.values) return [];
 
-    return data.values.flat().map((email: any) => String(email).toLowerCase().trim());
-  } catch (e) {
-    console.error("Whitelist fetch error", e);
+    const emails = data.values
+      .flat()
+      .map((email: unknown) => String(email).toLowerCase().trim())
+      .filter(Boolean);
+
+    cachedWhitelist = {
+      emails,
+      clientEmail: env.GCP_SERVICE_ACCOUNT_EMAIL,
+      spreadsheetId: env.SPREADSHEET_ID,
+      expiresAtMs: nowMs + 5 * 60 * 1000,
+    };
+
+    return emails;
+  } catch (error: unknown) {
+    console.error("Whitelist fetch error", error);
     return [];
   }
 }

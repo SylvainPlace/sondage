@@ -11,10 +11,14 @@ import {
   PointElement,
   LineElement,
   Filler,
+  type ChartDataset,
+  type ScriptableContext,
+  type TooltipItem,
 } from "chart.js";
 import { Bar, Line } from "react-chartjs-2";
 import { parsePrime, parseSalaryRange } from "@/lib/frontend-utils";
 import { useMemo } from "react";
+import { SurveyResponse } from "@/lib/types";
 
 ChartJS.register(
   CategoryScale,
@@ -31,7 +35,7 @@ ChartJS.register(
 import { UserComparisonData } from "./ComparisonForm";
 
 interface ChartsProps {
-  data: any[];
+  data: SurveyResponse[];
   userComparison?: UserComparisonData | null;
 }
 
@@ -71,7 +75,7 @@ export function SalaryChart({ data, userComparison }: ChartsProps) {
         {
           label: "Nombre d'alumni",
           data: counts,
-          backgroundColor: (context: any) => {
+          backgroundColor: (context: ScriptableContext<"bar">) => {
             if (!userComparison) return "#be9249";
             
             const index = context.dataIndex;
@@ -111,7 +115,7 @@ export function SalaryChart({ data, userComparison }: ChartsProps) {
       },
       tooltip: {
         callbacks: {
-          title: (items: any) => `Tranche : ${items[0].label}`,
+          title: (items: TooltipItem<"bar">[]) => `Tranche : ${items[0]?.label ?? ""}`,
         },
       },
     },
@@ -142,7 +146,7 @@ export function XpChart({ data, userComparison }: ChartsProps) {
     let maxXp = 0;
 
     data.forEach((item) => {
-      const xp = parseInt(item.experience);
+      const xp = Number(item.experience);
       if (!isNaN(xp)) {
         if (xp > maxXp) maxXp = xp;
         if (!xpMap[xp]) xpMap[xp] = { base: [], total: [] };
@@ -195,7 +199,7 @@ export function XpChart({ data, userComparison }: ChartsProps) {
       }
     });
 
-    const datasets: any[] = [
+    const datasets: Array<ChartDataset<"line", (number | null)[]>> = [
         {
           label: "Moyen (Base)",
           data: meanBaseData,
@@ -247,7 +251,7 @@ export function XpChart({ data, userComparison }: ChartsProps) {
             pointRadius: 8,
             pointHoverRadius: 10,
             showLine: false,
-            type: 'line' // Treated as scatter on a line chart if only points
+            type: "line" // Treated as scatter on a line chart if only points
         });
     }
 
@@ -271,13 +275,17 @@ export function XpChart({ data, userComparison }: ChartsProps) {
       },
       tooltip: {
         callbacks: {
-          label: (context: any) => {
-            if (context.raw === null) return "";
+          label: (context: TooltipItem<"line">) => {
+            const raw = context.raw;
+            if (raw === null || raw === undefined) return "";
+
+            const value = typeof raw === "number" ? raw : Number(raw);
+            if (!Number.isFinite(value)) return "";
             return `${context.dataset.label}: ${new Intl.NumberFormat("fr-FR", {
               style: "currency",
               currency: "EUR",
               maximumFractionDigits: 0,
-            }).format(context.raw)}`;
+            }).format(value)}`;
           },
         },
       },
@@ -287,8 +295,9 @@ export function XpChart({ data, userComparison }: ChartsProps) {
         beginAtZero: false,
         min: 30000,
         ticks: {
-          callback: function (value: any) {
-            return value / 1000 + "k€";
+          callback: function (value: string | number) {
+            const n = typeof value === "number" ? value : Number.parseFloat(value);
+            return `${Math.round(n / 1000)}k€`;
           },
         },
         grid: {
@@ -327,7 +336,7 @@ export function BenefitsList({ data }: ChartsProps) {
     ];
 
     const s = keywords.map((k) => {
-      const matchCount = data.filter((d) => {
+          const matchCount = data.filter((d) => {
         if (!d.avantages) return false;
         const text = d.avantages.toLowerCase();
         return k.terms.some((term) => text.includes(term));
@@ -366,7 +375,13 @@ export function BenefitsList({ data }: ChartsProps) {
   );
 }
 
-export function AnecdotesList({ data, hasActiveFilters }: { data: any[]; hasActiveFilters: boolean }) {
+export function AnecdotesList({
+  data,
+  hasActiveFilters,
+}: {
+  data: SurveyResponse[];
+  hasActiveFilters: boolean;
+}) {
   const withConseil = useMemo(() => {
     return data.filter((d) => {
         const conseil = d.conseil;
@@ -394,7 +409,7 @@ export function AnecdotesList({ data, hasActiveFilters }: { data: any[]; hasActi
     <div id="anecdotes-list" className="anecdotes-list">
       {withConseil.map((item, i) => (
         <div key={i} className="anecdote-card">
-          <p>"{item.conseil}"</p>
+          <p>&quot;{item.conseil}&quot;</p>
           <div className="anecdote-meta">
             {item.poste} - {item.secteur} ({item.experience} ans exp.)
           </div>

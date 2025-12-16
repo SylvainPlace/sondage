@@ -32,8 +32,9 @@ export default function LoginModal({ onSuccess }: LoginModalProps) {
 
       localStorage.setItem("auth_token", data.token);
       onSuccess(data.token);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Erreur inconnue";
+      setError(message);
     } finally {
       setLoading(false);
     }

@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+
+    // Huge static dataset; keep it out of linting to avoid slowdowns.
+    "src/lib/regions-data.ts",
   ]),
 ]);
 
