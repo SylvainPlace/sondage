@@ -427,7 +427,7 @@ const SECTOR_COLORS = [
   "#6366f1", "#14b8a6", "#a855f7", "#eab308", "#22c55e",
 ];
 
-export function SectorChart({ data }: { data: any[] }) {
+export function SectorChart({ data }: { data: SurveyResponse[] }) {
   const chartData = useMemo(() => {
     const sectorCounts: Record<string, number> = {};
 
@@ -468,17 +468,20 @@ export function SectorChart({ data }: { data: any[] }) {
           boxWidth: 12,
           padding: 12,
           font: { size: 11 },
-          generateLabels: (chart: any) => {
+          generateLabels: (chart: ChartJS<"doughnut">) => {
             const dataset = chart.data.datasets[0];
-            const total = dataset.data.reduce((a: number, b: number) => a + b, 0);
-            return chart.data.labels.map((label: string, i: number) => {
-              const value = dataset.data[i];
+            const dataArr = dataset.data as number[];
+            const total = dataArr.reduce((a, b) => a + b, 0);
+            const labels = chart.data.labels as string[];
+            const bgColors = dataset.backgroundColor as string[];
+            return labels.map((label, i) => {
+              const value = dataArr[i];
               const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
               return {
                 text: `${label} (${percentage}%)`,
-                fillStyle: dataset.backgroundColor[i],
-                strokeStyle: dataset.borderColor,
-                lineWidth: dataset.borderWidth,
+                fillStyle: bgColors[i],
+                strokeStyle: dataset.borderColor as string,
+                lineWidth: dataset.borderWidth as number,
                 hidden: false,
                 index: i,
               };
@@ -488,9 +491,10 @@ export function SectorChart({ data }: { data: any[] }) {
       },
       tooltip: {
         callbacks: {
-          label: (context: any) => {
-            const value = context.raw;
-            const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
+          label: (context: TooltipItem<"doughnut">) => {
+            const value = context.raw as number;
+            const dataArr = context.dataset.data as number[];
+            const total = dataArr.reduce((a, b) => a + b, 0);
             const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
             return `${context.label}: ${value} (${percentage}%)`;
           },
