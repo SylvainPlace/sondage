@@ -1,8 +1,8 @@
 // Logic for converting ranges (e.g., "2-5" -> average) and handling strings like "10+".
 export function parseExperience(str: string | undefined): number {
-  if (!str) return 0;
+  if (!str) {return 0;}
   str = String(str).trim();
-  if (str.includes("+")) return parseInt(str);
+  if (str.includes("+")) {return parseInt(str);}
 
   const parts = str.match(/(\d+)-(\d+)/);
   if (parts) {
@@ -259,9 +259,9 @@ const REGION_RULES: NormalizationRule[] = [
 function normalizeWithRules(
   str: string | undefined,
   rules: NormalizationRule[],
-  defaultLabel: string = "Autre"
+  defaultLabel: string = "Autre",
 ): string {
-  if (!str) return "Non renseigné";
+  if (!str) {return "Non renseigné";}
   const s = str.toLowerCase().trim();
 
   for (const rule of rules) {

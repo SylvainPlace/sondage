@@ -16,9 +16,10 @@ import {
   type ScriptableContext,
   type TooltipItem,
 } from "chart.js";
-import { Bar, Line, Doughnut } from "react-chartjs-2";
-import { parsePrime, parseSalaryRange } from "@/lib/frontend-utils";
 import { useMemo } from "react";
+import { Bar, Line, Doughnut } from "react-chartjs-2";
+
+import { parsePrime, parseSalaryRange } from "@/lib/frontend-utils";
 import { SurveyResponse } from "@/lib/types";
 
 ChartJS.register(
@@ -31,7 +32,7 @@ ChartJS.register(
   PointElement,
   LineElement,
   Filler,
-  ArcElement
+  ArcElement,
 );
 
 import { UserComparisonData } from "./ComparisonForm";
@@ -60,7 +61,7 @@ export function SalaryChart({ data, userComparison }: ChartsProps) {
     const counts = categories.map((cat) => {
       return data.filter((d) => {
         const normalize = (str: string) => {
-          if (!str) return "";
+          if (!str) {return "";}
           return str.toLowerCase().replace(/\s/g, "").replace(/[–—]/g, "-");
         };
 
@@ -78,7 +79,7 @@ export function SalaryChart({ data, userComparison }: ChartsProps) {
           label: "Nombre d'alumni",
           data: counts,
           backgroundColor: (context: ScriptableContext<"bar">) => {
-            if (!userComparison) return "#be9249";
+            if (!userComparison) {return "#be9249";}
             
             const index = context.dataIndex;
             const label = categories[index];
@@ -89,14 +90,12 @@ export function SalaryChart({ data, userComparison }: ChartsProps) {
             const normalize = (str: string) => str.toLowerCase().replace(/\s/g, "");
             const catNorm = normalize(label);
             
-            if (catNorm.includes("moinsde30") && salary < 30000) isMatch = true;
-            else if (catNorm.includes("plusde100") && salary > 100000) isMatch = true;
-            else {
+            if (catNorm.includes("moinsde30") && salary < 30000) {isMatch = true;} else if (catNorm.includes("plusde100") && salary > 100000) {isMatch = true;} else {
                const matches = catNorm.match(/(\d+)-(\d+)/);
                if (matches) {
                  const min = parseInt(matches[1]) * 1000;
                  const max = parseInt(matches[2]) * 1000;
-                 if (salary >= min && salary < max) isMatch = true;
+                 if (salary >= min && salary < max) {isMatch = true;}
                }
             }
             
@@ -150,8 +149,8 @@ export function XpChart({ data, userComparison }: ChartsProps) {
     data.forEach((item) => {
       const xp = Number(item.experience);
       if (!isNaN(xp)) {
-        if (xp > maxXp) maxXp = xp;
-        if (!xpMap[xp]) xpMap[xp] = { base: [], total: [] };
+        if (xp > maxXp) {maxXp = xp;}
+        if (!xpMap[xp]) {xpMap[xp] = { base: [], total: [] };}
 
         const base = parseSalaryRange(item.salaire_brut);
         const prime = parsePrime(item.primes);
@@ -164,10 +163,10 @@ export function XpChart({ data, userComparison }: ChartsProps) {
     });
 
     const labels: number[] = [];
-    for (let i = 0; i <= maxXp; i++) labels.push(i);
+    for (let i = 0; i <= maxXp; i++) {labels.push(i);}
 
     const getStats = (arr: number[]) => {
-      if (!arr || arr.length === 0) return null;
+      if (!arr || arr.length === 0) {return null;}
       const sum = arr.reduce((a, b) => a + b, 0);
       const mean = Math.round(sum / arr.length);
       const sorted = [...arr].sort((a, b) => a - b);
@@ -253,7 +252,7 @@ export function XpChart({ data, userComparison }: ChartsProps) {
             pointRadius: 8,
             pointHoverRadius: 10,
             showLine: false,
-            type: "line" // Treated as scatter on a line chart if only points
+            type: "line", // Treated as scatter on a line chart if only points
         });
     }
 
@@ -279,10 +278,10 @@ export function XpChart({ data, userComparison }: ChartsProps) {
         callbacks: {
           label: (context: TooltipItem<"line">) => {
             const raw = context.raw;
-            if (raw === null || raw === undefined) return "";
+            if (raw === null || raw === undefined) {return "";}
 
             const value = typeof raw === "number" ? raw : Number(raw);
-            if (!Number.isFinite(value)) return "";
+            if (!Number.isFinite(value)) {return "";}
             return `${context.dataset.label}: ${new Intl.NumberFormat("fr-FR", {
               style: "currency",
               currency: "EUR",
@@ -324,7 +323,7 @@ export function XpChart({ data, userComparison }: ChartsProps) {
 export function BenefitsList({ data }: ChartsProps) {
   const stats = useMemo(() => {
     const count = data.length;
-    if (count === 0) return [];
+    if (count === 0) {return [];}
 
     const keywords = [
       { label: "Télétravail", terms: ["télétravail", "teletravail", "remote"] },
@@ -339,7 +338,7 @@ export function BenefitsList({ data }: ChartsProps) {
 
     const s = keywords.map((k) => {
           const matchCount = data.filter((d) => {
-        if (!d.avantages) return false;
+        if (!d.avantages) {return false;}
         const text = d.avantages.toLowerCase();
         return k.terms.some((term) => text.includes(term));
       }).length;
@@ -353,7 +352,7 @@ export function BenefitsList({ data }: ChartsProps) {
     return s.sort((a, b) => b.percentage - a.percentage);
   }, [data]);
 
-  if (data.length === 0) return <p style={{ color: "var(--text-muted)" }}>Pas de données.</p>;
+  if (data.length === 0) {return <p style={{ color: "var(--text-muted)" }}>Pas de données.</p>;}
 
   return (
     <div className="benefits-list">
@@ -371,7 +370,7 @@ export function BenefitsList({ data }: ChartsProps) {
               ></div>
             </div>
           </div>
-        ) : null
+        ) : null,
       )}
     </div>
   );
@@ -508,7 +507,7 @@ export function SectorChart({ data }: { data: SurveyResponse[] }) {
   const textCenterPlugin = {
     id: "textCenter",
     beforeDraw: function (chart: ChartJS) {
-      const { ctx, width, height } = chart;
+      const { ctx } = chart;
       const { top, bottom, left, right } = chart.chartArea;
       
       ctx.save();

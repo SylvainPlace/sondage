@@ -7,15 +7,15 @@ export function formatMoney(amount: number): string {
 }
 
 export function parseSalaryRange(rangeStr: string): number {
-  if (!rangeStr) return 0;
+  if (!rangeStr) {return 0;}
   const cleanStr = rangeStr
     .toLowerCase()
     .replace(/\s/g, "")
     .replace(/[–—]/g, "-")
     .replace("—", "-");
 
-  if (cleanStr.includes("moins")) return 29000;
-  if (cleanStr.includes("plus")) return 101000;
+  if (cleanStr.includes("moins")) {return 29000;}
+  if (cleanStr.includes("plus")) {return 101000;}
 
   const matches = cleanStr.match(/(\d+)-(\d+)/);
   if (matches) {
@@ -28,15 +28,15 @@ export function parseSalaryRange(rangeStr: string): number {
 }
 
 export function parsePrime(primeStr: string): number {
-  if (!primeStr) return 0;
+  if (!primeStr) {return 0;}
   const cleanStr = primeStr
     .toLowerCase()
     .replace(/\s/g, "")
     .replace(/[–—]/g, "-");
 
-  if (cleanStr.includes("aucune") || cleanStr === "0") return 0;
-  if (cleanStr.includes("moins")) return 1000;
-  if (cleanStr.includes("plus")) return 11000;
+  if (cleanStr.includes("aucune") || cleanStr === "0") {return 0;}
+  if (cleanStr.includes("moins")) {return 1000;}
+  if (cleanStr.includes("plus")) {return 11000;}
 
   const matches = cleanStr.match(/(\d+)-(\d+)/);
   if (matches) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useMemo } from "react";
+
 import { SurveyResponse } from "@/lib/types";
 
 interface FilterConfig {
@@ -119,9 +120,9 @@ export default function Filters({ data, activeFilters, onChange, onReset }: Filt
              const bStr = String(b);
              const isASpecial = specialValues.includes(aStr);
              const isBSpecial = specialValues.includes(bStr);
-             if (isASpecial && !isBSpecial) return 1;
-             if (!isASpecial && isBSpecial) return -1;
-             if (isASpecial && isBSpecial) return aStr.localeCompare(bStr);
+             if (isASpecial && !isBSpecial) {return 1;}
+             if (!isASpecial && isBSpecial) {return -1;}
+             if (isASpecial && isBSpecial) {return aStr.localeCompare(bStr);}
 
              if (config.key === "xp_group") {
                 const order = ["0-1 an", "2-3 ans", "4-5 ans", "6-9 ans", "10+ ans", "Non renseigné"];
@@ -140,7 +141,7 @@ export default function Filters({ data, activeFilters, onChange, onReset }: Filt
               <label>{config.label}</label>
               <div
                 className="custom-dropdown"
-                ref={(el) => { if (el) dropdownRefs.current[config.key] = el; }}
+                ref={(el) => { if (el) {dropdownRefs.current[config.key] = el;} }}
               >
                 <button
                   className="dropdown-btn"
@@ -162,7 +163,7 @@ export default function Filters({ data, activeFilters, onChange, onReset }: Filt
                     <span className="option-text">Tous</span>
                   </label>
                   {uniqueValues.map((val: unknown) => {
-                     if (val === undefined || val === null || val === "") return null;
+                     if (val === undefined || val === null || val === "") {return null;}
                      return (
                         <label key={String(val)} className="checkbox-option">
                           <input

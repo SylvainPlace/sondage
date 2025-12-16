@@ -36,7 +36,7 @@ let cachedWhitelist: CachedWhitelist | null = null;
 
 export async function getGoogleAccessToken(
   clientEmail: string,
-  privateKey: string
+  privateKey: string,
 ): Promise<string> {
   const nowMs = Date.now();
   if (
@@ -92,7 +92,7 @@ export async function getGoogleAccessToken(
 }
 
 export async function getWhitelist(
-  env: { GCP_SERVICE_ACCOUNT_EMAIL: string; GCP_PRIVATE_KEY: string; SPREADSHEET_ID: string }
+  env: { GCP_SERVICE_ACCOUNT_EMAIL: string; GCP_PRIVATE_KEY: string; SPREADSHEET_ID: string },
 ): Promise<string[]> {
   try {
     const nowMs = Date.now();
@@ -107,7 +107,7 @@ export async function getWhitelist(
 
     const token = await getGoogleAccessToken(
       env.GCP_SERVICE_ACCOUNT_EMAIL,
-      env.GCP_PRIVATE_KEY
+      env.GCP_PRIVATE_KEY,
     );
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${env.SPREADSHEET_ID}/values/Whitelist!A:A`;
 
@@ -115,10 +115,10 @@ export async function getWhitelist(
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    if (!response.ok) return [];
+    if (!response.ok) {return [];}
 
   const data = (await response.json()) as SheetsValuesResponse;
-    if (!data.values) return [];
+    if (!data.values) {return [];}
 
     const emails = data.values
       .flat()

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyUserToken } from "@/lib/jwt";
+
 import { getGoogleAccessToken } from "@/lib/google-auth";
-import { getXpGroup } from "@/lib/xp";
+import { verifyUserToken } from "@/lib/jwt";
 import {
   parseExperience,
   normalizeSector,
@@ -10,6 +10,7 @@ import {
   normalizeRegion,
 } from "@/lib/normalization";
 import { SurveyResponse } from "@/lib/types";
+import { getXpGroup } from "@/lib/xp";
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("Authorization");
@@ -39,19 +40,19 @@ export async function GET(request: NextRequest) {
 
     const gToken = await getGoogleAccessToken(
       GCP_SERVICE_ACCOUNT_EMAIL,
-      GCP_PRIVATE_KEY
+      GCP_PRIVATE_KEY,
     );
 
     const sheetName = "Réponses au formulaire 1";
     const googleUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(
-      sheetName
+      sheetName,
     )}`;
 
     const sheetResponse = await fetch(googleUrl, {
       headers: {
         Authorization: `Bearer ${gToken}`,
       },
-      next: { revalidate: 3600 } // Revalidate every hour
+      next: { revalidate: 3600 }, // Revalidate every hour
     });
 
     if (!sheetResponse.ok) {
@@ -106,10 +107,10 @@ export async function GET(request: NextRequest) {
 
         if (colIndex === undefined) {
           const foundHeader = headers.find((h) => h.includes(sheetColumnName));
-          if (foundHeader) colIndex = headerMap[foundHeader];
+          if (foundHeader) {colIndex = headerMap[foundHeader];}
         }
 
-        if (colIndex === undefined || row[colIndex] === undefined) continue;
+        if (colIndex === undefined || row[colIndex] === undefined) {continue;}
 
         const value = row[colIndex];
         switch (jsonKey) {

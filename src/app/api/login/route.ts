@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { signUserToken } from "@/lib/jwt";
+
 import { getWhitelist } from "@/lib/google-auth";
+import { signUserToken } from "@/lib/jwt";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
     const whitelist = await getWhitelist({
         GCP_SERVICE_ACCOUNT_EMAIL,
         GCP_PRIVATE_KEY,
-        SPREADSHEET_ID
+        SPREADSHEET_ID,
     });
 
     if (!whitelist.includes(email.toLowerCase().trim())) {
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest) {
           error:
             "Email non autorisé. Utilisez l'adresse de votre inscription à l'association. En cas d'oubli, contactez un administrateur.",
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 

@@ -145,7 +145,7 @@ export default function ComparisonForm({ onCompare }: ComparisonFormProps) {
               padding: "0.75rem",
               border: "1px solid var(--border)",
               borderRadius: "4px",
-              fontSize: "0.875rem"
+              fontSize: "0.875rem",
             }}
             required
           />
@@ -163,7 +163,7 @@ export default function ComparisonForm({ onCompare }: ComparisonFormProps) {
               padding: "0.75rem",
               border: "1px solid var(--border)",
               borderRadius: "4px",
-              fontSize: "0.875rem"
+              fontSize: "0.875rem",
             }}
             required
           />

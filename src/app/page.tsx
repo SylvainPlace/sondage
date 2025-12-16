@@ -1,15 +1,17 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
+import { useEffect, useState, useMemo } from "react";
+
+import { SalaryChart, XpChart, BenefitsList, AnecdotesList, SectorChart } from "@/components/Charts";
+import ComparisonForm, { UserComparisonData } from "@/components/ComparisonForm";
 import Filters from "@/components/Filters";
 import LoginModal from "@/components/LoginModal";
-import { SalaryChart, XpChart, BenefitsList, AnecdotesList, SectorChart } from "@/components/Charts";
+import { DashboardSkeleton } from "@/components/Skeleton";
 import { formatMoney, parsePrime, parseSalaryRange } from "@/lib/frontend-utils";
 import { SurveyResponse } from "@/lib/types";
-import { DashboardSkeleton } from "@/components/Skeleton";
-import ComparisonForm, { UserComparisonData } from "@/components/ComparisonForm";
-import Image from "next/image";
+
 
 // Dynamic import for Map to avoid SSR issues with Leaflet
 const Map = dynamic(() => import("@/components/Map"), { ssr: false });
@@ -75,7 +77,7 @@ export default function Home() {
   };
 
   const filteredData = useMemo(() => {
-    if (Object.keys(activeFilters).length === 0) return allData;
+    if (Object.keys(activeFilters).length === 0) {return allData;}
 
     return allData.filter((item) => {
       for (const key in activeFilters) {
@@ -99,7 +101,7 @@ export default function Home() {
     const salairesTotaux = filteredData
       .map((d) => {
         const base = parseSalaryRange(d.salaire_brut);
-        if (base === 0) return 0;
+        if (base === 0) {return 0;}
         const prime = parsePrime(d.primes);
         return base + prime;
       })
