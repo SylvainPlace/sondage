@@ -366,6 +366,14 @@ export function BenefitsList({ data }: ChartsProps) {
         label: "Intéressement",
         terms: ["intéressement", "participation", "interessement"],
       },
+      {
+        label: "Mutuelle gratuite",
+        terms: [
+          "mutuelle gratuite",
+          "mutuelle pris en charge à 100%",
+          "mutuelle prise en charge à 100%",
+        ],
+      },
     ];
 
     const s = keywords.map((k) => {
