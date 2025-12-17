@@ -2,17 +2,13 @@
 
 Ce document décrit les conventions à suivre pour contribuer au projet.
 
-# Guide de Contribution
-
-Ce document décrit les conventions à suivre pour contribuer au projet.
-
 ## 📝 Conventions de Commit
 
 Nous suivons la spécification **Conventional Commits**. Tous les messages de commit doivent être rédigés en **Anglais**.
 
 ### Format
 
-```
+```md
 <type>(<scope optionnel>): <description>
 ```
 
@@ -37,6 +33,7 @@ Nous suivons la spécification **Conventional Commits**. Tous les messages de co
 ## 💻 Standards de Code & Bonnes Pratiques
 
 ### Général
+
 - **Langue** : L'anglais est préféré pour les commentaires de code et les noms de variables (bien que le code existant puisse être mixte, le nouveau code doit viser l'anglais).
 - **Nommage** : Utilisez des noms de variables et de fonctions descriptifs.
   - `camelCase` pour les variables et les fonctions.
@@ -44,15 +41,18 @@ Nous suivons la spécification **Conventional Commits**. Tous les messages de co
   - `UPPER_CASE` pour les constantes.
 
 ### TypeScript
+
 - **Typage Strict** : Évitez `any` autant que possible. Définissez des interfaces ou des types pour les props et les structures de données.
 - **Interfaces vs Types** : Utilisez `interface` pour les définitions d'objets susceptibles d'être étendues, et `type` pour les unions/intersections.
 
 ### React / Next.js
+
 - **Server Components** : Par défaut, utilisez les Server Components. Ajoutez `"use client"` uniquement lorsque nécessaire (état, effets, écouteurs d'événements).
 - **Hooks** : Suivez les règles des Hooks (appels uniquement au niveau supérieur).
 - **Structure des Fichiers** : Gardez les composants et la logique liés proches (colocation).
 
 ### CSS / Style
+
 - **CSS Global** : Actuellement utilise `globals.css`. Assurez-vous que les nouveaux styles n'entrent pas en conflit avec les noms de classes globaux existants.
 - **Responsivité** : Assurez-vous que l'interface fonctionne sur mobile.
 
