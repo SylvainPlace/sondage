@@ -47,7 +47,7 @@
     "jsdom": "^25.0.1",
     "prettier": "^3.7.4",
     "typescript": "^5",
-    "vitest": "^4.0.15",
+    "vitest": "^4.0.16",
     "wrangler": "^4.54.0"
   }
 }
