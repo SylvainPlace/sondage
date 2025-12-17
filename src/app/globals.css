@@ -555,3 +555,40 @@ path.leaflet-interactive:focus {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
+
+/* Credits Section */
+.credits-section {
+  margin-top: 2rem;
+  padding: 0.8rem 1rem;
+  text-align: center;
+  border-top: 1px solid var(--border);
+}
+
+.credits-content p {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.credits-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.credits-link:hover {
+  color: #99763a;
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .credits-section {
+    margin-top: 1.5rem;
+    padding: 0.6rem 0.8rem;
+  }
+  
+  .credits-content p {
+    font-size: 0.8rem;
+  }
+}

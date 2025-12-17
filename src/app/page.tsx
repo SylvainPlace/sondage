@@ -378,6 +378,22 @@ export default function Home() {
       >
         ↑
       </button>
+
+      <footer className="credits-section">
+        <div className="credits-content">
+          <p>
+            Tu veux aider ? Contacte un admin ou{" "}
+            <a
+              href="https://github.com/SylvainPlace/sondage"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="credits-link"
+            >
+              plonge-toi dans le code 🡢
+            </a>
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
