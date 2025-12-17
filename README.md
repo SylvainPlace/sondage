@@ -50,6 +50,41 @@ Application de visualisation des données de carrière des alumni, construite av
 
    > **Note** : Pour `GCP_PRIVATE_KEY`, assurez-vous de bien inclure les sauts de ligne `\n` ou de mettre la clé entre guillemets si nécessaire selon votre OS.
 
+## 🔧 Scripts Disponibles
+
+### Développement
+
+- `npm run dev` : Lance le serveur de développement Next.js
+
+### Qualité du code
+
+- `npm run lint` : Vérifie les erreurs ESLint
+- `npm run lint:fix` : Corrige automatiquement les erreurs ESLint
+- `npm run typecheck` : Vérifie les types TypeScript
+- `npm run format` : Formate le code avec Prettier
+- `npm run format:check` : Vérifie le formatage sans modifier
+- `npm run check` : Exécute toutes les vérifications (lint, typecheck, test, format)
+- `npm run check:fix` : Corrige automatiquement lint et formatage
+
+### Tests
+
+- `npm run test` : Exécute les tests unitaires
+- `npm run test:watch` : Lance les tests en mode watch
+
+### Déploiement
+
+- `npm run pages:build` : Construit pour Cloudflare Pages
+- `npm run preview` : Prévisualise le build Cloudflare en local
+- `npm run deploy` : Construit et déploie sur Cloudflare Pages
+
+**Hooks Git (Husky)** : Un hook pre-commit est configuré pour exécuter automatiquement toutes les vérifications de qualité (`npm run check`) avant chaque commit.
+
+Si un commit échoue à cause d'erreurs de qualité du code :
+
+- Utilisez `npm run check:fix` pour corriger automatiquement la plupart des problèmes (linting et formatage)
+- Utilisez `npm run check` pour voir tous les détails des erreurs restantes
+- Une fois les problèmes résolus, vous pourrez committer normalement
+
 ## 💻 Développement Local
 
 Lancer le serveur de développement Next.js classique :
@@ -60,13 +95,23 @@ npm run dev
 
 L'application sera accessible sur `http://localhost:3000`.
 
-## ☁️ Déploiement (Cloudflare Pages)
+## ☁️ Déploiement (Cloudflare Workers)
 
-Ce projet utilise `@opennextjs/cloudflare` pour adapter Next.js au runtime Edge de Cloudflare.
+Ce projet utilise `@opennextjs/cloudflare` pour adapter Next.js au runtime Edge de Cloudflare Workers.
 
-### Déploiement automatique (Recommandé)
+Le déploiement est entièrement automatisé via l'intégration Git de Cloudflare Workers. Chaque push sur la branche principale trigger automatiquement un pipeline de déploiement qui exécute les commandes de build configurées.
 
-Utilisez le script configuré pour construire et déployer directement :
+### Déploiement automatique (Par défaut)
+
+Le déploiement se fait automatiquement lors de chaque push sur la branche principale via Cloudflare Workers. Le pipeline exécute :
+
+1. **Build Command**: `npm run pages:build`
+2. **Worker Setup**: Configuration du runtime Workers avec OpenNext
+3. **Deployment**: Mise en production automatique sur Cloudflare Workers
+
+### Déploiement manuel
+
+Pour déployer manuellement si nécessaire :
 
 ```bash
 npm run deploy
@@ -81,15 +126,6 @@ Pour tester le comportement exact du build Cloudflare en local (Workerd) :
 ```bash
 npm run preview
 ```
-
-### Configuration Manuelle (CI/CD)
-
-Si vous configurez le déploiement via le tableau de bord Cloudflare Pages (Git integration) :
-
-1. **Build Command**: `npm run pages:build` (ou `npx @opennextjs/cloudflare build`)
-2. **Build Output Directory**: `.open-next/assets` (Note: OpenNext change parfois cela, vérifiez `wrangler.json` ou la doc si le défaut `.vercel/output/static` ne fonctionne pas. Pour ce projet configuré avec `wrangler.json`, les assets statiques sont souvent gérés automatiquement par le worker).
-3. **Compatibility Flags**: `nodejs_compat`
-4. **Variables d'environnement**: Ajoutez toutes les variables définies dans `.env.local` dans les réglages de votre projet Cloudflare Pages.
 
 ## 📂 Structure du Projet
 
