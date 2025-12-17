@@ -1,0 +1,49 @@
+# Dependabot configuration for npm packages
+# Documentation: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+
+updates:
+  # Monitor npm dependencies
+  - package-ecosystem: "npm"
+    # Look for package.json and package-lock.json in the root directory
+    directory: "/"
+    # Check for updates daily
+    schedule:
+      interval: "daily"
+      # Time zone for schedule (optional, defaults to UTC)
+      timezone: "Europe/Paris"
+    # Open pull requests for version updates immediately (default: "daily")
+    open-pull-requests-limit: 5
+    # Create pull requests for version updates with a custom prefix
+    commit-message:
+      # Prefix all commit messages with "deps"
+      prefix: "deps"
+      # Include the package name and version in the commit message
+      include: "scope"
+    # Update all versions (major and minor)
+    labels:
+      - "dependencies"
+      - "npm"
+    # Don't update certain packages that might cause breaking changes
+    ignore:
+      # Ignore updates to next.js version until we verify compatibility
+      - dependency-name: "next"
+      # Ignore major version updates for stability
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+
+  # GitHub Actions workflow updates
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      timezone: "Europe/Paris"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
