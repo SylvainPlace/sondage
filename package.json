@@ -16,7 +16,8 @@
     "check": "npm run lint && npm run typecheck && npm test && npm run format:check",
     "pages:build": "npx @opennextjs/cloudflare build",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "prepare": "husky"
   },
   "dependencies": {
     "chart.js": "^4.4.1",
@@ -41,6 +42,7 @@
     "eslint-config-next": "^16.0.10",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
+    "husky": "^9.1.7",
     "jsdom": "^25.0.1",
     "prettier": "^3.7.4",
     "typescript": "^5",
