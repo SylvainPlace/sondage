@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useDashboard } from "@/context/DashboardContext";
 import { UserComparisonData } from "@/types";
 import { Button } from "@/components/ui/Button";
@@ -32,12 +32,34 @@ export default function ComparisonForm() {
   );
   const [active, setActive] = useState(!!initialData);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+  const infoIconRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     if (initialData) {
       setUserComparison(initialData);
     }
   }, [setUserComparison, initialData]);
+
+  useEffect(() => {
+    if (showTooltip && infoIconRef.current) {
+      const rect = infoIconRef.current.getBoundingClientRect();
+      setTooltipPosition({
+        top: rect.top - 10, // 10px above the icon
+        left: rect.left - 100, // Center the tooltip (200px width / 2)
+      });
+    }
+  }, [showTooltip]);
+
+  useEffect(() => {
+    if (showTooltip && infoIconRef.current) {
+      const rect = infoIconRef.current.getBoundingClientRect();
+      setTooltipPosition({
+        top: rect.top + 22, // 10px above the icon
+        left: rect.left - 100, // Center the tooltip (200px width / 2)
+      });
+    }
+  }, [showTooltip]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,6 +104,7 @@ export default function ComparisonForm() {
           Me Comparer
           <div className={styles.tooltipContainer}>
             <span
+              ref={infoIconRef}
               className={styles.infoIcon}
               onClick={() => setShowTooltip(!showTooltip)}
               onMouseEnter={() => setShowTooltip(true)}
@@ -90,7 +113,13 @@ export default function ComparisonForm() {
               i
             </span>
             {showTooltip && (
-              <div className={styles.tooltip}>
+              <div
+                className={styles.tooltip}
+                style={{
+                  top: `${tooltipPosition.top}px`,
+                  left: `${tooltipPosition.left}px`,
+                }}
+              >
                 Vos données sont stockées uniquement dans votre navigateur et ne
                 sont jamais envoyées à nos serveurs.
                 <div className={styles.tooltipArrow} />

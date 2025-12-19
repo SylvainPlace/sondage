@@ -12,6 +12,34 @@
   gap: 2rem;
 }
 
+.filtersColumn {
+  position: sticky;
+  top: 2rem;
+  height: calc(100vh - 4rem);
+  overflow-y: auto;
+  align-self: flex-start;
+  padding-right: 8px;
+  overflow-x: visible;
+}
+
+.filtersColumn::-webkit-scrollbar {
+  width: 6px;
+}
+
+.filtersColumn::-webkit-scrollbar-track {
+  background: var(--background-alt);
+  border-radius: 3px;
+}
+
+.filtersColumn::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 3px;
+}
+
+.filtersColumn::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
 /* HEADER */
 
 .logoContainer {
@@ -145,7 +173,6 @@
     font-size: 1.25rem;
   }
 }
-
 
 /* MAP */
 

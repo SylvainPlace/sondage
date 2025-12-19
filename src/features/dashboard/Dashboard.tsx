@@ -95,7 +95,7 @@ export default function Dashboard() {
       </header>
 
       <main className={styles.mainGrid}>
-        <div>
+        <div className={styles.filtersColumn}>
           <ComparisonForm />
           <Filters />
         </div>

@@ -4,6 +4,7 @@
   border-radius: 8px;
   border: 1px solid var(--border);
   margin-bottom: 2rem;
+  overflow: visible;
 }
 
 .activePanel {
@@ -52,11 +53,7 @@
 }
 
 .tooltip {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-bottom: 8px;
+  position: fixed;
   padding: 0.5rem;
   background-color: #1e293b;
   color: white;
@@ -64,19 +61,19 @@
   border-radius: 4px;
   width: 200px;
   text-align: center;
-  z-index: 10;
+  z-index: 1000;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   pointer-events: none;
 }
 
 .tooltipArrow {
   position: absolute;
-  top: 100%;
-  left: 50%;
+  top: -8px;
+  left: 54%;
   transform: translateX(-50%);
   border-width: 4px;
   border-style: solid;
-  border-color: #1e293b transparent transparent transparent;
+  border-color: transparent transparent #1e293b transparent;
 }
 
 .form {
