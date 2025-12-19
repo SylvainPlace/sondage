@@ -10,6 +10,7 @@ import {
   parseSalaryRange,
 } from "@/lib/frontend-utils";
 import { SurveyResponse } from "@/types";
+import styles from "./Map.module.css";
 
 import type { FeatureCollection, GeoJsonObject } from "geojson";
 
@@ -343,6 +344,7 @@ export default function Map({ data, mode }: MapProps) {
     const legend = new L.Control({ position: "bottomright" });
     legend.onAdd = function () {
       const div = L.DomUtil.create("div", "info legend");
+      div.className += ` ${styles.legend}`;
       let title = "Salaire";
       if (mode === "count") {
         title = "Répondants";
@@ -355,31 +357,25 @@ export default function Map({ data, mode }: MapProps) {
         title += " (+ Primes)";
       }
 
-      div.innerHTML += `<div class="legend-title">${title}</div>`;
+      div.innerHTML += `<div class="${styles.legendTitle}">${title}</div>`;
       const fmt = (v: number) => (mode === "count" ? v : formatMoney(v));
 
       div.innerHTML +=
-        '<i style="background:' +
-        MAP_COLORS[0] +
-        '"></i> ' +
+        `<i class="${styles.legendIcon}" style="background:${MAP_COLORS[0]}"></i> ` +
         "&lt; " +
         fmt(currentBreaks[0]) +
         "<br>";
 
       for (let i = 0; i < 3; i++) {
         div.innerHTML +=
-          '<i style="background:' +
-          MAP_COLORS[i + 1] +
-          '"></i> ' +
+          `<i class="${styles.legendIcon}" style="background:${MAP_COLORS[i + 1]}"></i> ` +
           fmt(currentBreaks[i]) +
           " &ndash; " +
           fmt(currentBreaks[i + 1]) +
           "<br>";
       }
       div.innerHTML +=
-        '<i style="background:' +
-        MAP_COLORS[4] +
-        '"></i> ' +
+        `<i class="${styles.legendIcon}" style="background:${MAP_COLORS[4]}"></i> ` +
         "&gt; " +
         fmt(currentBreaks[3]) +
         "<br>";

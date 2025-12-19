@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, TooltipItem } from "chart.js";
 
@@ -26,6 +26,25 @@ const SECTOR_COLORS = [
 ];
 
 export function SectorChart({ data }: { data: SurveyResponse[] }) {
+  const [legendPosition, setLegendPosition] = useState<"right" | "bottom">(
+    "right",
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      setLegendPosition(window.innerWidth < 768 ? "bottom" : "right");
+    };
+
+    // Set initial position
+    handleResize();
+
+    // Add event listener
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const chartData = useMemo(() => {
     const sectorCounts: Record<string, number> = {};
 
@@ -58,7 +77,7 @@ export function SectorChart({ data }: { data: SurveyResponse[] }) {
     plugins: {
       legend: {
         display: true,
-        position: "right" as const,
+        position: legendPosition,
         labels: {
           boxWidth: 12,
           padding: 12,

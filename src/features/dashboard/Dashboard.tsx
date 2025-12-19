@@ -65,8 +65,8 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="container">
-      <header>
+    <div className={styles.container}>
+      <header className={styles.dashboardHeader}>
         <div
           style={{
             display: "flex",
@@ -88,13 +88,13 @@ export default function Dashboard() {
         <a
           href="https://docs.google.com/forms/d/e/1FAIpQLSdnh6qcQjVctVYsgcjOOlVwCO_4PtFGHSzmZ7lP0f6rw3krWA/viewform"
           target="_blank"
-          className="cta-button"
+          className={styles.ctaButton}
         >
           Participer au sondage
         </a>
       </header>
 
-      <main className="main-grid">
+      <main className={styles.mainGrid}>
         <div>
           <ComparisonForm />
           <Filters />
@@ -185,7 +185,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className={styles.benefitsSection}>
+              <div className={styles.chartsSection}>
                 <h2>Avantages les plus fréquents</h2>
                 <BenefitsList data={filteredData} />
               </div>
@@ -214,7 +214,7 @@ export default function Dashboard() {
                 </div>
                 <div
                   className={styles.chartContainer}
-                  style={{ height: "500px" }}
+                  style={{ height: "600px" }}
                 >
                   <Map data={filteredData} mode={mapMode} />
                 </div>
@@ -224,13 +224,13 @@ export default function Dashboard() {
                 <h2>Repartition par Secteur</h2>
                 <div
                   className={styles.chartContainer}
-                  style={{ height: "350px" }}
+                  style={{ height: "400px" }}
                 >
                   <SectorChart data={filteredData} />
                 </div>
               </div>
 
-              <div className={styles.anecdotesSection}>
+              <div className={styles.chartsSection}>
                 <h2>Conseils & Retours d&apos;expérience</h2>
                 <AnecdotesList
                   data={filteredData}
@@ -243,22 +243,22 @@ export default function Dashboard() {
       </main>
 
       <button
-        className={`scroll-top ${showScrollTop ? "visible" : ""}`}
+        className={`${styles.scrollTop} ${showScrollTop ? styles.visible : ""}`}
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         aria-label="Remonter en haut"
       >
         ↑
       </button>
 
-      <footer className="credits-section">
-        <div className="credits-content">
+      <footer className={styles.creditsSection}>
+        <div className={styles.creditsContent}>
           <p>
             Tu veux aider ? Contacte un admin ou{" "}
             <a
               href="https://github.com/SylvainPlace/sondage"
               target="_blank"
               rel="noopener noreferrer"
-              className="credits-link"
+              className={styles.creditsLink}
             >
               plonge-toi dans le code 🡢
             </a>

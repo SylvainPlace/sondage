@@ -1,0 +1,52 @@
+.benefitsSection {
+  margin-bottom: 2rem;
+}
+
+.benefitsSection h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.benefitsList {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.benefitRow {
+  margin-bottom: 1rem;
+}
+
+.benefitRow:last-child {
+  margin-bottom: 0;
+}
+
+.benefitInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.benefitBarBg {
+  height: 8px;
+  background-color: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.benefitBarFill {
+  height: 100%;
+  background-color: var(--primary);
+  border-radius: 4px;
+  transition: width 0.5s ease-in-out;
+}
+
+@media (max-width: 480px) {
+  .benefitsSection h2 {
+    font-size: 1.25rem;
+  }
+}

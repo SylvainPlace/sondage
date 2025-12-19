@@ -61,16 +61,8 @@
   margin-bottom: 1.5rem;
 }
 
-.filtersContainerResponsive {
-  /* Default stack */
-}
-
 .filterGroup {
   margin-bottom: 1rem;
-}
-
-.resultsPanel {
-  /* Just a wrapper */
 }
 
 .statsGrid {
@@ -101,18 +93,6 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   min-height: 300px;
   position: relative;
-}
-
-.benefitsSection {
-  margin-bottom: 2rem;
-}
-
-.benefitsList {
-  background: var(--card-bg);
-  padding: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 @media (max-width: 768px) {

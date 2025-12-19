@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { SurveyResponse } from "@/types";
-import styles from "@/features/dashboard/Dashboard.module.css";
+import styles from "@/features/charts/AnecdotesList.module.css";
 
 interface AnecdotesListProps {
   data: SurveyResponse[];
