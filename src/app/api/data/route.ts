@@ -9,7 +9,7 @@ import {
   normalizeJob,
   normalizeRegion,
 } from "@/lib/normalization";
-import { SurveyResponse } from "@/lib/types";
+import { SurveyResponse } from "@/types";
 import { getXpGroup } from "@/lib/xp";
 
 export async function GET(request: NextRequest) {

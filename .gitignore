@@ -43,3 +43,8 @@ next-env.d.ts
 # cloudflare / opennext
 .open-next
 .wrangler
+
+# several ai tools i test with, so don't want to commit config files (or until they're standardized)
+.opencode/
+.factory/
+.claude/

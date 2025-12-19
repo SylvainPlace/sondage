@@ -1,0 +1,116 @@
+.panel {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+
+.activePanel {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.activeText {
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.header h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  margin: 0;
+  color: var(--foreground);
+}
+
+.infoIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #e2e8f0;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.tooltipContainer {
+  position: relative;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  padding: 0.5rem;
+  background-color: #1e293b;
+  color: white;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  width: 200px;
+  text-align: center;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+}
+
+.tooltipArrow {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 4px;
+  border-style: solid;
+  border-color: #1e293b transparent transparent transparent;
+}
+
+.form {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.inputGroup {
+  flex: 1;
+  min-width: 200px;
+  margin-bottom: 0;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--foreground);
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.submitBtn {
+  padding: 0.75rem 1.5rem;
+  height: 42px; /* Match input height roughly if needed, or let padding dictate */
+}

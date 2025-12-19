@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState, useRef, useMemo } from "react";
-
-import { SurveyResponse } from "@/lib/types";
+import { useMemo, useState } from "react";
+import { useDashboard } from "@/context/DashboardContext";
+import { SurveyResponse } from "@/types";
+import { Dropdown } from "@/components/ui/Dropdown";
+import styles from "./Filters.module.css";
 
 interface FilterConfig {
   label: string;
@@ -19,37 +21,11 @@ const filtersConfig: FilterConfig[] = [
   { label: "Région", key: "departement" },
 ];
 
-interface FiltersProps {
-  data: SurveyResponse[];
-  activeFilters: Record<string, string[]>;
-  onChange: (newFilters: Record<string, string[]>) => void;
-  onReset: () => void;
-}
-
-export default function Filters({
-  data,
-  activeFilters,
-  onChange,
-  onReset,
-}: FiltersProps) {
+export default function Filters() {
+  const { allData, activeFilters, setFilters, resetFilters } = useDashboard();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const dropdownRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        openDropdown &&
-        dropdownRefs.current[openDropdown] &&
-        !dropdownRefs.current[openDropdown]?.contains(event.target as Node)
-      ) {
-        setOpenDropdown(null);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [openDropdown]);
-
-  const toggleDropdown = (key: string) => {
+  const handleToggle = (key: string) => {
     setOpenDropdown(openDropdown === key ? null : key);
   };
 
@@ -69,13 +45,13 @@ export default function Filters({
     } else {
       delete newFilters[key];
     }
-    onChange(newFilters);
+    setFilters(newFilters);
   };
 
   const handleSelectAll = (key: string) => {
     const newFilters = { ...activeFilters };
     delete newFilters[key];
-    onChange(newFilters);
+    setFilters(newFilters);
   };
 
   // Calculate counters dynamically with memoization
@@ -88,11 +64,9 @@ export default function Filters({
       const contextFilters = { ...activeFilters };
       delete contextFilters[key];
 
-      const contextData = data.filter((item) => {
+      const contextData = allData.filter((item) => {
         for (const k in contextFilters) {
           const filterValues = contextFilters[k];
-          // We assume keys in activeFilters are valid keys of SurveyResponse
-          // because they come from filtersConfig
           const itemValue = String(item[k as keyof SurveyResponse]);
           if (!filterValues.some((val) => String(val) === itemValue)) {
             return false;
@@ -109,22 +83,26 @@ export default function Filters({
     });
 
     return result;
-  }, [data, activeFilters]);
+  }, [allData, activeFilters]);
 
   return (
-    <aside className="filters-panel">
-      <div className="filter-header">
+    <aside className={styles.panel}>
+      <div className={styles.header}>
         <h2>Filtres</h2>
-        <button id="reset-filters" className="btn-text" onClick={onReset}>
+        <button
+          className={styles.resetBtn}
+          onClick={resetFilters}
+          type="button"
+        >
           Réinitialiser
         </button>
       </div>
 
-      <div className="filters-container-responsive">
+      <div className={styles.grid}>
         {filtersConfig.map((config) => {
           const counts = allCounts[config.key] || {};
           const uniqueValues = Array.from(
-            new Set(data.map((d) => d[config.key])),
+            new Set(allData.map((d) => d[config.key])),
           ).sort((a: unknown, b: unknown) => {
             const specialValues = ["Autre", "Non renseigné"];
             const aStr = String(a);
@@ -163,62 +141,52 @@ export default function Filters({
           const isAll = selected.length === 0;
 
           return (
-            <div key={config.key} className="filter-group">
-              <label>{config.label}</label>
-              <div
-                className="custom-dropdown"
-                ref={(el) => {
-                  if (el) {
-                    dropdownRefs.current[config.key] = el;
-                  }
-                }}
-              >
-                <button
-                  className="dropdown-btn"
-                  onClick={() => toggleDropdown(config.key)}
-                >
-                  {isAll
+            <div key={config.key} className={styles.group}>
+              <label className={styles.label}>{config.label}</label>
+              <Dropdown
+                label={config.label}
+                triggerLabel={
+                  isAll
                     ? "Tous"
                     : selected.length === 1
                       ? selected[0]
-                      : `${selected.length} sélectionnés`}
-                </button>
-                <div
-                  className={`dropdown-content ${openDropdown === config.key ? "show" : ""}`}
-                >
-                  <label className="checkbox-option">
-                    <input
-                      type="checkbox"
-                      checked={isAll}
-                      onChange={() => handleSelectAll(config.key)}
-                    />
-                    <span className="option-text">Tous</span>
-                  </label>
-                  {uniqueValues.map((val: unknown) => {
-                    if (val === undefined || val === null || val === "") {
-                      return null;
-                    }
-                    return (
-                      <label key={String(val)} className="checkbox-option">
-                        <input
-                          type="checkbox"
-                          checked={selected.includes(String(val))}
-                          onChange={(e) =>
-                            handleFilterChange(
-                              config.key,
-                              String(val),
-                              e.target.checked,
-                            )
-                          }
-                        />
-                        <span className="option-text">
-                          {String(val)} ({counts[String(val)] || 0})
-                        </span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
+                      : `${selected.length} sélectionnés`
+                }
+                isOpen={openDropdown === config.key}
+                onToggle={() => handleToggle(config.key)}
+              >
+                <label className={styles.checkboxOption}>
+                  <input
+                    type="checkbox"
+                    checked={isAll}
+                    onChange={() => handleSelectAll(config.key)}
+                  />
+                  <span className={styles.optionText}>Tous</span>
+                </label>
+                {uniqueValues.map((val: unknown) => {
+                  if (val === undefined || val === null || val === "") {
+                    return null;
+                  }
+                  return (
+                    <label key={String(val)} className={styles.checkboxOption}>
+                      <input
+                        type="checkbox"
+                        checked={selected.includes(String(val))}
+                        onChange={(e) =>
+                          handleFilterChange(
+                            config.key,
+                            String(val),
+                            e.target.checked,
+                          )
+                        }
+                      />
+                      <span className={styles.optionText}>
+                        {String(val)} ({counts[String(val)] || 0})
+                      </span>
+                    </label>
+                  );
+                })}
+              </Dropdown>
             </div>
           );
         })}

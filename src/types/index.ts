@@ -10,7 +10,12 @@ export interface SurveyResponse {
   primes: string;
   avantages: string;
   conseil: string;
-  xp_group?: string; // Virtual field added by frontend
+  xp_group: string; // Virtual field added by frontend
 }
 
 export type SurveyData = SurveyResponse[];
+
+export interface UserComparisonData {
+  salary: number;
+  experience: number;
+}

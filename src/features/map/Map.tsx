@@ -9,7 +9,7 @@ import {
   parsePrime,
   parseSalaryRange,
 } from "@/lib/frontend-utils";
-import { SurveyResponse } from "@/lib/types";
+import { SurveyResponse } from "@/types";
 
 import type { FeatureCollection, GeoJsonObject } from "geojson";
 
