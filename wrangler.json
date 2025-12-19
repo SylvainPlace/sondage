@@ -2,14 +2,18 @@
   "name": "sondage",
   "main": ".open-next/worker.js",
   "compatibility_date": "2024-09-23",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
+  "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "binding": "ASSETS",
     "directory": ".open-next/assets"
   },
-  "kv_namespaces": [],
+  "kv_namespaces": [
+    {
+      "binding": "DATA_CACHE",
+      "id": "sondage_data_cache",
+      "preview_id": "sondage_data_cache_dev"
+    }
+  ],
   "vars": {
     "NEXTJS_ENV": "production"
   },
