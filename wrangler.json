@@ -12,5 +12,8 @@
   "kv_namespaces": [],
   "vars": {
     "NEXTJS_ENV": "production"
+  },
+  "images": {
+    "binding": "IMAGES"
   }
 }
