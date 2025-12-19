@@ -9,12 +9,6 @@
 		"binding": "ASSETS",
 		"directory": ".open-next/assets"
 	},
-	"kv_namespaces": [
-		{
-			"binding": "DATA_CACHE",
-			"id": "2f213ee88b5549c1b358571ad760f685"
-		}
-	],
 	"vars": {
 		"NEXTJS_ENV": "production"
 	},

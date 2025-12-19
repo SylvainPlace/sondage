@@ -11,12 +11,6 @@ import {
 } from "@/lib/normalization";
 import { SurveyResponse } from "@/types";
 import { getXpGroup } from "@/lib/xp";
-import {
-  getCache,
-  setCache,
-  createHitResponse,
-  createCachedResponse,
-} from "@/lib/cache-utils";
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("Authorization");
@@ -38,14 +32,6 @@ export async function GET(request: NextRequest) {
 
     if (!GCP_SERVICE_ACCOUNT_EMAIL || !GCP_PRIVATE_KEY || !SPREADSHEET_ID) {
       throw new Error("Missing configuration (Secrets).");
-    }
-
-    // Check cache first
-    const cacheKey = `google-sheets-data-${SPREADSHEET_ID}`;
-    const cachedData = await getCache(cacheKey);
-
-    if (cachedData) {
-      return createHitResponse(cachedData);
     }
 
     const gToken = await getGoogleAccessToken(
@@ -173,10 +159,11 @@ export async function GET(request: NextRequest) {
       return item;
     });
 
-    // Store data in cache before returning
-    await setCache(cacheKey, formattedData, { ttl: 3600 });
-
-    return createCachedResponse(formattedData, { ttl: 3600 });
+    return NextResponse.json(formattedData, {
+      headers: {
+        "Cache-Control": "public, max-age=3600, s-maxage=3600",
+      },
+    });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });
