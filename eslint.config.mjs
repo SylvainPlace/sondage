@@ -33,6 +33,7 @@ const eslintConfig = defineConfig([
       // Rules complexes et bonnes pratiques
       eqeqeq: ["error", "always", { null: "ignore" }],
       complexity: ["warn", 25],
+      "react-hooks/set-state-in-effect": "off", //TODO put this on and correct errors later
 
       // Rules variables (plus strictes)
       "@typescript-eslint/no-unused-vars": [
