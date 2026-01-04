@@ -64,6 +64,24 @@ export default function Dashboard() {
     return <LoginModal />;
   }
 
+  const renderComparison = (statValue: number) => {
+    if (!userComparison || !userComparison.salary || !statValue) return null;
+    const diff = userComparison.salary - statValue;
+    const percent = Math.round((diff / statValue) * 100);
+    const isPositive = diff >= 0;
+    const sign = isPositive ? "+" : "";
+
+    return (
+      <div
+        className={`${styles.comparison} ${isPositive ? styles.comparisonPositive : styles.comparisonNegative}`}
+      >
+        {sign}
+        {formatMoney(diff)} ({sign}
+        {percent}%)
+      </div>
+    );
+  };
+
   return (
     <div className={styles.container}>
       <header className={styles.dashboardHeader}>
@@ -128,6 +146,7 @@ export default function Dashboard() {
                   <div className={styles.statValue}>
                     {stats.count > 0 ? formatMoney(stats.mean) : "- €"}
                   </div>
+                  {stats.count > 0 && renderComparison(stats.mean)}
                 </Card>
                 <Card
                   title="Salaire Médian"
@@ -137,6 +156,7 @@ export default function Dashboard() {
                   <div className={styles.statValue}>
                     {stats.count > 0 ? formatMoney(stats.median) : "- €"}
                   </div>
+                  {stats.count > 0 && renderComparison(stats.median)}
                 </Card>
                 <Card
                   title="Moyen (+ Primes)"
@@ -146,6 +166,7 @@ export default function Dashboard() {
                   <div className={styles.statValue}>
                     {stats.count > 0 ? formatMoney(stats.meanTotal) : "- €"}
                   </div>
+                  {stats.count > 0 && renderComparison(stats.meanTotal)}
                 </Card>
                 <Card
                   title="Médian (+ Primes)"
@@ -155,6 +176,7 @@ export default function Dashboard() {
                   <div className={styles.statValue}>
                     {stats.count > 0 ? formatMoney(stats.medianTotal) : "- €"}
                   </div>
+                  {stats.count > 0 && renderComparison(stats.medianTotal)}
                 </Card>
                 <Card
                   title="Répondants"
