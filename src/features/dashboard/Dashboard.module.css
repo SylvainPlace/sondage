@@ -290,6 +290,13 @@
     gap: 1.5rem;
   }
 
+  .filtersColumn {
+    position: static;
+    height: auto;
+    overflow-y: visible;
+    padding-right: 0;
+  }
+
   .filtersContainerResponsive {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
