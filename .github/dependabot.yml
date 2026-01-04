@@ -10,7 +10,7 @@ updates:
     directory: "/"
     # Check for updates daily
     schedule:
-      interval: "daily"
+      interval: "weekly"
       # Time zone for schedule (optional, defaults to UTC)
       timezone: "Europe/Paris"
     # Open pull requests for version updates immediately (default: "daily")
@@ -22,6 +22,10 @@ updates:
       # Include the package name and version in the commit message
       include: "scope"
     # Update all versions (major and minor)
+    groups:
+      npm-dependencies:
+        patterns:
+          - "*"
     labels:
       - "dependencies"
       - "npm"
@@ -41,6 +45,10 @@ updates:
     schedule:
       interval: "weekly"
       timezone: "Europe/Paris"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
     labels:
       - "dependencies"
       - "github-actions"
