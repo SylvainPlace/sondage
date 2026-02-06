@@ -11,6 +11,7 @@ import LoginModal from "@/features/auth/LoginModal";
 import Filters from "@/features/filters/Filters";
 import ComparisonForm from "@/features/dashboard/ComparisonForm";
 import { formatMoney } from "@/lib/frontend-utils";
+import { Button } from "@/components/ui/Button";
 
 import { SalaryChart } from "@/features/charts/SalaryChart";
 import { XpChart } from "@/features/charts/XpChart";
@@ -24,7 +25,7 @@ import styles from "./Dashboard.module.css";
 const Map = dynamic(() => import("@/features/map/Map"), { ssr: false });
 
 export default function Dashboard() {
-  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading, logout } = useAuth();
   const {
     filteredData,
     isLoading: isDataLoading,
@@ -126,6 +127,13 @@ export default function Dashboard() {
               <p className={styles.errorIcon}>⚠️</p>
               <p>Impossible de charger les données.</p>
               <p className={styles.errorText}>{error}</p>
+              <Button
+                onClick={logout}
+                variant="primary"
+                style={{ marginTop: "1rem" }}
+              >
+                Se reconnecter
+              </Button>
             </div>
           ) : stats.count === 0 ? (
             <div id="no-results" className={styles.noResults}>
