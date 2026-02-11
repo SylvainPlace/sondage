@@ -24,5 +24,3 @@ ChartJS.register(
   Filler,
   ArcElement,
 );
-
-export default ChartJS;

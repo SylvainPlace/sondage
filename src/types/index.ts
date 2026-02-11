@@ -13,8 +13,6 @@ export interface SurveyResponse {
   xp_group: string; // Virtual field added by frontend
 }
 
-export type SurveyData = SurveyResponse[];
-
 export interface UserComparisonData {
   salary: number;
   experience: number;

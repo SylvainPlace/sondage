@@ -2,10 +2,7 @@ import { HTMLAttributes } from "react";
 import Image from "next/image";
 import styles from "./Skeleton.module.css";
 
-export function Skeleton({
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
+function Skeleton({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={`${styles.skeleton} ${className || ""}`} {...props} />;
 }
 

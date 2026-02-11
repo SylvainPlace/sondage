@@ -60,5 +60,3 @@ export function parsePrime(primeStr: string): number {
   }
   return 0;
 }
-
-export { getXpGroup } from "./xp";
