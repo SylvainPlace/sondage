@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { getWhitelist } from "@/lib/google-auth";
 import { signUserToken } from "@/lib/jwt";
+import logger from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
   try {
@@ -49,9 +50,10 @@ export async function POST(request: NextRequest) {
 
     const token = await signUserToken(email);
 
+    logger.info({ email, context: "login" }, "User logged in successfully");
     return NextResponse.json({ token });
   } catch (e) {
-    console.error(e);
+    logger.error({ error: e, context: "login" }, "Login failed");
     return NextResponse.json({ error: "Invalid Request" }, { status: 400 });
   }
 }

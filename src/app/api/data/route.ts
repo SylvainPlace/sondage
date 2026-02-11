@@ -11,6 +11,7 @@ import {
 } from "@/lib/normalization";
 import { SurveyResponse } from "@/types";
 import { getXpGroup } from "@/lib/xp";
+import logger from "@/lib/logger";
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("Authorization");
@@ -159,6 +160,10 @@ export async function GET(request: NextRequest) {
       return item;
     });
 
+    logger.info(
+      { dataCount: formattedData.length, context: "data" },
+      "Successfully retrieved survey data",
+    );
     return NextResponse.json(formattedData, {
       headers: {
         "Cache-Control": "public, max-age=3600, s-maxage=3600",
@@ -166,6 +171,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
+    logger.error({ error, context: "data" }, "Failed to fetch survey data");
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -3,6 +3,7 @@
 // However, utilizing 'jose' library is cleaner.
 
 import { importPKCS8, SignJWT } from "jose";
+import logger from "@/lib/logger";
 
 type GoogleTokenResponse = {
   access_token?: string;
@@ -77,6 +78,10 @@ export async function getGoogleAccessToken(
 
   const tokenData = (await tokenResponse.json()) as GoogleTokenResponse;
   if (!tokenData.access_token) {
+    logger.error(
+      { error: tokenData, context: "google-auth" },
+      "Failed to get Google access token",
+    );
     throw new Error(`Failed to get access token: ${JSON.stringify(tokenData)}`);
   }
 
@@ -141,7 +146,10 @@ export async function getWhitelist(env: {
 
     return emails;
   } catch (error: unknown) {
-    console.error("Whitelist fetch error", error);
+    logger.error(
+      { error, context: "google-auth" },
+      "Failed to fetch whitelist",
+    );
     return [];
   }
 }
