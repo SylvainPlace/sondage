@@ -50,8 +50,7 @@ export async function POST(request: NextRequest) {
     const token = await signUserToken(email);
 
     return NextResponse.json({ token });
-  } catch (e) {
-    console.error(e);
+  } catch (_e) {
     return NextResponse.json({ error: "Invalid Request" }, { status: 400 });
   }
 }

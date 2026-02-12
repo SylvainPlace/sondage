@@ -1,0 +1,24 @@
+{
+  "threshold": 0.95,
+  "min-tokens": 50,
+  "format": "console",
+  "output": "jscpd-report.txt",
+  "ignore": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/coverage/**",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.d.ts"
+  ],
+  "reporters": ["console"],
+  "absolute": false,
+  "blame": false,
+  "checkAllFiles": false,
+  "mode": "strict",
+  "silent": false,
+  "skipOnHint": false,
+  "since": "2020-01-01",
+  "detectors": ["typescript"],
+  "exclude": ""
+}
