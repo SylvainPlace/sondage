@@ -5,44 +5,40 @@ import { Bar } from "react-chartjs-2";
 import { ScriptableContext, TooltipItem } from "chart.js";
 
 import "@/features/charts/ChartConfig";
-import { SurveyResponse, UserComparisonData } from "@/types";
+import { SalaryDistribution, UserComparisonData } from "@/types";
+
+const DEFAULT_CATEGORIES = [
+  "Moins de 30k€",
+  "30-35k€",
+  "35-40k€",
+  "40-45k€",
+  "45-50k€",
+  "50-60k€",
+  "60-70k€",
+  "70-80k€",
+  "80-90k€",
+  "90-100k€",
+  "Plus de 100k€",
+];
 
 interface SalaryChartProps {
-  data: SurveyResponse[];
+  distribution?: SalaryDistribution;
   userComparison?: UserComparisonData | null;
 }
 
-export function SalaryChart({ data, userComparison }: SalaryChartProps) {
+export function SalaryChart({
+  distribution,
+  userComparison,
+}: SalaryChartProps) {
   const chartData = useMemo(() => {
-    const categories = [
-      "Moins de 30k€",
-      "30-35k€",
-      "35-40k€",
-      "40-45k€",
-      "45-50k€",
-      "50-60k€",
-      "60-70k€",
-      "70-80k€",
-      "80-90k€",
-      "90-100k€",
-      "Plus de 100k€",
-    ];
-
-    const counts = categories.map((cat) => {
-      return data.filter((d) => {
-        const normalize = (str: string) => {
-          if (!str) {
-            return "";
-          }
-          return str.toLowerCase().replace(/\s/g, "").replace(/[–—]/g, "-");
-        };
-
-        const dClean = normalize(d.salaire_brut);
-        const catClean = normalize(cat);
-
-        return dClean === catClean;
-      }).length;
-    });
+    const categories =
+      distribution?.labels && distribution.labels.length > 0
+        ? distribution.labels
+        : DEFAULT_CATEGORIES;
+    const counts =
+      distribution?.counts && distribution.counts.length === categories.length
+        ? distribution.counts
+        : categories.map(() => 0);
 
     return {
       labels: categories,
@@ -86,7 +82,7 @@ export function SalaryChart({ data, userComparison }: SalaryChartProps) {
         },
       ],
     };
-  }, [data, userComparison]);
+  }, [distribution, userComparison]);
 
   const options = {
     responsive: true,

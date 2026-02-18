@@ -4,18 +4,14 @@ import L from "leaflet";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 
 import "leaflet/dist/leaflet.css";
-import {
-  formatMoney,
-  parsePrime,
-  parseSalaryRange,
-} from "@/lib/frontend-utils";
-import { SurveyResponse } from "@/types";
+import { formatMoney } from "@/lib/frontend-utils";
+import { MapRegionStats } from "@/types";
 import styles from "./Map.module.css";
 
 import type { FeatureCollection, GeoJsonObject } from "geojson";
 
 interface MapProps {
-  data: SurveyResponse[];
+  regions: Record<string, MapRegionStats>;
   mode: string;
 }
 
@@ -52,7 +48,7 @@ function calculateBreaks(values: number[]) {
   return [q1, q2, q3, q4];
 }
 
-export default function Map({ data, mode }: MapProps) {
+export default function Map({ regions, mode }: MapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const geoJsonLayerRef = useRef<L.GeoJSON | null>(null);
@@ -61,72 +57,7 @@ export default function Map({ data, mode }: MapProps) {
   const geoJsonDataRef = useRef<FeatureCollection | null>(null);
   const isGeoJsonLoadingRef = useRef(false);
 
-  const regionMetrics = useMemo(() => {
-    const regionStats: Record<
-      string,
-      { salaries: number[]; totals: number[] }
-    > = {};
-
-    for (const item of data) {
-      const region = item.departement;
-      if (!region) {
-        continue;
-      }
-      const normalizedRegion = normalizeRegionName(region);
-
-      if (!regionStats[normalizedRegion]) {
-        regionStats[normalizedRegion] = { salaries: [], totals: [] };
-      }
-
-      const salary = parseSalaryRange(item.salaire_brut);
-      if (salary > 0) {
-        regionStats[normalizedRegion].salaries.push(salary);
-        const prime = parsePrime(item.primes);
-        regionStats[normalizedRegion].totals.push(salary + prime);
-      }
-    }
-
-    const getStats = (arr: number[]) => {
-      if (arr.length === 0) {
-        return { avg: 0, median: 0 };
-      }
-      const sum = arr.reduce((a, b) => a + b, 0);
-      const avg = Math.round(sum / arr.length);
-      const sorted = [...arr].sort((a, b) => a - b);
-      const mid = Math.floor(sorted.length / 2);
-      const median =
-        sorted.length % 2 !== 0
-          ? sorted[mid]
-          : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
-      return { avg, median };
-    };
-
-    const metrics: Record<
-      string,
-      {
-        avg: number;
-        median: number;
-        avgTotal: number;
-        medianTotal: number;
-        count: number;
-      }
-    > = {};
-
-    for (const key of Object.keys(regionStats)) {
-      const group = regionStats[key];
-      const baseStats = getStats(group.salaries);
-      const totalStats = getStats(group.totals);
-      metrics[key] = {
-        avg: baseStats.avg,
-        median: baseStats.median,
-        avgTotal: totalStats.avg,
-        medianTotal: totalStats.median,
-        count: group.salaries.length,
-      };
-    }
-
-    return metrics;
-  }, [data]);
+  const regionMetrics = useMemo(() => regions, [regions]);
 
   const currentValues = useMemo(() => {
     const values: number[] = [];

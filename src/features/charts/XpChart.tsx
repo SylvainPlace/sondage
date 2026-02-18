@@ -5,80 +5,21 @@ import { Line } from "react-chartjs-2";
 import { ChartDataset, TooltipItem } from "chart.js";
 
 import "@/features/charts/ChartConfig";
-import { parsePrime, parseSalaryRange } from "@/lib/frontend-utils";
-import { SurveyResponse, UserComparisonData } from "@/types";
+import { UserComparisonData, XpByYearEntry } from "@/types";
 
 interface XpChartProps {
-  data: SurveyResponse[];
+  data: XpByYearEntry[];
   userComparison?: UserComparisonData | null;
 }
 
 export function XpChart({ data, userComparison }: XpChartProps) {
   const chartData = useMemo(() => {
-    const xpMap: Record<number, { base: number[]; total: number[] }> = {};
-    let maxXp = 0;
+    const labels = data.map((entry) => entry.year);
 
-    data.forEach((item) => {
-      const xp = Number(item.experience);
-      if (!isNaN(xp)) {
-        if (xp > maxXp) {
-          maxXp = xp;
-        }
-        if (!xpMap[xp]) {
-          xpMap[xp] = { base: [], total: [] };
-        }
-
-        const base = parseSalaryRange(item.salaire_brut);
-        const prime = parsePrime(item.primes);
-
-        if (base > 0) {
-          xpMap[xp].base.push(base);
-          xpMap[xp].total.push(base + prime);
-        }
-      }
-    });
-
-    const labels: number[] = [];
-    for (let i = 0; i <= maxXp; i++) {
-      labels.push(i);
-    }
-
-    const getStats = (arr: number[]) => {
-      if (!arr || arr.length === 0) {
-        return null;
-      }
-      const sum = arr.reduce((a, b) => a + b, 0);
-      const mean = Math.round(sum / arr.length);
-      const sorted = [...arr].sort((a, b) => a - b);
-      const mid = Math.floor(sorted.length / 2);
-      const median =
-        sorted.length % 2 !== 0
-          ? sorted[mid]
-          : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
-      return { mean, median };
-    };
-
-    const meanBaseData: (number | null)[] = [];
-    const medianBaseData: (number | null)[] = [];
-    const meanTotalData: (number | null)[] = [];
-    const medianTotalData: (number | null)[] = [];
-
-    labels.forEach((year) => {
-      const group = xpMap[year];
-      if (group) {
-        const baseStats = getStats(group.base);
-        const totalStats = getStats(group.total);
-        meanBaseData.push(baseStats ? baseStats.mean : null);
-        medianBaseData.push(baseStats ? baseStats.median : null);
-        meanTotalData.push(totalStats ? totalStats.mean : null);
-        medianTotalData.push(totalStats ? totalStats.median : null);
-      } else {
-        meanBaseData.push(null);
-        medianBaseData.push(null);
-        meanTotalData.push(null);
-        medianTotalData.push(null);
-      }
-    });
+    const meanBaseData = data.map((entry) => entry.meanBase);
+    const medianBaseData = data.map((entry) => entry.medianBase);
+    const meanTotalData = data.map((entry) => entry.meanTotal);
+    const medianTotalData = data.map((entry) => entry.medianTotal);
 
     const datasets: Array<ChartDataset<"line", (number | null)[]>> = [
       {
@@ -121,7 +62,7 @@ export function XpChart({ data, userComparison }: XpChartProps) {
       },
     ];
 
-    if (userComparison) {
+    if (userComparison && labels.length > 0) {
       // Add User Point
       const userPointData = labels.map((l) =>
         l === userComparison.experience ? userComparison.salary : null,

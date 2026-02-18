@@ -101,53 +101,59 @@ export function DashboardSkeleton() {
         </div>
 
         <div className={styles.resultsPanel}>
-          {/* Stats Grid Skeleton */}
-          <div className={styles.statsGrid}>
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className={styles.statCard}>
-                <Skeleton
-                  style={{
-                    height: "14px",
-                    width: "60%",
-                    margin: "0 auto 8px",
-                  }}
-                />
-                <Skeleton
-                  style={{
-                    height: "32px",
-                    width: "80%",
-                    margin: "0 auto 4px",
-                  }}
-                />
-                <Skeleton
-                  style={{ height: "12px", width: "40%", margin: "0 auto" }}
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Charts Section Skeleton */}
-          <div className={styles.chartsSection}>
-            <Skeleton
-              style={{ height: "24px", width: "200px", marginBottom: "16px" }}
-            />
-            <div className={styles.chartContainer}>
-              <Skeleton style={{ height: "300px", width: "100%" }} />
-            </div>
-          </div>
-
-          <div className={styles.chartsSection}>
-            <Skeleton
-              style={{ height: "24px", width: "250px", marginBottom: "16px" }}
-            />
-            <div className={styles.chartContainer}>
-              <Skeleton style={{ height: "300px", width: "100%" }} />
-            </div>
-          </div>
-
-          {/* No need for more since it already take all the screen*/}
+          <ResultsSkeleton />
         </div>
       </main>
     </div>
+  );
+}
+
+export function ResultsSkeleton() {
+  return (
+    <>
+      <div className={styles.statsGrid}>
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className={styles.statCard}>
+            <Skeleton
+              style={{
+                height: "14px",
+                width: "60%",
+                margin: "0 auto 8px",
+              }}
+            />
+            <Skeleton
+              style={{
+                height: "32px",
+                width: "80%",
+                margin: "0 auto 4px",
+              }}
+            />
+            <Skeleton
+              style={{ height: "12px", width: "40%", margin: "0 auto" }}
+            />
+          </div>
+        ))}
+      </div>
+
+      {[1, 2, 3, 4, 5].map((section) => (
+        <div key={section} className={styles.chartsSection}>
+          <Skeleton
+            style={{
+              height: "24px",
+              width: section % 2 === 0 ? "250px" : "200px",
+              marginBottom: "16px",
+            }}
+          />
+          <div className={styles.chartContainer}>
+            <Skeleton
+              style={{
+                height: section === 4 ? "420px" : "300px",
+                width: "100%",
+              }}
+            />
+          </div>
+        </div>
+      ))}
+    </>
   );
 }

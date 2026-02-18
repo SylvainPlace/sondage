@@ -11,6 +11,9 @@ interface FilterConfig {
   key: keyof SurveyResponse;
 }
 
+const disabledOptionMessage =
+  "Il n’y a pas assez de données. Pour des raisons d’anonymat, nous ne pouvons pas afficher ces données. Essayez d’enlever d’abord certains filtres.";
+
 const filtersConfig: FilterConfig[] = [
   { label: "Année de Diplôme", key: "annee_diplome" },
   { label: "Sexe", key: "sexe" },
@@ -22,7 +25,7 @@ const filtersConfig: FilterConfig[] = [
 ];
 
 export default function Filters() {
-  const { allData, activeFilters, setFilters, resetFilters } = useDashboard();
+  const { results, activeFilters, setFilters, resetFilters } = useDashboard();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const handleToggle = (key: string) => {
@@ -54,36 +57,7 @@ export default function Filters() {
     setFilters(newFilters);
   };
 
-  // Calculate counters dynamically with memoization
-  const allCounts = useMemo(() => {
-    const result: Record<string, Record<string, number>> = {};
-
-    filtersConfig.forEach((config) => {
-      const key = config.key;
-      // Filter data based on OTHER active filters
-      const contextFilters = { ...activeFilters };
-      delete contextFilters[key];
-
-      const contextData = allData.filter((item) => {
-        for (const k in contextFilters) {
-          const filterValues = contextFilters[k];
-          const itemValue = String(item[k as keyof SurveyResponse]);
-          if (!filterValues.some((val) => String(val) === itemValue)) {
-            return false;
-          }
-        }
-        return true;
-      });
-
-      result[key] = contextData.reduce((acc: Record<string, number>, item) => {
-        const val = String(item[key]);
-        acc[val] = (acc[val] || 0) + 1;
-        return acc;
-      }, {});
-    });
-
-    return result;
-  }, [allData, activeFilters]);
+  const filtersData = useMemo(() => results?.filters ?? {}, [results]);
 
   return (
     <aside className={styles.panel}>
@@ -100,42 +74,52 @@ export default function Filters() {
 
       <div className={styles.grid}>
         {filtersConfig.map((config) => {
-          const counts = allCounts[config.key] || {};
-          const uniqueValues = Array.from(
-            new Set(allData.map((d) => d[config.key])),
-          ).sort((a: unknown, b: unknown) => {
-            const specialValues = ["Autre", "Non renseigné"];
-            const aStr = String(a);
-            const bStr = String(b);
-            const isASpecial = specialValues.includes(aStr);
-            const isBSpecial = specialValues.includes(bStr);
-            if (isASpecial && !isBSpecial) {
-              return 1;
-            }
-            if (!isASpecial && isBSpecial) {
-              return -1;
-            }
-            if (isASpecial && isBSpecial) {
-              return aStr.localeCompare(bStr);
-            }
+          const options = filtersData[config.key] || [];
+          const counts = options.reduce(
+            (
+              acc: Record<string, number>,
+              item: { value: string; count: number },
+            ) => {
+              acc[item.value] = item.count;
+              return acc;
+            },
+            {},
+          );
+          const uniqueValues = options
+            .map((item: { value: string }) => item.value)
+            .sort((a: unknown, b: unknown) => {
+              const specialValues = ["Autre", "Non renseigné"];
+              const aStr = String(a);
+              const bStr = String(b);
+              const isASpecial = specialValues.includes(aStr);
+              const isBSpecial = specialValues.includes(bStr);
+              if (isASpecial && !isBSpecial) {
+                return 1;
+              }
+              if (!isASpecial && isBSpecial) {
+                return -1;
+              }
+              if (isASpecial && isBSpecial) {
+                return aStr.localeCompare(bStr);
+              }
 
-            if (config.key === "xp_group") {
-              const order = [
-                "0-1 an",
-                "2-3 ans",
-                "4-5 ans",
-                "6-9 ans",
-                "10+ ans",
-                "Non renseigné",
-              ];
-              return order.indexOf(aStr) - order.indexOf(bStr);
-            }
-            const aNum = Number(aStr);
-            const bNum = Number(bStr);
-            return !Number.isNaN(aNum) && !Number.isNaN(bNum)
-              ? aNum - bNum
-              : aStr.localeCompare(bStr);
-          });
+              if (config.key === "xp_group") {
+                const order = [
+                  "0-1 an",
+                  "2-3 ans",
+                  "4-5 ans",
+                  "6-9 ans",
+                  "10+ ans",
+                  "Non renseigné",
+                ];
+                return order.indexOf(aStr) - order.indexOf(bStr);
+              }
+              const aNum = Number(aStr);
+              const bNum = Number(bStr);
+              return !Number.isNaN(aNum) && !Number.isNaN(bNum)
+                ? aNum - bNum
+                : aStr.localeCompare(bStr);
+            });
 
           const selected = activeFilters[config.key] || [];
           const isAll = selected.length === 0;
@@ -167,11 +151,23 @@ export default function Filters() {
                   if (val === undefined || val === null || val === "") {
                     return null;
                   }
+                  const count = counts[String(val)] || 0;
+                  const isDisabled = count < 3;
                   return (
-                    <label key={String(val)} className={styles.checkboxOption}>
+                    <label
+                      key={String(val)}
+                      className={`${styles.checkboxOption} ${
+                        isDisabled ? styles.disabledOption : ""
+                      }`}
+                      data-tooltip={
+                        isDisabled ? disabledOptionMessage : undefined
+                      }
+                      aria-disabled={isDisabled}
+                    >
                       <input
                         type="checkbox"
                         checked={selected.includes(String(val))}
+                        disabled={isDisabled}
                         onChange={(e) =>
                           handleFilterChange(
                             config.key,
@@ -181,7 +177,7 @@ export default function Filters() {
                         }
                       />
                       <span className={styles.optionText}>
-                        {String(val)} ({counts[String(val)] || 0})
+                        {String(val)} ({count})
                       </span>
                     </label>
                   );

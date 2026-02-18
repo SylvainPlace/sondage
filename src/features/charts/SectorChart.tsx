@@ -5,7 +5,7 @@ import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, TooltipItem } from "chart.js";
 
 import "@/features/charts/ChartConfig";
-import { SurveyResponse } from "@/types";
+import { SectorStat } from "@/types";
 
 const SECTOR_COLORS = [
   "#be9249",
@@ -25,7 +25,7 @@ const SECTOR_COLORS = [
   "#22c55e",
 ];
 
-export function SectorChart({ data }: { data: SurveyResponse[] }) {
+export function SectorChart({ data }: { data: SectorStat[] }) {
   const [legendPosition, setLegendPosition] = useState<"right" | "bottom">(
     "right",
   );
@@ -46,17 +46,8 @@ export function SectorChart({ data }: { data: SurveyResponse[] }) {
   }, []);
 
   const chartData = useMemo(() => {
-    const sectorCounts: Record<string, number> = {};
-
-    data.forEach((item) => {
-      const sector = item.secteur || "Non renseigne";
-      sectorCounts[sector] = (sectorCounts[sector] || 0) + 1;
-    });
-
-    const sorted = Object.entries(sectorCounts).sort((a, b) => b[1] - a[1]);
-
-    const labels = sorted.map(([label]) => label);
-    const counts = sorted.map(([, count]) => count);
+    const labels = data.map((item) => item.label);
+    const counts = data.map((item) => item.count);
 
     return {
       labels,
@@ -119,7 +110,7 @@ export function SectorChart({ data }: { data: SurveyResponse[] }) {
     },
   };
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return <p style={{ color: "var(--text-muted)" }}>Pas de donnees.</p>;
   }
 
@@ -136,8 +127,8 @@ export function SectorChart({ data }: { data: SurveyResponse[] }) {
       const y = (top + bottom) / 2;
 
       const dataset = chart.data.datasets[0];
-      const data = dataset.data as number[];
-      const total = data.reduce((a, b) => a + b, 0);
+      const dataArr = dataset.data as number[];
+      const total = dataArr.reduce((a, b) => a + b, 0);
 
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
