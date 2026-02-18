@@ -48,6 +48,31 @@ function calculateBreaks(values: number[]) {
   return [q1, q2, q3, q4];
 }
 
+function hasSufficientData(stats?: MapRegionStats) {
+  return !!stats && stats.count >= 3;
+}
+
+function getRegionValue(stats: MapRegionStats | undefined, mode: string) {
+  if (!hasSufficientData(stats)) {
+    return 0;
+  }
+
+  switch (mode) {
+    case "avg_base":
+      return stats?.avg ?? 0;
+    case "median_base":
+      return stats?.median ?? 0;
+    case "avg_total":
+      return stats?.avgTotal ?? 0;
+    case "median_total":
+      return stats?.medianTotal ?? 0;
+    case "count":
+      return stats?.count ?? 0;
+    default:
+      return 0;
+  }
+}
+
 export default function Map({ regions, mode }: MapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -62,18 +87,7 @@ export default function Map({ regions, mode }: MapProps) {
   const currentValues = useMemo(() => {
     const values: number[] = [];
     for (const stats of Object.values(regionMetrics)) {
-      const val =
-        mode === "avg_base"
-          ? stats.avg
-          : mode === "median_base"
-            ? stats.median
-            : mode === "avg_total"
-              ? stats.avgTotal
-              : mode === "median_total"
-                ? stats.medianTotal
-                : mode === "count"
-                  ? stats.count
-                  : 0;
+      const val = getRegionValue(stats, mode);
       if (val > 0) {
         values.push(val);
       }
@@ -178,18 +192,7 @@ export default function Map({ regions, mode }: MapProps) {
           ? regionMetrics["paca sud"]
           : undefined);
 
-      const value =
-        mode === "avg_base"
-          ? (stats?.avg ?? 0)
-          : mode === "median_base"
-            ? (stats?.median ?? 0)
-            : mode === "avg_total"
-              ? (stats?.avgTotal ?? 0)
-              : mode === "median_total"
-                ? (stats?.medianTotal ?? 0)
-                : mode === "count"
-                  ? (stats?.count ?? 0)
-                  : 0;
+      const value = getRegionValue(stats, mode);
 
       const color = value ? getColor(value) : "#f0f0f0";
 
@@ -249,14 +252,14 @@ export default function Map({ regions, mode }: MapProps) {
           : undefined);
 
       let content = `<strong>${nom}</strong><br/>`;
-      if (stats && stats.count > 0) {
+      if (stats && hasSufficientData(stats)) {
         content += `Moyen: ${formatMoney(stats.avg)}<br/>`;
         content += `Médian: ${formatMoney(stats.median)}<br/>`;
         content += `Moyen (+Primes): ${formatMoney(stats.avgTotal)}<br/>`;
         content += `Médian (+Primes): ${formatMoney(stats.medianTotal)}<br/>`;
         content += `Répondants: ${stats.count}`;
       } else {
-        content += "Pas de données";
+        content += "Données insuffisantes";
       }
       layer.bindTooltip(content);
     },

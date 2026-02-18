@@ -450,13 +450,15 @@ export async function POST(request: NextRequest) {
       const group = regionStats[key];
       const baseRegionStats = getStats(group.salaries);
       const totalRegionStats = getStats(group.totals);
-      mapRegions[key] = {
-        avg: baseRegionStats.mean,
-        median: baseRegionStats.median,
-        avgTotal: totalRegionStats.mean,
-        medianTotal: totalRegionStats.median,
-        count: group.salaries.length,
-      };
+      if (group.salaries.length >= 3) {
+        mapRegions[key] = {
+          avg: baseRegionStats.mean,
+          median: baseRegionStats.median,
+          avgTotal: totalRegionStats.mean,
+          medianTotal: totalRegionStats.median,
+          count: group.salaries.length,
+        };
+      }
     }
 
     const anecdotes = filteredData
