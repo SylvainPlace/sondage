@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 import { getGoogleAccessToken } from "@/lib/google-auth";
@@ -147,6 +148,13 @@ function sanitizeFilters(rawFilters: unknown) {
   return filters;
 }
 
+function buildEtag(payload: unknown) {
+  const hash = createHash("sha256")
+    .update(JSON.stringify(payload))
+    .digest("hex");
+  return `"${hash}"`;
+}
+
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("Authorization");
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -162,6 +170,7 @@ export async function POST(request: NextRequest) {
 
   const body = await request.json().catch(() => ({}));
   const filters = sanitizeFilters((body as { filters?: unknown })?.filters);
+  const ifNoneMatch = request.headers.get("if-none-match");
 
   try {
     const GCP_SERVICE_ACCOUNT_EMAIL = process.env.GCP_SERVICE_ACCOUNT_EMAIL;
@@ -479,23 +488,34 @@ export async function POST(request: NextRequest) {
       }));
     });
 
-    return NextResponse.json(
-      {
-        stats,
-        salaryDistribution,
-        xpByYear,
-        benefits,
-        sectors,
-        mapRegions,
-        anecdotes,
-        filters: filtersResponse,
-      },
-      {
+    const responsePayload = {
+      stats,
+      salaryDistribution,
+      xpByYear,
+      benefits,
+      sectors,
+      mapRegions,
+      anecdotes,
+      filters: filtersResponse,
+    };
+    const etag = buildEtag(responsePayload);
+
+    if (ifNoneMatch && ifNoneMatch === etag) {
+      return new NextResponse(null, {
+        status: 304,
         headers: {
           "Cache-Control": "no-store",
+          ETag: etag,
         },
+      });
+    }
+
+    return NextResponse.json(responsePayload, {
+      headers: {
+        "Cache-Control": "no-store",
+        ETag: etag,
       },
-    );
+    });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });
