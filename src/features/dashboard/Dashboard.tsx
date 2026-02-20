@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 
 import { useAuth } from "@/context/AuthContext";
 import { useDashboard } from "@/context/DashboardContext";
@@ -34,24 +34,30 @@ interface StatsGridProps {
   userComparison: UserComparisonData | null;
 }
 
-function StatsGrid({ stats, userComparison }: StatsGridProps) {
-  const renderComparison = (statValue: number) => {
-    if (!userComparison || !userComparison.salary || !statValue) return null;
-    const diff = userComparison.salary - statValue;
-    const percent = Math.round((diff / statValue) * 100);
-    const isPositive = diff >= 0;
-    const sign = isPositive ? "+" : "";
+const StatsGrid = memo(function StatsGrid({
+  stats,
+  userComparison,
+}: StatsGridProps) {
+  const renderComparison = useCallback(
+    (statValue: number) => {
+      if (!userComparison || !userComparison.salary || !statValue) return null;
+      const diff = userComparison.salary - statValue;
+      const percent = Math.round((diff / statValue) * 100);
+      const isPositive = diff >= 0;
+      const sign = isPositive ? "+" : "";
 
-    return (
-      <div
-        className={`${styles.comparison} ${isPositive ? styles.comparisonPositive : styles.comparisonNegative}`}
-      >
-        {sign}
-        {formatMoney(diff)} ({sign}
-        {percent}%)
-      </div>
-    );
-  };
+      return (
+        <div
+          className={`${styles.comparison} ${isPositive ? styles.comparisonPositive : styles.comparisonNegative}`}
+        >
+          {sign}
+          {formatMoney(diff)} ({sign}
+          {percent}%)
+        </div>
+      );
+    },
+    [userComparison],
+  );
 
   return (
     <div className={styles.statsGrid}>
@@ -104,7 +110,7 @@ function StatsGrid({ stats, userComparison }: StatsGridProps) {
       </Card>
     </div>
   );
-}
+});
 
 interface ResultsPanelProps {
   isLoading: boolean;
@@ -118,7 +124,7 @@ interface ResultsPanelProps {
   onMapModeChange: (value: string) => void;
 }
 
-function ResultsPanel({
+const ResultsPanel = memo(function ResultsPanel({
   isLoading,
   error,
   stats,
@@ -234,7 +240,7 @@ function ResultsPanel({
       </div>
     </div>
   );
-}
+});
 
 export default function Dashboard() {
   const { isAuthenticated, isLoading: isAuthLoading, logout } = useAuth();
@@ -250,6 +256,14 @@ export default function Dashboard() {
   const [mapMode, setMapMode] = useState("avg_base");
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  const handleMapModeChange = useCallback((value: string) => {
+    setMapMode(value);
+  }, []);
+
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -323,14 +337,14 @@ export default function Dashboard() {
             hasActiveFilters={Object.keys(activeFilters).length > 0}
             logout={logout}
             mapMode={mapMode}
-            onMapModeChange={setMapMode}
+            onMapModeChange={handleMapModeChange}
           />
         </section>
       </main>
 
       <button
         className={`${styles.scrollTop} ${showScrollTop ? styles.visible : ""}`}
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        onClick={scrollToTop}
         aria-label="Remonter en haut"
       >
         ↑

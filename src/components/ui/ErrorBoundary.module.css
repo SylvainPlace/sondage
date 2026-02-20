@@ -1,0 +1,31 @@
+.errorContainer {
+  padding: 2rem;
+  text-align: center;
+  background-color: #fee;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  margin: 1rem;
+}
+
+.errorTitle {
+  color: #721c24;
+  margin-bottom: 1rem;
+}
+
+.errorMessage {
+  color: #721c24;
+  margin-bottom: 1rem;
+}
+
+.errorButton {
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.errorButton:hover {
+  background-color: #0056b3;
+}
