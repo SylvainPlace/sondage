@@ -1,0 +1,100 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.clearBtn {
+  font-size: 0.75rem;
+  color: var(--primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.clearBtn:hover {
+  color: var(--primary-hover);
+}
+
+.pillsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.7rem;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--foreground);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.pill:hover:not(.disabled) {
+  border-color: var(--primary);
+  background-color: rgba(190, 146, 73, 0.05);
+  transform: translateY(-1px);
+}
+
+.pill.active {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  box-shadow: 0 2px 4px rgba(190, 146, 73, 0.3);
+}
+
+.pill.active:hover {
+  background-color: var(--primary-hover);
+}
+
+.pill.active .count {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.pill.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background-color: var(--background-alt);
+}
+
+.pill.disabled:hover {
+  transform: none;
+  border-color: var(--border);
+}
+
+.count {
+  font-size: 0.7rem;
+  background-color: var(--background-alt);
+  color: var(--text-muted);
+  padding: 0.1rem 0.35rem;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.selectedInfo {
+  font-size: 0.7rem;
+  color: var(--primary);
+  font-weight: 500;
+}
