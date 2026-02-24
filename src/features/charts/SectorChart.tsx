@@ -75,17 +75,30 @@ export function SectorChart({ data }: { data: SectorStat[] }) {
           font: { size: 11 },
           generateLabels: (chart: ChartJS<"doughnut">) => {
             const dataset = chart.data.datasets[0];
+            if (!dataset) {
+              return [];
+            }
             const dataArr = dataset.data as number[];
             const total = dataArr.reduce((a, b) => a + b, 0);
             const labels = chart.data.labels as string[];
             const bgColors = dataset.backgroundColor as string[];
             return labels.map((label, i) => {
               const value = dataArr[i];
+              if (value === undefined) {
+                return {
+                  text: "",
+                  fillStyle: "#ccc",
+                  strokeStyle: "#fff",
+                  lineWidth: 0,
+                  hidden: false,
+                  index: i,
+                };
+              }
               const percentage =
                 total > 0 ? Math.round((value / total) * 100) : 0;
               return {
                 text: `${label} (${percentage}%)`,
-                fillStyle: bgColors[i],
+                fillStyle: bgColors[i] ?? "#ccc",
                 strokeStyle: dataset.borderColor as string,
                 lineWidth: dataset.borderWidth as number,
                 hidden: false,
@@ -127,6 +140,9 @@ export function SectorChart({ data }: { data: SectorStat[] }) {
       const y = (top + bottom) / 2;
 
       const dataset = chart.data.datasets[0];
+      if (!dataset) {
+        return;
+      }
       const dataArr = dataset.data as number[];
       const total = dataArr.reduce((a, b) => a + b, 0);
 

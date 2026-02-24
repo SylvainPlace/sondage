@@ -52,7 +52,7 @@ export function SalaryChart({
             }
 
             const index = context.dataIndex;
-            const label = categories[index];
+            const label = categories[index] as string;
             const salary = userComparison.salary;
 
             // Simple mapping logic matching parseSalaryRange ranges
@@ -67,7 +67,7 @@ export function SalaryChart({
               isMatch = true;
             } else {
               const matches = catNorm.match(/(\d+)-(\d+)/);
-              if (matches) {
+              if (matches && matches[1] && matches[2]) {
                 const min = parseInt(matches[1]) * 1000;
                 const max = parseInt(matches[2]) * 1000;
                 if (salary >= min && salary < max) {

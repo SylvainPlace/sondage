@@ -162,16 +162,17 @@ export default function Map({ regions, mode }: MapProps) {
       if (d === undefined || d === null) {
         return "#f0f0f0";
       }
-      if (d > currentBreaks[3]) {
+      const b = currentBreaks;
+      if (d > (b[3] ?? 0)) {
         return MAP_COLORS[4];
       }
-      if (d > currentBreaks[2]) {
+      if (d > (b[2] ?? 0)) {
         return MAP_COLORS[3];
       }
-      if (d > currentBreaks[1]) {
+      if (d > (b[1] ?? 0)) {
         return MAP_COLORS[2];
       }
-      if (d > currentBreaks[0]) {
+      if (d > (b[0] ?? 0)) {
         return MAP_COLORS[1];
       }
       return MAP_COLORS[0];
@@ -293,25 +294,27 @@ export default function Map({ regions, mode }: MapProps) {
 
       div.innerHTML += `<div class="${styles.legendTitle}">${title}</div>`;
       const fmt = (v: number) => (mode === "count" ? v : formatMoney(v));
+      const b = currentBreaks;
+      const getB = (i: number) => b[i] ?? 0;
 
       div.innerHTML +=
         `<i class="${styles.legendIcon}" style="background:${MAP_COLORS[0]}"></i> ` +
         "&lt; " +
-        fmt(currentBreaks[0]) +
+        fmt(getB(0)) +
         "<br>";
 
       for (let i = 0; i < 3; i++) {
         div.innerHTML +=
           `<i class="${styles.legendIcon}" style="background:${MAP_COLORS[i + 1]}"></i> ` +
-          fmt(currentBreaks[i]) +
+          fmt(getB(i)) +
           " &ndash; " +
-          fmt(currentBreaks[i + 1]) +
+          fmt(getB(i + 1)) +
           "<br>";
       }
       div.innerHTML +=
         `<i class="${styles.legendIcon}" style="background:${MAP_COLORS[4]}"></i> ` +
         "&gt; " +
-        fmt(currentBreaks[3]) +
+        fmt(getB(3)) +
         "<br>";
 
       return div;

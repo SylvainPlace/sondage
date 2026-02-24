@@ -24,7 +24,7 @@ export function parseSalaryRange(rangeStr: string): number {
   }
 
   const matches = cleanStr.match(/(\d+)-(\d+)/);
-  if (matches) {
+  if (matches && matches[1] && matches[2]) {
     const min = parseInt(matches[1]) * 1000;
     const max = parseInt(matches[2]) * 1000;
     return (min + max) / 2;
@@ -53,7 +53,7 @@ export function parsePrime(primeStr: string): number {
   }
 
   const matches = cleanStr.match(/(\d+)-(\d+)/);
-  if (matches) {
+  if (matches && matches[1] && matches[2]) {
     const min = parseInt(matches[1]) * 1000;
     const max = parseInt(matches[2]) * 1000;
     return (min + max) / 2;

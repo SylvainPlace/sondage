@@ -9,7 +9,7 @@ export function parseExperience(str: string | undefined): number {
   }
 
   const parts = str.match(/(\d+)-(\d+)/);
-  if (parts) {
+  if (parts && parts[1] && parts[2]) {
     return Math.ceil((parseInt(parts[1]) + parseInt(parts[2])) / 2);
   }
   return parseInt(str) || 0;

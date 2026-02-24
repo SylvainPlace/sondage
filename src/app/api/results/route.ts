@@ -80,7 +80,7 @@ function normalizeRegionName(name: string) {
     .trim();
 }
 
-function getStats(values: number[]) {
+function getStats(values: number[]): { mean: number; median: number } {
   if (!values || values.length === 0) {
     return { mean: 0, median: 0 };
   }
@@ -88,10 +88,14 @@ function getStats(values: number[]) {
   const mean = Math.round(sum / values.length);
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
-  const median =
-    sorted.length % 2 !== 0
-      ? sorted[mid]
-      : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
+  let median: number;
+  if (sorted.length % 2 !== 0) {
+    median = sorted[mid] ?? 0;
+  } else {
+    const a = sorted[mid - 1] ?? 0;
+    const b = sorted[mid] ?? 0;
+    median = Math.round((a + b) / 2);
+  }
   return { mean, median };
 }
 
@@ -162,6 +166,9 @@ export async function POST(request: NextRequest) {
   }
 
   const token = authHeader.split(" ")[1];
+  if (!token) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   try {
     await verifyUserToken(token);
   } catch {
@@ -209,7 +216,11 @@ export async function POST(request: NextRequest) {
       throw new Error("No data found in sheet.");
     }
 
-    const headers: string[] = rawData.values[0];
+    const firstRow = rawData.values[0];
+    if (!firstRow) {
+      throw new Error("No headers found in sheet.");
+    }
+    const headers: string[] = firstRow;
     const rows: string[][] = rawData.values.slice(1);
 
     const MAPPING: Record<Exclude<keyof SurveyResponse, "xp_group">, string> = {
@@ -266,7 +277,8 @@ export async function POST(request: NextRequest) {
             item.experience = parseExperience(value);
             break;
           case "annee_diplome": {
-            const num = parseInt(value, 10);
+            const strVal = value ?? "";
+            const num = parseInt(strVal, 10);
             item.annee_diplome = Number.isNaN(num) ? 0 : num;
             break;
           }
@@ -448,6 +460,9 @@ export async function POST(request: NextRequest) {
 
     for (const key of Object.keys(regionStats)) {
       const group = regionStats[key];
+      if (!group) {
+        continue;
+      }
       const baseRegionStats = getStats(group.salaries);
       const totalRegionStats = getStats(group.totals);
       if (group.salaries.length >= 3) {
