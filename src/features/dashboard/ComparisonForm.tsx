@@ -24,9 +24,7 @@ export default function ComparisonForm() {
 
   const initialData = useMemo(() => getInitialComparison(), []);
 
-  const [salary, setSalary] = useState(
-    initialData ? initialData.salary.toString() : "",
-  );
+  const [salary, setSalary] = useState(initialData ? initialData.salary.toString() : "");
   const [experience, setExperience] = useState(
     initialData ? initialData.experience.toString() : "",
   );
@@ -87,8 +85,7 @@ export default function ComparisonForm() {
       <div className={styles.activePanel}>
         <h3>Mode Comparaison Activé</h3>
         <p className={styles.activeText}>
-          Vous visualisez votre position ({salary} €, {experience} ans) sur les
-          graphiques.
+          Vous visualisez votre position ({salary} €, {experience} ans) sur les graphiques.
         </p>
         <Button variant="text" onClick={handleReset}>
           Arrêter la comparaison
@@ -120,8 +117,8 @@ export default function ComparisonForm() {
                   left: `${tooltipPosition.left}px`,
                 }}
               >
-                Vos données sont stockées uniquement dans votre navigateur et ne
-                sont jamais envoyées à nos serveurs.
+                Vos données sont stockées uniquement dans votre navigateur et ne sont jamais
+                envoyées à nos serveurs.
                 <div className={styles.tooltipArrow} />
               </div>
             )}

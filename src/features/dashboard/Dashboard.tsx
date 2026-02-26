@@ -19,11 +19,7 @@ import { BenefitsList } from "@/features/charts/BenefitsList";
 import { AnecdotesList } from "@/features/charts/AnecdotesList";
 import { SectorChart } from "@/features/charts/SectorChart";
 import { Card } from "@/components/ui/Card";
-import type {
-  DashboardStats,
-  ResultsResponse,
-  UserComparisonData,
-} from "@/types";
+import type { DashboardStats, ResultsResponse, UserComparisonData } from "@/types";
 import styles from "./Dashboard.module.css";
 
 // Dynamic import for Map
@@ -34,10 +30,7 @@ interface StatsGridProps {
   userComparison: UserComparisonData | null;
 }
 
-const StatsGrid = memo(function StatsGrid({
-  stats,
-  userComparison,
-}: StatsGridProps) {
+const StatsGrid = memo(function StatsGrid({ stats, userComparison }: StatsGridProps) {
   const renderComparison = useCallback(
     (statValue: number) => {
       if (!userComparison || !userComparison.salary || !statValue) return null;
@@ -61,31 +54,17 @@ const StatsGrid = memo(function StatsGrid({
 
   return (
     <div className={styles.statsGrid}>
-      <Card
-        title="Salaire Moyen"
-        subtitle="Brut annuel hors primes"
-        className={styles.statCard}
-      >
-        <div className={styles.statValue}>
-          {stats.count > 0 ? formatMoney(stats.mean) : "- €"}
-        </div>
+      <Card title="Salaire Moyen" subtitle="Brut annuel hors primes" className={styles.statCard}>
+        <div className={styles.statValue}>{stats.count > 0 ? formatMoney(stats.mean) : "- €"}</div>
         {stats.count > 0 && renderComparison(stats.mean)}
       </Card>
-      <Card
-        title="Salaire Médian"
-        subtitle="Brut annuel hors primes"
-        className={styles.statCard}
-      >
+      <Card title="Salaire Médian" subtitle="Brut annuel hors primes" className={styles.statCard}>
         <div className={styles.statValue}>
           {stats.count > 0 ? formatMoney(stats.median) : "- €"}
         </div>
         {stats.count > 0 && renderComparison(stats.median)}
       </Card>
-      <Card
-        title="Moyen (+ Primes)"
-        subtitle="Brut annuel avec primes"
-        className={styles.statCard}
-      >
+      <Card title="Moyen (+ Primes)" subtitle="Brut annuel avec primes" className={styles.statCard}>
         <div className={styles.statValue}>
           {stats.count > 0 ? formatMoney(stats.meanTotal) : "- €"}
         </div>
@@ -101,11 +80,7 @@ const StatsGrid = memo(function StatsGrid({
         </div>
         {stats.count > 0 && renderComparison(stats.medianTotal)}
       </Card>
-      <Card
-        title="Répondants"
-        subtitle="Profils sélectionnés"
-        className={styles.statCard}
-      >
+      <Card title="Répondants" subtitle="Profils sélectionnés" className={styles.statCard}>
         <div className={styles.statValue}>{stats.count}</div>
       </Card>
     </div>
@@ -145,11 +120,7 @@ const ResultsPanel = memo(function ResultsPanel({
         <p className={styles.errorIcon}>⚠️</p>
         <p>Impossible de charger les données.</p>
         <p className={styles.errorText}>{error}</p>
-        <Button
-          onClick={logout}
-          variant="primary"
-          style={{ marginTop: "1rem" }}
-        >
+        <Button onClick={logout} variant="primary" style={{ marginTop: "1rem" }}>
           Se reconnecter
         </Button>
       </div>
@@ -175,20 +146,14 @@ const ResultsPanel = memo(function ResultsPanel({
       <div className={styles.chartsSection}>
         <h2>Distribution des Salaires</h2>
         <div className={styles.chartContainer}>
-          <SalaryChart
-            distribution={results?.salaryDistribution}
-            userComparison={userComparison}
-          />
+          <SalaryChart distribution={results?.salaryDistribution} userComparison={userComparison} />
         </div>
       </div>
 
       <div className={styles.chartsSection}>
         <h2>Salaire Moyen par Expérience</h2>
         <div className={styles.chartContainer}>
-          <XpChart
-            data={results?.xpByYear ?? []}
-            userComparison={userComparison}
-          />
+          <XpChart data={results?.xpByYear ?? []} userComparison={userComparison} />
         </div>
       </div>
 
@@ -233,10 +198,7 @@ const ResultsPanel = memo(function ResultsPanel({
 
       <div className={styles.chartsSection}>
         <h2>Conseils & Retours d&apos;expérience</h2>
-        <AnecdotesList
-          data={results?.anecdotes ?? []}
-          hasActiveFilters={hasActiveFilters}
-        />
+        <AnecdotesList data={results?.anecdotes ?? []} hasActiveFilters={hasActiveFilters} />
       </div>
     </div>
   );
@@ -307,10 +269,9 @@ export default function Dashboard() {
           <h1>Panorama des Carrières Alumnis</h1>
         </div>
         <p>
-          Bienvenue sur le Panorama des Carrières, fruit de la grande enquête
-          annuelle menée auprès des membres de notre association. Cet outil
-          interactif a été conçu pour vous offrir une transparence totale sur le
-          marché de l&apos;emploi au sein de notre communauté.
+          Bienvenue sur le Panorama des Carrières, fruit de la grande enquête annuelle menée auprès
+          des membres de notre association. Cet outil interactif a été conçu pour vous offrir une
+          transparence totale sur le marché de l&apos;emploi au sein de notre communauté.
         </p>
         <a
           href="https://docs.google.com/forms/d/e/1FAIpQLSdnh6qcQjVctVYsgcjOOlVwCO_4PtFGHSzmZ7lP0f6rw3krWA/viewform"

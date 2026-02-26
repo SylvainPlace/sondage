@@ -12,23 +12,12 @@ export async function POST(request: NextRequest) {
     const GCP_PRIVATE_KEY = process.env.GCP_PRIVATE_KEY;
     const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
 
-    if (
-      !GLOBAL_PASSWORD ||
-      !GCP_SERVICE_ACCOUNT_EMAIL ||
-      !GCP_PRIVATE_KEY ||
-      !SPREADSHEET_ID
-    ) {
-      return NextResponse.json(
-        { error: "Server Configuration Error" },
-        { status: 500 },
-      );
+    if (!GLOBAL_PASSWORD || !GCP_SERVICE_ACCOUNT_EMAIL || !GCP_PRIVATE_KEY || !SPREADSHEET_ID) {
+      return NextResponse.json({ error: "Server Configuration Error" }, { status: 500 });
     }
 
     if (password !== GLOBAL_PASSWORD) {
-      return NextResponse.json(
-        { error: "Mot de passe incorrect" },
-        { status: 401 },
-      );
+      return NextResponse.json({ error: "Mot de passe incorrect" }, { status: 401 });
     }
 
     const whitelist = await getWhitelist({
@@ -50,7 +39,7 @@ export async function POST(request: NextRequest) {
     const token = await signUserToken(email);
 
     return NextResponse.json({ token });
-  } catch (_e) {
+  } catch {
     return NextResponse.json({ error: "Invalid Request" }, { status: 400 });
   }
 }

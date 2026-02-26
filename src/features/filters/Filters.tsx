@@ -63,11 +63,7 @@ export default function Filters() {
     <aside className={styles.panel}>
       <div className={styles.header}>
         <h2>Filtres</h2>
-        <button
-          className={styles.resetBtn}
-          onClick={resetFilters}
-          type="button"
-        >
+        <button className={styles.resetBtn} onClick={resetFilters} type="button">
           Réinitialiser
         </button>
       </div>
@@ -76,10 +72,7 @@ export default function Filters() {
         {filtersConfig.map((config) => {
           const options = filtersData[config.key] || [];
           const counts = options.reduce(
-            (
-              acc: Record<string, number>,
-              item: { value: string; count: number },
-            ) => {
+            (acc: Record<string, number>, item: { value: string; count: number }) => {
               acc[item.value] = item.count;
               return acc;
             },
@@ -159,9 +152,7 @@ export default function Filters() {
                       className={`${styles.checkboxOption} ${
                         isDisabled ? styles.disabledOption : ""
                       }`}
-                      data-tooltip={
-                        isDisabled ? disabledOptionMessage : undefined
-                      }
+                      data-tooltip={isDisabled ? disabledOptionMessage : undefined}
                       aria-disabled={isDisabled}
                     >
                       <input
@@ -169,11 +160,7 @@ export default function Filters() {
                         checked={selected.includes(String(val))}
                         disabled={isDisabled}
                         onChange={(e) =>
-                          handleFilterChange(
-                            config.key,
-                            String(val),
-                            e.target.checked,
-                          )
+                          handleFilterChange(config.key, String(val), e.target.checked)
                         }
                       />
                       <span className={styles.optionText}>

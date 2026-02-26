@@ -65,9 +65,7 @@ export function DashboardSkeleton() {
                   }}
                 />
               </div>
-              <Skeleton
-                style={{ height: "42px", width: "100px", borderRadius: "4px" }}
-              />
+              <Skeleton style={{ height: "42px", width: "100px", borderRadius: "4px" }} />
             </div>
           </div>
 
@@ -128,9 +126,7 @@ export function ResultsSkeleton() {
                 margin: "0 auto 4px",
               }}
             />
-            <Skeleton
-              style={{ height: "12px", width: "40%", margin: "0 auto" }}
-            />
+            <Skeleton style={{ height: "12px", width: "40%", margin: "0 auto" }} />
           </div>
         ))}
       </div>

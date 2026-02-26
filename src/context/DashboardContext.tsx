@@ -25,9 +25,7 @@ interface DashboardContextType {
   refreshData: () => Promise<void>;
 }
 
-const DashboardContext = createContext<DashboardContextType | undefined>(
-  undefined,
-);
+const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
 
 const CACHE_TTL_MS = 60 * 60 * 1000;
 
@@ -58,10 +56,7 @@ function buildCacheKey(filters: Record<string, string[]>, token: string) {
   return `results:${userKey}:${filterKey}`;
 }
 
-function readCachedEntry(
-  cacheKey: string,
-  memoryCache: Record<string, CachedResultsEntry>,
-) {
+function readCachedEntry(cacheKey: string, memoryCache: Record<string, CachedResultsEntry>) {
   const memoryEntry = memoryCache[cacheKey];
   if (memoryEntry) {
     return memoryEntry;
@@ -96,13 +91,10 @@ function writeCachedEntry(
 export function DashboardProvider({ children }: { children: ReactNode }) {
   const { token, isAuthenticated } = useAuth();
   const [results, setResults] = useState<ResultsResponse | null>(null);
-  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(
-    {},
-  );
+  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [userComparison, setUserComparison] =
-    useState<UserComparisonData | null>(null);
+  const [userComparison, setUserComparison] = useState<UserComparisonData | null>(null);
   const etagRef = useRef<string | null>(null);
   const memoryCacheRef = useRef<Record<string, CachedResultsEntry>>({});
 
@@ -175,8 +167,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         setResults(data);
       } catch (error: unknown) {
         if (!isFresh) {
-          const message =
-            error instanceof Error ? error.message : "Erreur inconnue";
+          const message = error instanceof Error ? error.message : "Erreur inconnue";
           setError(message);
         }
       } finally {

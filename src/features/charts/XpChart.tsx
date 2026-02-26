@@ -124,8 +124,7 @@ export function XpChart({ data, userComparison }: XpChartProps) {
         min: 30000,
         ticks: {
           callback: function (value: string | number) {
-            const n =
-              typeof value === "number" ? value : Number.parseFloat(value);
+            const n = typeof value === "number" ? value : Number.parseFloat(value);
             return `${Math.round(n / 1000)}k€`;
           },
         },

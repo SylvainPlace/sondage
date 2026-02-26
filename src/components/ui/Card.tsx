@@ -8,13 +8,7 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
-export function Card({
-  children,
-  title,
-  subtitle,
-  className = "",
-  ...props
-}: CardProps) {
+export function Card({ children, title, subtitle, className = "", ...props }: CardProps) {
   return (
     <div className={`${styles.card} ${className}`} {...props}>
       {title && <h3 className={styles.title}>{title}</h3>}

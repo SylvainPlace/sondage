@@ -13,6 +13,7 @@ Application de visualisation des données de carrière des alumni, construite av
   - Graphiques : `react-chartjs-2` / Chart.js
 - **Données**: Google Sheets API
 - **Authentification**: Mot de passe + Whitelist email (JWT)
+- **Toolchain**: Oxc (Oxfmt + Oxlint) - Rust-based development tools
 
 ## 🛠️ Prérequis
 
@@ -58,11 +59,19 @@ Application de visualisation des données de carrière des alumni, construite av
 
 ### Qualité du code
 
-- `npm run lint` : Vérifie les erreurs ESLint
-- `npm run lint:fix` : Corrige automatiquement les erreurs ESLint
-- `npm run typecheck` : Vérifie les types TypeScript
-- `npm run format` : Formate le code avec Prettier
+#### Formatage (Oxfmt - 10-20x plus rapide que Prettier!)
+- `npm run format` : Formate le code avec Oxfmt
 - `npm run format:check` : Vérifie le formatage sans modifier
+- `npm run format:fix` : Formate le code (alias de format)
+
+#### Linting (Oxlint)
+- `npm run lint` : Vérifie les erreurs avec Oxlint
+- `npm run lint:fix` : Corrige automatiquement les erreurs Oxlint
+
+#### Autres vérifications
+- `npm run typecheck` : Vérifie les types TypeScript
+
+#### Vérifications complètes
 - `npm run check` : Exécute toutes les vérifications (lint, typecheck, test, format)
 - `npm run check:fix` : Corrige automatiquement lint et formatage
 
@@ -135,6 +144,8 @@ npm run preview
 - `src/lib`: Logique métier et utilitaires (Auth Google, JWT, Normalisation des données).
 - `wrangler.json`: Configuration Cloudflare Workers.
 - `open-next.config.ts`: Configuration spécifique à OpenNext.
+- `oxfmtrc.jsonc`: Configuration du formateur Oxfmt.
+- `oxlintrc.json`: Configuration du linter Oxlint.
 
 ## 🔐 Sécurité
 

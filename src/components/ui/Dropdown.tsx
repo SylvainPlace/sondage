@@ -74,9 +74,7 @@ export function Dropdown({
       >
         {triggerLabel}
       </button>
-      {isOpen && (
-        <div className={`${styles.content} ${styles[align]}`}>{children}</div>
-      )}
+      {isOpen && <div className={`${styles.content} ${styles[align]}`}>{children}</div>}
     </div>
   );
 }

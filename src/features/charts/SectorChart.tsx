@@ -26,9 +26,7 @@ const SECTOR_COLORS = [
 ];
 
 export function SectorChart({ data }: { data: SectorStat[] }) {
-  const [legendPosition, setLegendPosition] = useState<"right" | "bottom">(
-    "right",
-  );
+  const [legendPosition, setLegendPosition] = useState<"right" | "bottom">("right");
 
   useEffect(() => {
     const handleResize = () => {
@@ -94,8 +92,7 @@ export function SectorChart({ data }: { data: SectorStat[] }) {
                   index: i,
                 };
               }
-              const percentage =
-                total > 0 ? Math.round((value / total) * 100) : 0;
+              const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
               return {
                 text: `${label} (${percentage}%)`,
                 fillStyle: bgColors[i] ?? "#ccc",
@@ -114,8 +111,7 @@ export function SectorChart({ data }: { data: SectorStat[] }) {
             const value = context.raw as number;
             const dataArr = context.dataset.data as number[];
             const total = dataArr.reduce((a, b) => a + b, 0);
-            const percentage =
-              total > 0 ? Math.round((value / total) * 100) : 0;
+            const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
             return `${context.label}: ${value} (${percentage}%)`;
           },
         },
@@ -165,11 +161,7 @@ export function SectorChart({ data }: { data: SectorStat[] }) {
 
   return (
     <div style={{ position: "relative", height: "100%", width: "100%" }}>
-      <Doughnut
-        data={chartData}
-        options={options}
-        plugins={[textCenterPlugin]}
-      />
+      <Doughnut data={chartData} options={options} plugins={[textCenterPlugin]} />
     </div>
   );
 }

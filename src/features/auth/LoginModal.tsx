@@ -39,8 +39,7 @@ export default function LoginModal({ onSuccess }: LoginModalProps) {
         onSuccess(data.token);
       }
     } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : "Erreur inconnue";
+      const message = error instanceof Error ? error.message : "Erreur inconnue";
       setError(message);
     } finally {
       setLoading(false);
@@ -51,9 +50,7 @@ export default function LoginModal({ onSuccess }: LoginModalProps) {
     <div className={styles.overlay}>
       <div className={styles.card}>
         <h2 className={styles.title}>🔐 Accès Restreint</h2>
-        <p className={styles.text}>
-          Veuillez vous identifier pour accéder aux données.
-        </p>
+        <p className={styles.text}>Veuillez vous identifier pour accéder aux données.</p>
         <form onSubmit={handleSubmit}>
           <div className={styles.formGroup}>
             <label htmlFor="email" className={styles.label}>

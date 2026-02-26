@@ -1,0 +1,68 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "rules": {
+    "typescript": {
+      "no-explicit-any": "error",
+      "no-unused-vars": "error",
+      "no-non-null-assertion": "warn"
+    },
+    "eslint": {
+      "no-var": "error",
+      "no-debugger": "error",
+      "no-alert": "error",
+      "no-eval": "error",
+      "no-implied-eval": "error",
+      "eqeqeq": "error",
+      "prefer-const": "error",
+      "no-unused-vars": "error"
+    },
+    "react": {
+      "no-danger": "warn",
+      "no-direct-mutation-state": "error",
+      "no-unknown-property": "error",
+      "jsx-no-duplicate-props": "error",
+      "jsx-no-undef": "error"
+    },
+    "react-hooks": {
+      "rules-of-hooks": "error",
+      "exhaustive-deps": "warn"
+    },
+    "unicorn": {
+      "filename-case": "off"
+    },
+    "import": {
+      "no-default-export": "off"
+    },
+    "nextjs": {
+      "no-html-link-for-pages": "off"
+    }
+  },
+  "settings": {
+    "jsx-a11y": {
+      "polymorphicPropName": "as",
+      "components": {}
+    }
+  },
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "pedantic": "off",
+    "perf": "warn",
+    "restriction": "off",
+    "style": "warn",
+    "nursery": "off"
+  },
+  "ignore": [
+    "*.config.js",
+    "*.config.ts",
+    "*.config.mjs",
+    ".next/**",
+    "out/**",
+    "build/**",
+    "dist/**",
+    "node_modules/**",
+    ".open-next/**",
+    "next-env.d.ts",
+    "src/lib/regions-data.ts"
+  ]
+}

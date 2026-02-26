@@ -1,6 +1,5 @@
 export function getXpGroup(years: unknown): string {
-  const xp =
-    typeof years === "number" ? years : Number.parseInt(String(years), 10);
+  const xp = typeof years === "number" ? years : Number.parseInt(String(years), 10);
   if (Number.isNaN(xp)) {
     return "Non renseigné";
   }
