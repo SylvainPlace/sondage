@@ -1,0 +1,48 @@
+{
+  // Oxfmt configuration for sondage-next project
+  // Documentation: https://oxc.rs/docs/guide/usage/formatter.html
+
+  "$schema": "https://oxc.rs/schemas/oxfmtrc.json",
+
+  // General formatting options
+  "useTabs": false,
+  "tabWidth": 2,
+  "printWidth": 100,
+  "lineEnding": "lf",
+  "indentWidth": 2,
+
+  // Semicolons and quotes
+  "semicolons": true,
+  "quoteStyle": "single",
+  "jsxQuoteStyle": "double",
+
+  // Trailing commas
+  "trailingCommas": "es5",
+
+  // Bracket spacing
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+
+  // Arrow function parentheses
+  "arrowParens": "always",
+
+  // JSX/TSX specific
+  "jsxSingleQuote": false,
+
+  // File-specific overrides
+  "overrides": [
+    {
+      "files": ["*.json", "*.jsonc"],
+      "options": {
+        "trailingCommas": "none"
+      }
+    },
+    {
+      "files": ["*.md"],
+      "options": {
+        "printWidth": 80,
+        "proseWrap": "always"
+      }
+    }
+  ]
+}
