@@ -13,6 +13,7 @@ Application de visualisation des données de carrière des alumni, construite av
   - Graphiques : `react-chartjs-2` / Chart.js
 - **Données**: Google Sheets API
 - **Authentification**: Mot de passe + Whitelist email (JWT)
+- **Formatage**: Oxfmt (Rust-based formatter)
 
 ## 🛠️ Prérequis
 
@@ -61,8 +62,9 @@ Application de visualisation des données de carrière des alumni, construite av
 - `npm run lint` : Vérifie les erreurs ESLint
 - `npm run lint:fix` : Corrige automatiquement les erreurs ESLint
 - `npm run typecheck` : Vérifie les types TypeScript
-- `npm run format` : Formate le code avec Prettier
+- `npm run format` : Formate le code avec Oxfmt
 - `npm run format:check` : Vérifie le formatage sans modifier
+- `npm run format:fix` : Formate le code (alias de format)
 - `npm run check` : Exécute toutes les vérifications (lint, typecheck, test, format)
 - `npm run check:fix` : Corrige automatiquement lint et formatage
 
@@ -94,6 +96,20 @@ npm run dev
 ```
 
 L'application sera accessible sur `http://localhost:3000`.
+
+## 🎨 Formatage du Code
+
+Ce projet utilise **Oxfmt**, un formateur de code ultra-rapide écrit en Rust, compatible avec Prettier mais jusqu'à 20x plus rapide. Pour plus d'informations sur la migration de Prettier vers Oxfmt, consultez [OXFMT_MIGRATION.md](./OXFMT_MIGRATION.md).
+
+Pour formater votre code :
+```bash
+npm run format
+```
+
+Pour vérifier le formatage sans modifier les fichiers :
+```bash
+npm run format:check
+```
 
 ## ☁️ Déploiement (Cloudflare Workers)
 
@@ -135,6 +151,7 @@ npm run preview
 - `src/lib`: Logique métier et utilitaires (Auth Google, JWT, Normalisation des données).
 - `wrangler.json`: Configuration Cloudflare Workers.
 - `open-next.config.ts`: Configuration spécifique à OpenNext.
+- `oxfmtrc.jsonc`: Configuration du formateur de code Oxfmt.
 
 ## 🔐 Sécurité
 
