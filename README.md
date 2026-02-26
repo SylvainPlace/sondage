@@ -13,6 +13,7 @@ Application de visualisation des données de carrière des alumni, construite av
   - Graphiques : `react-chartjs-2` / Chart.js
 - **Données**: Google Sheets API
 - **Authentification**: Mot de passe + Whitelist email (JWT)
+- **Toolchain**: Oxc (Oxfmt + Oxlint) - Rust-based development tools
 
 ## 🛠️ Prérequis
 
@@ -58,12 +59,25 @@ Application de visualisation des données de carrière des alumni, construite av
 
 ### Qualité du code
 
-- `npm run lint` : Vérifie les erreurs ESLint
-- `npm run lint:fix` : Corrige automatiquement les erreurs ESLint
-- `npm run typecheck` : Vérifie les types TypeScript
-- `npm run format` : Formate le code avec Prettier
+#### Formatage (Oxfmt - 10-20x plus rapide que Prettier!)
+- `npm run format` : Formate le code avec Oxfmt
 - `npm run format:check` : Vérifie le formatage sans modifier
-- `npm run check` : Exécute toutes les vérifications (lint, typecheck, test, format)
+- `npm run format:fix` : Formate le code (alias de format)
+
+#### Linting (ESLint + Oxlint)
+- `npm run lint` : Vérifie les erreurs avec ESLint (actuel par défaut)
+- `npm run lint:fix` : Corrige automatiquement les erreurs ESLint
+- `npm run lint:ox` : Vérifie avec Oxlint (nouveau, 50-100x plus rapide!)
+- `npm run lint:ox:fix` : Corrige automatiquement avec Oxlint
+- `npm run lint:both` : Exécute ESLint et Oxlint pour comparaison
+
+#### Autres vérifications
+- `npm run typecheck` : Vérifie les types TypeScript
+
+#### Vérifications complètes
+- `npm run check` : Exécute toutes les vérifications avec ESLint (lint, typecheck, test, format)
+- `npm run check:ox` : Exécute toutes les vérifications avec Oxlint
+- `npm run check:both` : Exécute toutes les vérifications avec les deux linters
 - `npm run check:fix` : Corrige automatiquement lint et formatage
 
 ### Tests
@@ -94,6 +108,95 @@ npm run dev
 ```
 
 L'application sera accessible sur `http://localhost:3000`.
+
+## ⚡ Oxc Toolchain (Formatage + Linting)
+
+Ce projet utilise la **toolchain Oxc**, une suite d'outils de développement ultra-rapides écrits en Rust :
+
+- **Oxfmt** (formateur) : 10-20x plus rapide que Prettier
+- **Oxlint** (linter) : 50-100x plus rapide qu'ESLint
+
+### Pourquoi Oxc?
+
+✨ **Performance exceptionnelle**
+- Feedback quasi-instantané (< 1 seconde pour tout le codebase)
+- Formatage : 2-3s → 0.1-0.2s
+- Linting : 5-10s → 0.1-0.5s
+- Quality check complète : 7-13s → 0.2-0.7s ⚡
+
+🔧 **Toolchain unifiée**
+- Écosystème cohérent (Oxfmt + Oxlint)
+- Configuration simplifiée
+- Meilleure intégration
+
+💻 **Expérience développeur**
+- Format-on-save imperceptible
+- Linting instantané
+- Pre-commit hooks ultra-rapides
+- CI/CD dramatiquement plus rapide
+
+### Utilisation
+
+#### Formatage avec Oxfmt
+
+```bash
+# Formater tous les fichiers
+npm run format
+
+# Vérifier le formatage
+npm run format:check
+```
+
+#### Linting (phase de coexistence)
+
+Les deux linters coexistent actuellement :
+
+```bash
+# ESLint (actuel par défaut)
+npm run lint
+
+# Oxlint (nouveau, recommandé pour tester)
+npm run lint:ox
+
+# Comparer les deux
+npm run lint:both
+```
+
+### Migration Progressive
+
+Nous suivons une approche de migration graduelle :
+
+1. ✅ **Oxfmt** : Migration complète - remplace Prettier
+2. 🔄 **Oxlint** : Coexistence - disponible aux côtés d'ESLint
+3. 📅 **Futur** : Transition vers Oxlint comme défaut après évaluation
+
+### Documentation Complète
+
+Consultez [OXC_UNIFIED_MIGRATION.md](./OXC_UNIFIED_MIGRATION.md) pour :
+- Guide de migration détaillé
+- Comparaisons de performance
+- Configuration IDE (VS Code)
+- Meilleures pratiques
+- FAQ et support
+
+### Intégration IDE (Recommandé)
+
+Pour une expérience optimale, installez l'extension VS Code **Oxc** :
+
+1. Installer l'extension "oxc" depuis le marketplace
+2. Configurer `.vscode/settings.json` :
+
+```json
+{
+  "oxc.enable": true,
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.formatOnSave": true,
+  "oxc.lint.enable": true,
+  "oxc.lint.run": "onSave"
+}
+```
+
+Voir [OXC_UNIFIED_MIGRATION.md](./OXC_UNIFIED_MIGRATION.md) pour la configuration complète.
 
 ## ☁️ Déploiement (Cloudflare Workers)
 
@@ -135,6 +238,8 @@ npm run preview
 - `src/lib`: Logique métier et utilitaires (Auth Google, JWT, Normalisation des données).
 - `wrangler.json`: Configuration Cloudflare Workers.
 - `open-next.config.ts`: Configuration spécifique à OpenNext.
+- `oxfmtrc.jsonc`: Configuration du formateur Oxfmt.
+- `oxlintrc.json`: Configuration du linter Oxlint.
 
 ## 🔐 Sécurité
 
