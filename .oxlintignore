@@ -1,0 +1,46 @@
+# Build outputs
+.next/
+out/
+build/
+dist/
+
+# Dependencies
+node_modules/
+
+# Configuration files
+*.config.js
+*.config.ts
+*.config.mjs
+*.config.cjs
+
+# Type definitions
+next-env.d.ts
+*.d.ts
+
+# OpenNext build files
+.open-next/
+
+# Large static data files
+src/lib/regions-data.ts
+
+# Test files (optional - remove if you want to lint tests)
+# **/*.test.ts
+# **/*.test.tsx
+# **/*.spec.ts
+# **/*.spec.tsx
+
+# Cache directories
+.cache/
+.turbo/
+.vite/
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Logs
+*.log
+
+# Environment files
+.env*
+!.env.example
