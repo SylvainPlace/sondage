@@ -40,15 +40,7 @@ const SECTOR_RULES: NormalizationRule[] = [
   },
   {
     label: "Institution Publique",
-    keywords: [
-      "public",
-      "ars",
-      "ans",
-      "ministère",
-      "gip",
-      "doctorat",
-      "recherche",
-    ],
+    keywords: ["public", "ars", "ans", "ministère", "gip", "doctorat", "recherche"],
   },
   {
     label: "ESN / Conseil",
@@ -93,13 +85,7 @@ const JOB_RULES: NormalizationRule[] = [
   },
   {
     label: "Chef de Projet",
-    keywords: [
-      "chef de projet",
-      "cheffe de projet",
-      "projet",
-      "agile",
-      "scrum",
-    ],
+    keywords: ["chef de projet", "cheffe de projet", "projet", "agile", "scrum"],
   },
   {
     label: "Développeur / Ingénieur",
@@ -124,16 +110,7 @@ const JOB_RULES: NormalizationRule[] = [
   },
   {
     label: "DevOps / Infra / Sécurité",
-    keywords: [
-      "devops",
-      "système",
-      "réseau",
-      "sécurité",
-      "admin",
-      "cloud",
-      "sre",
-      "cyber",
-    ],
+    keywords: ["devops", "système", "réseau", "sécurité", "admin", "cloud", "sre", "cyber"],
   },
   {
     label: "Consultant / Intégrateur",
@@ -277,16 +254,7 @@ const REGION_RULES: NormalizationRule[] = [
   },
   {
     label: "Bretagne",
-    keywords: [
-      "finistère",
-      "29",
-      "morbihan",
-      "56",
-      "ille-et-vilaine",
-      "35",
-      "côtes-d'armor",
-      "22",
-    ],
+    keywords: ["finistère", "29", "morbihan", "56", "ille-et-vilaine", "35", "côtes-d'armor", "22"],
   },
   {
     label: "Pays de la Loire",
@@ -305,29 +273,11 @@ const REGION_RULES: NormalizationRule[] = [
   },
   {
     label: "PACA / Sud",
-    keywords: [
-      "bouches-du-rhône",
-      "13",
-      "var",
-      "83",
-      "alpes-maritimes",
-      "06",
-      "vaucluse",
-      "84",
-    ],
+    keywords: ["bouches-du-rhône", "13", "var", "83", "alpes-maritimes", "06", "vaucluse", "84"],
   },
   {
     label: "Grand Est",
-    keywords: [
-      "bas-rhin",
-      "67",
-      "haut-rhin",
-      "68",
-      "moselle",
-      "57",
-      "meurthe-et-moselle",
-      "54",
-    ],
+    keywords: ["bas-rhin", "67", "haut-rhin", "68", "moselle", "57", "meurthe-et-moselle", "54"],
   },
   {
     label: "Centre-Val de Loire",
@@ -361,11 +311,7 @@ function normalizeWithRules(
   const s = str.toLowerCase().trim();
 
   for (const rule of rules) {
-    if (
-      rule.keywords.some(
-        (k) => s.includes(k) || (k.startsWith(" ") && s.endsWith(k.trim())),
-      )
-    ) {
+    if (rule.keywords.some((k) => s.includes(k) || (k.startsWith(" ") && s.endsWith(k.trim())))) {
       // Handle " endsWith" via space prefix hack or explicit check
       return rule.label;
     }

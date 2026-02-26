@@ -26,10 +26,7 @@ interface SalaryChartProps {
   userComparison?: UserComparisonData | null;
 }
 
-export function SalaryChart({
-  distribution,
-  userComparison,
-}: SalaryChartProps) {
+export function SalaryChart({ distribution, userComparison }: SalaryChartProps) {
   const chartData = useMemo(() => {
     const categories =
       distribution?.labels && distribution.labels.length > 0
@@ -57,8 +54,7 @@ export function SalaryChart({
 
             // Simple mapping logic matching parseSalaryRange ranges
             let isMatch = false;
-            const normalize = (str: string) =>
-              str.toLowerCase().replace(/\s/g, "");
+            const normalize = (str: string) => str.toLowerCase().replace(/\s/g, "");
             const catNorm = normalize(label);
 
             if (catNorm.includes("moinsde30") && salary < 30000) {
@@ -93,8 +89,7 @@ export function SalaryChart({
       },
       tooltip: {
         callbacks: {
-          title: (items: TooltipItem<"bar">[]) =>
-            `Tranche : ${items[0]?.label ?? ""}`,
+          title: (items: TooltipItem<"bar">[]) => `Tranche : ${items[0]?.label ?? ""}`,
         },
       },
     },

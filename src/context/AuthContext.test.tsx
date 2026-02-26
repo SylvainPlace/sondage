@@ -102,10 +102,7 @@ describe("AuthContext", () => {
 
       expect(result.current.token).toBe(validToken);
       expect(result.current.isAuthenticated).toBe(true);
-      expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        "auth_token",
-        validToken,
-      );
+      expect(localStorageMock.setItem).toHaveBeenCalledWith("auth_token", validToken);
     });
 
     it("should throw error for invalid token format", async () => {
@@ -171,9 +168,7 @@ describe("AuthContext", () => {
 
   describe("useAuth hook", () => {
     it("should throw error when used outside AuthProvider", () => {
-      const consoleError = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
+      const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
 
       expect(() => {
         renderHook(() => useAuth());

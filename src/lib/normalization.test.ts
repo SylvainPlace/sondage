@@ -1,12 +1,7 @@
 import { describe, it, expect } from "vitest";
 
 import { parseSalaryRange, parsePrime } from "./frontend-utils";
-import {
-  normalizeJob,
-  normalizeSector,
-  normalizeRegion,
-  parseExperience,
-} from "./normalization";
+import { normalizeJob, normalizeSector, normalizeRegion, parseExperience } from "./normalization";
 
 describe("Normalization Logic", () => {
   describe("parseExperience", () => {
@@ -68,9 +63,7 @@ describe("Normalization Logic", () => {
 
   describe("normalizeJob", () => {
     it("should normalize Product Owner roles", () => {
-      expect(normalizeJob("Product Owner")).toBe(
-        "Product Owner / Product Manager",
-      );
+      expect(normalizeJob("Product Owner")).toBe("Product Owner / Product Manager");
       expect(normalizeJob("PO")).toBe("Product Owner / Product Manager");
       expect(normalizeJob("PM")).toBe("Autre"); // Unless PM is added to keywords
     });
@@ -81,9 +74,7 @@ describe("Normalization Logic", () => {
     });
 
     it("should normalize Developers", () => {
-      expect(normalizeJob("Développeur Fullstack")).toBe(
-        "Développeur / Ingénieur",
-      );
+      expect(normalizeJob("Développeur Fullstack")).toBe("Développeur / Ingénieur");
       expect(normalizeJob("Software Engineer")).toBe("Développeur / Ingénieur");
     });
 
@@ -95,15 +86,11 @@ describe("Normalization Logic", () => {
 
   describe("normalizeSector", () => {
     it("should normalize Health Software", () => {
-      expect(normalizeSector("Éditeur logiciel médical")).toBe(
-        "Éditeur Logiciel Santé",
-      );
+      expect(normalizeSector("Éditeur logiciel médical")).toBe("Éditeur Logiciel Santé");
     });
 
     it("should normalize Public Institutions", () => {
-      expect(normalizeSector("Ministère de la Santé")).toBe(
-        "Institution Publique",
-      );
+      expect(normalizeSector("Ministère de la Santé")).toBe("Institution Publique");
     });
   });
 

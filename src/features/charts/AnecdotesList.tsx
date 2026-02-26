@@ -18,11 +18,7 @@ export function AnecdotesList({ data, hasActiveFilters }: AnecdotesListProps) {
   }
 
   if (!data || data.length === 0) {
-    return (
-      <p style={{ color: "var(--text-muted)" }}>
-        Aucun commentaire pour cette sélection.
-      </p>
-    );
+    return <p style={{ color: "var(--text-muted)" }}>Aucun commentaire pour cette sélection.</p>;
   }
 
   return (

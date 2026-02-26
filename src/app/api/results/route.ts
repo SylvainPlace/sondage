@@ -64,7 +64,10 @@ function normalizeSalaryLabel(str: string) {
   if (!str) {
     return "";
   }
-  return str.toLowerCase().replace(/\s/g, "").replace(/[–—]/g, "-");
+  return str
+    .toLowerCase()
+    .replace(/\s/g, "")
+    .replace(/[–—]/g, "-");
 }
 
 function normalizeRegionName(name: string) {
@@ -107,10 +110,7 @@ function getStatsOrNull(values: number[]) {
   return { mean: stats.mean, median: stats.median };
 }
 
-function applyFilters(
-  data: SurveyResponse[],
-  filters: Record<string, string[]>,
-) {
+function applyFilters(data: SurveyResponse[], filters: Record<string, string[]>) {
   const entries = Object.entries(filters);
   if (entries.length === 0) {
     return data;
@@ -136,9 +136,7 @@ function sanitizeFilters(rawFilters: unknown) {
   }
 
   const filters: Record<string, string[]> = {};
-  for (const [key, value] of Object.entries(
-    rawFilters as Record<string, unknown>,
-  )) {
+  for (const [key, value] of Object.entries(rawFilters as Record<string, unknown>)) {
     if (Array.isArray(value)) {
       const cleaned = value
         .map((val) => String(val))
@@ -153,9 +151,7 @@ function sanitizeFilters(rawFilters: unknown) {
 }
 
 function buildEtag(payload: unknown) {
-  const hash = createHash("sha256")
-    .update(JSON.stringify(payload))
-    .digest("hex");
+  const hash = createHash("sha256").update(JSON.stringify(payload)).digest("hex");
   return `"${hash}"`;
 }
 
@@ -188,10 +184,7 @@ export async function POST(request: NextRequest) {
       throw new Error("Missing configuration (Secrets).");
     }
 
-    const gToken = await getGoogleAccessToken(
-      GCP_SERVICE_ACCOUNT_EMAIL,
-      GCP_PRIVATE_KEY,
-    );
+    const gToken = await getGoogleAccessToken(GCP_SERVICE_ACCOUNT_EMAIL, GCP_PRIVATE_KEY);
 
     const sheetName = "Réponses au formulaire 1";
     const googleUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(
@@ -234,8 +227,7 @@ export async function POST(request: NextRequest) {
       salaire_brut: "Salaire brut annuel actuel (hors primes)",
       primes: "Primes / variable annuel",
       avantages: "Avantages particuliers (optionnel)",
-      conseil:
-        "Un conseil, un retour d’expérience, une anecdote ? (facultatif)",
+      conseil: "Un conseil, un retour d’expérience, une anecdote ? (facultatif)",
     };
 
     const headerMap: Record<string, number> = {};
@@ -425,10 +417,7 @@ export async function POST(request: NextRequest) {
       .sort((a, b) => b[1] - a[1])
       .map(([label, count]) => ({ label, count }));
 
-    const regionStats: Record<
-      string,
-      { salaries: number[]; totals: number[] }
-    > = {};
+    const regionStats: Record<string, { salaries: number[]; totals: number[] }> = {};
     filteredData.forEach((item) => {
       const region = item.departement;
       if (!region) {
@@ -485,8 +474,7 @@ export async function POST(request: NextRequest) {
         experience: item.experience,
       }));
 
-    const filtersResponse: Record<string, { value: string; count: number }[]> =
-      {};
+    const filtersResponse: Record<string, { value: string; count: number }[]> = {};
     FILTER_KEYS.forEach((key) => {
       const contextFilters = { ...filters };
       delete contextFilters[key];

@@ -22,10 +22,7 @@ export function BenefitsList({ data }: BenefitsListProps) {
               <span>{stat.percentage}%</span>
             </div>
             <div className={styles.benefitBarBg}>
-              <div
-                className={styles.benefitBarFill}
-                style={{ width: `${stat.percentage}%` }}
-              ></div>
+              <div className={styles.benefitBarFill} style={{ width: `${stat.percentage}%` }}></div>
             </div>
           </div>
         ) : null,

@@ -95,30 +95,21 @@ export default function Map({ regions, mode }: MapProps) {
     return values;
   }, [mode, regionMetrics]);
 
-  const currentBreaks = useMemo(
-    () => calculateBreaks(currentValues),
-    [currentValues],
-  );
+  const currentBreaks = useMemo(() => calculateBreaks(currentValues), [currentValues]);
 
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) {
       return;
     }
 
-    const map = L.map(mapContainerRef.current).setView(
-      [46.603354, 1.888334],
-      6,
-    );
+    const map = L.map(mapContainerRef.current).setView([46.603354, 1.888334], 6);
 
-    L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-      {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: "abcd",
-        maxZoom: 19,
-      },
-    ).addTo(map);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: "abcd",
+      maxZoom: 19,
+    }).addTo(map);
 
     mapInstanceRef.current = map;
 
@@ -133,11 +124,7 @@ export default function Map({ regions, mode }: MapProps) {
           return r.json();
         })
         .then((geo) => {
-          if (
-            geo &&
-            geo.type === "FeatureCollection" &&
-            Array.isArray(geo.features)
-          ) {
+          if (geo && geo.type === "FeatureCollection" && Array.isArray(geo.features)) {
             geoJsonDataRef.current = geo as FeatureCollection;
             renderGeoJsonLayer();
           }
@@ -182,16 +169,11 @@ export default function Map({ regions, mode }: MapProps) {
 
   const style = useCallback(
     (feature?: GeoJSON.Feature) => {
-      const props = feature?.properties as
-        | Record<string, unknown>
-        | null
-        | undefined;
+      const props = feature?.properties as Record<string, unknown> | null | undefined;
       const name = normalizeRegionName(props?.nom ? String(props.nom) : "");
       const stats =
         regionMetrics[name] ??
-        (name.includes("provence alpes cote d azur")
-          ? regionMetrics["paca sud"]
-          : undefined);
+        (name.includes("provence alpes cote d azur") ? regionMetrics["paca sud"] : undefined);
 
       const value = getRegionValue(stats, mode);
 
@@ -236,10 +218,7 @@ export default function Map({ regions, mode }: MapProps) {
         mouseout: resetHighlight,
       });
 
-      const props = feature.properties as
-        | Record<string, unknown>
-        | null
-        | undefined;
+      const props = feature.properties as Record<string, unknown> | null | undefined;
       const nom = props?.nom ? String(props.nom) : "";
       if (!nom) {
         return;
@@ -248,9 +227,7 @@ export default function Map({ regions, mode }: MapProps) {
       const normalized = normalizeRegionName(nom);
       const stats =
         regionMetrics[normalized] ??
-        (normalized.includes("provence alpes cote d azur")
-          ? regionMetrics["paca sud"]
-          : undefined);
+        (normalized.includes("provence alpes cote d azur") ? regionMetrics["paca sud"] : undefined);
 
       let content = `<strong>${nom}</strong><br/>`;
       if (stats && hasSufficientData(stats)) {
@@ -347,7 +324,5 @@ export default function Map({ regions, mode }: MapProps) {
     renderGeoJsonLayer();
   }, [renderGeoJsonLayer]);
 
-  return (
-    <div ref={mapContainerRef} style={{ height: "100%", width: "100%" }} />
-  );
+  return <div ref={mapContainerRef} style={{ height: "100%", width: "100%" }} />;
 }

@@ -80,8 +80,7 @@ export async function getGoogleAccessToken(
     throw new Error(`Failed to get access token: ${JSON.stringify(tokenData)}`);
   }
 
-  const expiresInSec =
-    typeof tokenData.expires_in === "number" ? tokenData.expires_in : 3600;
+  const expiresInSec = typeof tokenData.expires_in === "number" ? tokenData.expires_in : 3600;
   const refreshSkewSec = 60;
   cachedAccessToken = {
     token: tokenData.access_token,
@@ -108,10 +107,7 @@ export async function getWhitelist(env: {
       return cachedWhitelist.emails;
     }
 
-    const token = await getGoogleAccessToken(
-      env.GCP_SERVICE_ACCOUNT_EMAIL,
-      env.GCP_PRIVATE_KEY,
-    );
+    const token = await getGoogleAccessToken(env.GCP_SERVICE_ACCOUNT_EMAIL, env.GCP_PRIVATE_KEY);
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${env.SPREADSHEET_ID}/values/Whitelist!A:A`;
 
     const response = await fetch(url, {
