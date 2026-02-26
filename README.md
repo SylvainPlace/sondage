@@ -104,28 +104,6 @@ npm run dev
 
 L'application sera accessible sur `http://localhost:3000`.
 
-### Utilisation
-
-#### Formatage avec Oxfmt
-
-```bash
-# Formater tous les fichiers
-npm run format
-
-# Vérifier le formatage
-npm run format:check
-```
-
-#### Linting avec Oxlint
-
-```bash
-# Vérifier le code
-npm run lint
-
-# Corriger automatiquement
-npm run lint:fix
-```
-
 ## ☁️ Déploiement (Cloudflare Workers)
 
 Ce projet utilise `@opennextjs/cloudflare` pour adapter Next.js au runtime Edge de Cloudflare Workers.
