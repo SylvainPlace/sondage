@@ -13,6 +13,7 @@ Application de visualisation des données de carrière des alumni, construite av
   - Graphiques : `react-chartjs-2` / Chart.js
 - **Données**: Google Sheets API
 - **Authentification**: Mot de passe + Whitelist email (JWT)
+- **Linting**: ESLint + Oxlint (migration en cours)
 
 ## 🛠️ Prérequis
 
@@ -58,13 +59,23 @@ Application de visualisation des données de carrière des alumni, construite av
 
 ### Qualité du code
 
-- `npm run lint` : Vérifie les erreurs ESLint
+#### Linting
+- `npm run lint` : Vérifie les erreurs avec ESLint (actuel)
 - `npm run lint:fix` : Corrige automatiquement les erreurs ESLint
+- `npm run lint:ox` : Vérifie les erreurs avec Oxlint (nouveau, 50-100x plus rapide!)
+- `npm run lint:ox:fix` : Corrige automatiquement les erreurs avec Oxlint
+- `npm run lint:both` : Exécute ESLint et Oxlint pour comparaison
+
+#### Autres vérifications
 - `npm run typecheck` : Vérifie les types TypeScript
 - `npm run format` : Formate le code avec Prettier
 - `npm run format:check` : Vérifie le formatage sans modifier
-- `npm run check` : Exécute toutes les vérifications (lint, typecheck, test, format)
-- `npm run check:fix` : Corrige automatiquement lint et formatage
+
+#### Vérifications complètes
+- `npm run check` : Exécute toutes les vérifications avec ESLint (lint, typecheck, test, format)
+- `npm run check:ox` : Exécute toutes les vérifications avec Oxlint
+- `npm run check:both` : Exécute toutes les vérifications avec les deux linters
+- `npm run check:fix` : Corrige automatiquement lint et formatage (ESLint)
 
 ### Tests
 
@@ -94,6 +105,41 @@ npm run dev
 ```
 
 L'application sera accessible sur `http://localhost:3000`.
+
+## ⚡ Linting avec Oxlint
+
+Ce projet est en cours de migration vers **Oxlint**, un linter JavaScript/TypeScript ultra-rapide écrit en Rust, qui est **50-100x plus rapide** qu'ESLint. Pour plus d'informations sur la stratégie de migration, consultez [OXLINT_MIGRATION.md](./OXLINT_MIGRATION.md).
+
+### Pourquoi Oxlint?
+- **Performance**: 50-100x plus rapide qu'ESLint
+- **Feedback instantané**: Résultats en < 1 seconde pour tout le codebase
+- **CI/CD rapide**: Réduction drastique du temps de pipeline
+- **Compatibilité**: Supporte la plupart des règles ESLint courantes
+
+### Utilisation actuelle (Phase de coexistence)
+
+Les deux linters coexistent actuellement:
+
+```bash
+# Utiliser ESLint (actuel par défaut)
+npm run lint
+
+# Utiliser Oxlint (nouveau, recommandé pour tester)
+npm run lint:ox
+
+# Comparer les deux
+npm run lint:both
+```
+
+### Migration progressive
+
+Nous suivons une approche de migration graduelle:
+1. **Phase 1 (actuelle)**: Coexistence - Les deux linters disponibles
+2. **Phase 2**: Évaluation - Comparaison et ajustements
+3. **Phase 3**: Transition - Oxlint devient le défaut
+4. **Phase 4**: Migration complète - Suppression d'ESLint
+
+Consultez [OXLINT_MIGRATION.md](./OXLINT_MIGRATION.md) pour plus de détails sur la stratégie de migration.
 
 ## ☁️ Déploiement (Cloudflare Workers)
 
@@ -135,6 +181,7 @@ npm run preview
 - `src/lib`: Logique métier et utilitaires (Auth Google, JWT, Normalisation des données).
 - `wrangler.json`: Configuration Cloudflare Workers.
 - `open-next.config.ts`: Configuration spécifique à OpenNext.
+- `oxlintrc.json`: Configuration du linter Oxlint (en migration).
 
 ## 🔐 Sécurité
 
