@@ -9,7 +9,7 @@ updates:
     # Look for package.json and package-lock.json in the root directory
     directory: "/"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
       # Time zone for schedule (optional, defaults to UTC)
       timezone: "Europe/Paris"
     # Open pull requests for version updates immediately (default: "daily")
