@@ -61,12 +61,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: "Idea not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       idea: {
         ...updatedIdea,
         userIsAuthor: updatedIdea.author_email === userEmail,
         isPublic: Boolean(updatedIdea.is_public),
-      }
+      },
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
@@ -135,7 +135,7 @@ export async function DELETE(
         ...updatedIdea,
         userIsAuthor: updatedIdea.author_email === userEmail,
         isPublic: Boolean(updatedIdea.is_public),
-      }
+      },
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
