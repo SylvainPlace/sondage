@@ -19,7 +19,8 @@
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "build:cloudflare": "opennextjs-cloudflare build",
     "deploy:cloudflare": "opennextjs-cloudflare deploy",
-    "prepare": "husky"
+    "prepare": "husky",
+    "cf:types": "wrangler types --env-interface CloudflareEnv"
   },
   "dependencies": {
     "chart.js": "^4.4.1",
