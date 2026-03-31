@@ -17,7 +17,6 @@
     "check": "npm run lint && npm run typecheck && npm test && npm run format:check",
     "check:fix": "npm run lint:fix && npm run format:fix",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "build:cloudflare": "opennextjs-cloudflare build",
     "deploy:cloudflare": "opennextjs-cloudflare deploy",
     "prepare": "husky"
