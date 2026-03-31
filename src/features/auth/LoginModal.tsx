@@ -28,7 +28,7 @@ export default function LoginModal({ onSuccess }: LoginModalProps) {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      const data = (await res.json()) as { token: string; error?: string };
 
       if (!res.ok) {
         throw new Error(data.error || "Erreur de connexion");

@@ -10,6 +10,7 @@ import { DashboardSkeleton, ResultsSkeleton } from "@/components/ui/Skeleton";
 import LoginModal from "@/features/auth/LoginModal";
 import Filters from "@/features/filters/Filters";
 import ComparisonForm from "@/features/dashboard/ComparisonForm";
+import IdeaBox from "@/features/ideas/IdeaBox";
 import { formatMoney } from "@/lib/frontend-utils";
 import { Button } from "@/components/ui/Button";
 
@@ -286,6 +287,7 @@ export default function Dashboard() {
         <div className={styles.filtersColumn}>
           <ComparisonForm />
           <Filters />
+          <IdeaBox />
         </div>
 
         <section className="results-panel">

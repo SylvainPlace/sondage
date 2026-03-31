@@ -124,7 +124,8 @@ export default function Map({ regions, mode }: MapProps) {
           return r.json();
         })
         .then((geo) => {
-          if (geo && geo.type === "FeatureCollection" && Array.isArray(geo.features)) {
+          const geoData = geo as { type?: string; features?: unknown[] } | null;
+          if (geoData && geoData.type === "FeatureCollection" && Array.isArray(geoData.features)) {
             geoJsonDataRef.current = geo as FeatureCollection;
             renderGeoJsonLayer();
           }

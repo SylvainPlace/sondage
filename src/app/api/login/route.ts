@@ -5,7 +5,8 @@ import { signUserToken } from "@/lib/jwt";
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
+    const body = (await request.json()) as { email: string; password: string };
+    const { email, password } = body;
 
     const GLOBAL_PASSWORD = process.env.GLOBAL_PASSWORD;
     const GCP_SERVICE_ACCOUNT_EMAIL = process.env.GCP_SERVICE_ACCOUNT_EMAIL;

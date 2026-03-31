@@ -34,6 +34,7 @@
     "react-dom": "^19.2.4"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260331.1",
     "@opennextjs/cloudflare": "^1.17.3",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
