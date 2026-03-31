@@ -17,8 +17,7 @@
     {
       "binding": "IDEAS_DB",
       "database_name": "ideas_db",
-      "database_id": "f0e99742-1bb8-4b52-a775-6278e6458e86",
-      "remote": true
+      "database_id": "f0e99742-1bb8-4b52-a775-6278e6458e86"
     }
   ],
   "observability": {
