@@ -26,19 +26,9 @@ export async function GET(request: NextRequest) {
   }
 
   const userEmail = getUserEmailFromToken(token);
-  
-  let env;
-  try {
-    env = getCloudflareContext().env;
-  } catch (e) {
-    console.error("DEBUG: getCloudflareContext failed", e);
-    return NextResponse.json({ error: "Context error" }, { status: 500 });
-  }
-
-  console.log("DEBUG: GET ideas, userEmail:", userEmail, "env:", !!env);
+  const { env } = getCloudflareContext();
 
   try {
-    console.log("DEBUG: Querying ideas for user:", userEmail);
     const ideasResult = await env.IDEAS_DB.prepare(
       `SELECT i.id, i.title, i.description, i.created_at, i.upvotes,
               EXISTS(SELECT 1 FROM idea_votes iv WHERE iv.idea_id = i.id AND iv.user_email = ?) as userHasVoted
@@ -51,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     const ideas = ideasResult.results as unknown as Idea[];
 
-    return NextResponse.json({ ideas });
+    return NextResponse.json({ ideas, env });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });
@@ -103,12 +93,9 @@ export async function POST(request: NextRequest) {
   const description = body.description?.trim() || null;
 
   try {
-    console.log("DEBUG: Inserting idea", { id, title, description });
-    const result = await env.IDEAS_DB.prepare(
+    await env.IDEAS_DB.prepare(
       `INSERT INTO ideas (id, title, description, upvotes) VALUES (?, ?, ?, 0)`,
-    ).bind(id, title, description);
-
-    console.log("DEBUG: Insert result", result);
+    ).bind(id, title, description).run();
 
     const newIdea: Idea = {
       id,
