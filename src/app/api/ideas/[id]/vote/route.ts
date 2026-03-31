@@ -40,12 +40,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: "Already voted" }, { status: 400 });
     }
 
-    await env.IDEAS_DB.prepare(`INSERT INTO idea_votes (idea_id, user_email) VALUES (?, ?)`).bind(
-      ideaId,
-      userEmail,
-    );
+    await env.IDEAS_DB.prepare(`INSERT INTO idea_votes (idea_id, user_email) VALUES (?, ?)`)
+      .bind(ideaId, userEmail)
+      .run();
 
-    await env.IDEAS_DB.prepare(`UPDATE ideas SET upvotes = upvotes + 1 WHERE id = ?`).bind(ideaId);
+    await env.IDEAS_DB.prepare(`UPDATE ideas SET upvotes = upvotes + 1 WHERE id = ?`)
+      .bind(ideaId)
+      .run();
 
     const updatedIdea = (await env.IDEAS_DB.prepare(
       `SELECT i.id, i.title, i.description, i.created_at, i.upvotes,

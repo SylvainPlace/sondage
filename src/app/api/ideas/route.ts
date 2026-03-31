@@ -29,7 +29,8 @@ export async function GET(request: NextRequest) {
   const { env } = getCloudflareContext();
 
   try {
-    const ideasResult = await env.IDEAS_DB.prepare(
+    const db = env.IDEAS_DB;
+    const ideasResult = await db.prepare(
       `SELECT i.id, i.title, i.description, i.created_at, i.upvotes,
               EXISTS(SELECT 1 FROM idea_votes iv WHERE iv.idea_id = i.id AND iv.user_email = ?) as userHasVoted
        FROM ideas i
@@ -41,7 +42,7 @@ export async function GET(request: NextRequest) {
 
     const ideas = ideasResult.results as unknown as Idea[];
 
-    return NextResponse.json({ ideas, env });
+    return NextResponse.json({ ideas });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });
@@ -88,12 +89,13 @@ export async function POST(request: NextRequest) {
   }
 
   const { env } = getCloudflareContext();
+  const db = env.IDEAS_DB;
   const id = generateId();
   const title = body.title.trim();
   const description = body.description?.trim() || null;
 
   try {
-    await env.IDEAS_DB.prepare(
+    await db.prepare(
       `INSERT INTO ideas (id, title, description, upvotes) VALUES (?, ?, ?, 0)`,
     ).bind(id, title, description).run();
 
