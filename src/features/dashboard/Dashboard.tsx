@@ -281,6 +281,9 @@ export default function Dashboard() {
         >
           Participer au sondage
         </a>
+        <div className={styles.mobileIdeaBox}>
+          <IdeaBox />
+        </div>
       </header>
 
       <div className={styles.floatingIdeaBox}>

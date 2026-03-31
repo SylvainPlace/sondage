@@ -8,6 +8,8 @@
   max-height: 500px;
   display: flex;
   flex-direction: column;
+  width: fit-content;
+  margin: 0 auto;
 }
 
 .floatingBtn {
@@ -32,7 +34,6 @@
 }
 
 .collapsed {
-  /* closed state - only shows floating button */
   background: transparent;
   border: none;
   padding: 0;
@@ -42,7 +43,7 @@
 }
 
 .expanded {
-  /* open state */
+  width: 100%;
 }
 
 .header {

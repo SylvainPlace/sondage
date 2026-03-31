@@ -49,19 +49,25 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       .run();
 
     const updatedIdea = (await env.IDEAS_DB.prepare(
-      `SELECT i.id, i.title, i.description, i.created_at, i.upvotes,
+      `SELECT i.id, i.title, i.description, i.created_at, i.upvotes, i.author_email, i.is_public,
               1 as userHasVoted
        FROM ideas i
        WHERE i.id = ?`,
     )
       .bind(ideaId)
-      .first()) as Idea | null;
+      .first()) as (Idea & { author_email: string; is_public: number }) | null;
 
     if (!updatedIdea) {
       return NextResponse.json({ error: "Idea not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ idea: updatedIdea });
+    return NextResponse.json({ 
+      idea: {
+        ...updatedIdea,
+        userIsAuthor: updatedIdea.author_email === userEmail,
+        isPublic: Boolean(updatedIdea.is_public),
+      }
+    });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });
@@ -112,19 +118,25 @@ export async function DELETE(
       .run();
 
     const updatedIdea = (await env.IDEAS_DB.prepare(
-      `SELECT i.id, i.title, i.description, i.created_at, i.upvotes,
+      `SELECT i.id, i.title, i.description, i.created_at, i.upvotes, i.author_email, i.is_public,
               0 as userHasVoted
        FROM ideas i
        WHERE i.id = ?`,
     )
       .bind(ideaId)
-      .first()) as Idea | null;
+      .first()) as (Idea & { author_email: string; is_public: number }) | null;
 
     if (!updatedIdea) {
       return NextResponse.json({ error: "Idea not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ idea: updatedIdea });
+    return NextResponse.json({
+      idea: {
+        ...updatedIdea,
+        userIsAuthor: updatedIdea.author_email === userEmail,
+        isPublic: Boolean(updatedIdea.is_public),
+      }
+    });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });

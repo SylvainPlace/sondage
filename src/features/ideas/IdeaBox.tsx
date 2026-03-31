@@ -132,7 +132,7 @@ export default function IdeaBox() {
     <div className={`${styles.container} ${isExpanded ? styles.expanded : styles.collapsed}`}>
       {!isExpanded ? (
         <button className={styles.floatingBtn} onClick={() => setIsExpanded(true)}>
-          💡 Idées
+          💡 Boîte à Idée
         </button>
       ) : (
         <>

@@ -33,10 +33,10 @@ export async function DELETE(
   const db = env.IDEAS_DB;
 
   try {
-    const idea = await db
+    const idea = (await db
       .prepare(`SELECT author_email FROM ideas WHERE id = ?`)
       .bind(ideaId)
-      .first() as { author_email: string } | null;
+      .first()) as { author_email: string } | null;
 
     if (!idea) {
       return NextResponse.json({ error: "Idea not found" }, { status: 404 });

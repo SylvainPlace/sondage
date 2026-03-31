@@ -104,7 +104,9 @@ export async function POST(request: NextRequest) {
 
   try {
     await db
-      .prepare(`INSERT INTO ideas (id, title, description, author_email, is_public, upvotes) VALUES (?, ?, ?, ?, ?, 0)`)
+      .prepare(
+        `INSERT INTO ideas (id, title, description, author_email, is_public, upvotes) VALUES (?, ?, ?, ?, ?, 0)`,
+      )
       .bind(id, title, description, userEmail, isPublic ? 1 : 0)
       .run();
 
