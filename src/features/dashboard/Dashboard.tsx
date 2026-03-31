@@ -283,11 +283,14 @@ export default function Dashboard() {
         </a>
       </header>
 
+      <div className={styles.floatingIdeaBox}>
+        <IdeaBox />
+      </div>
+
       <main className={styles.mainGrid}>
         <div className={styles.filtersColumn}>
           <ComparisonForm />
           <Filters />
-          <IdeaBox />
         </div>
 
         <section className="results-panel">

@@ -11,11 +11,13 @@ export default function IdeaBox() {
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<IdeaFormData>({
     title: "",
     description: "",
+    isPublic: true,
   });
 
   const fetchIdeas = useCallback(async () => {
@@ -72,12 +74,14 @@ export default function IdeaBox() {
     }
   };
 
-  const handleVote = async (ideaId: string) => {
+  const handleVote = async (ideaId: string, hasVoted: boolean) => {
     if (!token) return;
+
+    const method = hasVoted ? "DELETE" : "POST";
 
     try {
       const res = await fetch(`/api/ideas/${ideaId}/vote`, {
-        method: "POST",
+        method,
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -99,76 +103,127 @@ export default function IdeaBox() {
     }
   };
 
+  const handleDelete = async (ideaId: string) => {
+    if (!token || !confirm("Voulez-vous vraiment supprimer cette idée ?")) return;
+
+    try {
+      const res = await fetch(`/api/ideas/${ideaId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        const data = (await res.json()) as { error: string };
+        throw new Error(data.error || "Failed to delete");
+      }
+
+      setIdeas(ideas.filter((idea) => idea.id !== ideaId));
+    } catch (err) {
+      console.error("Error deleting:", err);
+    }
+  };
+
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h3>Boîte à Idées</h3>
-        <Button variant="text" size="sm" onClick={() => setShowForm(!showForm)}>
-          {showForm ? "—" : "+"}
-        </Button>
-      </div>
-
-      {showForm && (
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <input
-            type="text"
-            placeholder="Titre de l'idée..."
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            className={styles.input}
-            maxLength={200}
-            required
-          />
-          <textarea
-            placeholder="Description (optionnel)..."
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className={styles.textarea}
-            maxLength={2000}
-            rows={3}
-          />
-          {error && <p className={styles.error}>{error}</p>}
-          <Button
-            type="submit"
-            variant="primary"
-            disabled={isSubmitting}
-            className={styles.submitBtn}
-          >
-            {isSubmitting ? "Envoi..." : "Soumettre"}
-          </Button>
-        </form>
-      )}
-
-      {isLoading ? (
-        <div className={styles.loading}>Chargement...</div>
-      ) : ideas.length === 0 ? (
-        <p className={styles.empty}>Aucune idée soumise. Soyez le premier !</p>
+    <div className={`${styles.container} ${isExpanded ? styles.expanded : styles.collapsed}`}>
+      {!isExpanded ? (
+        <button className={styles.floatingBtn} onClick={() => setIsExpanded(true)}>
+          💡 Idées
+        </button>
       ) : (
-        <ul className={styles.list}>
-          {ideas.map((idea) => (
-            <li key={idea.id} className={styles.ideaItem}>
-              <div className={styles.ideaContent}>
-                <span className={styles.ideaTitle}>{idea.title}</span>
-                {idea.description && <span className={styles.ideaDesc}>{idea.description}</span>}
-                <span className={styles.ideaDate}>{formatDate(idea.created_at)}</span>
-              </div>
-              <button
-                className={`${styles.voteBtn} ${idea.userHasVoted ? styles.voted : ""}`}
-                onClick={() => !idea.userHasVoted && handleVote(idea.id)}
-                disabled={idea.userHasVoted}
-                aria-label={idea.userHasVoted ? "Déjà voted" : "Voter pour cette idée"}
+        <>
+          <div className={styles.header}>
+            <h3>Boîte à Idées</h3>
+            <div className={styles.headerActions}>
+              <Button variant="secondary" size="md" onClick={() => setShowForm(!showForm)}>
+                {showForm ? "-" : "+"}
+              </Button>
+              <Button variant="text" size="md" onClick={() => setIsExpanded(false)}>
+                ✕
+              </Button>
+            </div>
+          </div>
+
+          {showForm && (
+            <form onSubmit={handleSubmit} className={styles.form}>
+              <input
+                type="text"
+                placeholder="Titre de l'idée..."
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                className={styles.input}
+                maxLength={200}
+                required
+              />
+              <textarea
+                placeholder="Description (optionnel)..."
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className={styles.textarea}
+                maxLength={500}
+                rows={3}
+              />
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={formData.isPublic ?? true}
+                  onChange={(e) => setFormData({ ...formData, isPublic: e.target.checked })}
+                />
+                Rendre cette idée publique
+              </label>
+              {error && <p className={styles.error}>{error}</p>}
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={isSubmitting}
+                className={styles.submitBtn}
               >
-                <span className={styles.voteCount}>{idea.upvotes}</span>
-                <span className={styles.voteIcon}>▲</span>
-              </button>
-            </li>
-          ))}
-        </ul>
+                {isSubmitting ? "Envoi..." : "Soumettre"}
+              </Button>
+            </form>
+          )}
+
+          {isLoading ? (
+            <div className={styles.loading}>Chargement...</div>
+          ) : ideas.length === 0 ? (
+            <p className={styles.empty}>Aucune idée soumise. Soyez le premier !</p>
+          ) : (
+            <ul className={styles.list}>
+              {ideas.map((idea) => (
+                <li key={idea.id} className={styles.ideaItem}>
+                  <div className={styles.ideaContent}>
+                    <span className={styles.ideaTitle}>{idea.title}</span>
+                    {idea.description && (
+                      <span className={styles.ideaDesc}>{idea.description}</span>
+                    )}
+                    <span className={styles.ideaDate}>{formatDate(idea.created_at)}</span>
+                  </div>
+                  <button
+                    className={`${styles.voteBtn} ${idea.userHasVoted ? styles.voted : ""}`}
+                    onClick={() => handleVote(idea.id, idea.userHasVoted)}
+                    aria-label={idea.userHasVoted ? "Retirer mon vote" : "Voter pour cette idée"}
+                  >
+                    <span className={styles.voteCount}>{idea.upvotes}</span>
+                    <span className={styles.voteIcon}>▲</span>
+                  </button>
+                  {idea.userIsAuthor && (
+                    <button
+                      className={styles.deleteBtn}
+                      onClick={() => handleDelete(idea.id)}
+                      aria-label="Supprimer cette idée"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
       )}
     </div>
   );

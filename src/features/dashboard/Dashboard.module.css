@@ -95,6 +95,22 @@
   transform: translateY(0);
 }
 
+/* FLOATING IDEA BOX */
+
+.floatingIdeaBox {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  z-index: 9000;
+}
+
+@media (max-width: 768px) {
+  .floatingIdeaBox {
+    top: 1rem;
+    right: 1rem;
+  }
+}
+
 /* STATS GRID */
 
 .statsGrid {

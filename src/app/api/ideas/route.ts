@@ -30,19 +30,26 @@ export async function GET(request: NextRequest) {
 
   try {
     const db = env.IDEAS_DB;
-    const ideasResult = await db.prepare(
-      `SELECT i.id, i.title, i.description, i.created_at, i.upvotes,
+    const ideasResult = await db
+      .prepare(
+        `SELECT i.id, i.title, i.description, i.created_at, i.upvotes, i.author_email, i.is_public,
               EXISTS(SELECT 1 FROM idea_votes iv WHERE iv.idea_id = i.id AND iv.user_email = ?) as userHasVoted
-       FROM ideas i
-       ORDER BY i.upvotes DESC, i.created_at DESC
-       LIMIT 50`,
-    )
-      .bind(userEmail ?? "")
+        FROM ideas i
+        WHERE i.is_public = 1 OR i.author_email = ?
+        ORDER BY i.upvotes DESC, i.created_at DESC
+        LIMIT 50`,
+      )
+      .bind(userEmail ?? "", userEmail ?? "")
       .all();
 
-    const ideas = ideasResult.results as unknown as Idea[];
+    const ideas = ideasResult.results as unknown as (Idea & { author_email: string })[];
 
-    return NextResponse.json({ ideas });
+    const ideasWithMeta = ideas.map((idea) => ({
+      ...idea,
+      userIsAuthor: idea.author_email === userEmail,
+    }));
+
+    return NextResponse.json({ ideas: ideasWithMeta });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });
@@ -71,7 +78,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "User email not found" }, { status: 400 });
   }
 
-  const body = (await request.json().catch(() => ({}))) as IdeaFormData;
+  const body = (await request.json().catch(() => ({}))) as IdeaFormData & { isPublic?: boolean };
 
   if (!body.title || body.title.trim().length === 0) {
     return NextResponse.json({ error: "Title is required" }, { status: 400 });
@@ -81,9 +88,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Title too long (max 200 characters)" }, { status: 400 });
   }
 
-  if (body.description && body.description.length > 2000) {
+  if (body.description && body.description.length > 500) {
     return NextResponse.json(
-      { error: "Description too long (max 2000 characters)" },
+      { error: "Description too long (max 500 characters)" },
       { status: 400 },
     );
   }
@@ -93,11 +100,13 @@ export async function POST(request: NextRequest) {
   const id = generateId();
   const title = body.title.trim();
   const description = body.description?.trim() || null;
+  const isPublic = body.isPublic ?? true;
 
   try {
-    await db.prepare(
-      `INSERT INTO ideas (id, title, description, upvotes) VALUES (?, ?, ?, 0)`,
-    ).bind(id, title, description).run();
+    await db
+      .prepare(`INSERT INTO ideas (id, title, description, author_email, is_public, upvotes) VALUES (?, ?, ?, ?, ?, 0)`)
+      .bind(id, title, description, userEmail, isPublic ? 1 : 0)
+      .run();
 
     const newIdea: Idea = {
       id,
@@ -106,6 +115,8 @@ export async function POST(request: NextRequest) {
       created_at: new Date().toISOString(),
       upvotes: 0,
       userHasVoted: false,
+      userIsAuthor: true,
+      isPublic,
     };
 
     return NextResponse.json({ idea: newIdea }, { status: 201 });
