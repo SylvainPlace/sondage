@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { verifyUserToken, getUserEmailFromToken } from "@/lib/jwt";
 import type { Idea, IdeaFormData } from "@/types";
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substring(2);
-}
-
-interface CloudflareEnv {
-  IDEAS_DB: D1Database;
 }
 
 export async function GET(request: NextRequest) {
@@ -29,7 +26,7 @@ export async function GET(request: NextRequest) {
   }
 
   const userEmail = getUserEmailFromToken(token);
-  const env = process.env as unknown as CloudflareEnv;
+  const { env } = getCloudflareContext();
 
   try {
     const ideasResult = await env.IDEAS_DB.prepare(
@@ -90,7 +87,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const env = process.env as unknown as CloudflareEnv;
+  const { env } = getCloudflareContext();
   const id = generateId();
   const title = body.title.trim();
   const description = body.description?.trim() || null;

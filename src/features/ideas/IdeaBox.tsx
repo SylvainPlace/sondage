@@ -86,8 +86,14 @@ export default function IdeaBox() {
         throw new Error(data.error || "Failed to vote");
       }
 
-      const data = (await res.json()) as { idea: Idea };
-      setIdeas(ideas.map((idea) => (idea.id === ideaId ? data.idea : idea)));
+      const data = (await res.json()) as { idea: Idea | null };
+      if (data.idea) {
+        setIdeas(
+          ideas
+            .map((idea) => (idea.id === ideaId ? data.idea : idea))
+            .filter((idea): idea is Idea => idea !== null),
+        );
+      }
     } catch (err) {
       console.error("Error voting:", err);
     }

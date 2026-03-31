@@ -24,11 +24,11 @@
     ],
     "paths": {
       "@/*": ["./src/*"]
-    },
-    "types": ["@cloudflare/workers-types"]
+    }
   },
   "include": [
     "next-env.d.ts",
+    "worker-configuration.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
