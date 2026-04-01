@@ -60,18 +60,22 @@ Application de visualisation des données de carrière des alumni, construite av
 ### Qualité du code
 
 #### Formatage (Oxfmt - 10-20x plus rapide que Prettier!)
+
 - `npm run format` : Formate le code avec Oxfmt
 - `npm run format:check` : Vérifie le formatage sans modifier
 - `npm run format:fix` : Formate le code (alias de format)
 
 #### Linting (Oxlint)
+
 - `npm run lint` : Vérifie les erreurs avec Oxlint
 - `npm run lint:fix` : Corrige automatiquement les erreurs Oxlint
 
 #### Autres vérifications
+
 - `npm run typecheck` : Vérifie les types TypeScript
 
 #### Vérifications complètes
+
 - `npm run check` : Exécute toutes les vérifications (lint, typecheck, test, format)
 - `npm run check:fix` : Corrige automatiquement lint et formatage
 

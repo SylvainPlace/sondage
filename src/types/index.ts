@@ -79,3 +79,20 @@ export interface ResultsResponse {
   anecdotes: AnecdoteItem[];
   filters: Record<string, FilterOption[]>;
 }
+
+export interface Idea {
+  id: string;
+  title: string;
+  description: string | null;
+  created_at: string;
+  upvotes: number;
+  userHasVoted: boolean;
+  userIsAuthor?: boolean;
+  isPublic?: boolean;
+}
+
+export interface IdeaFormData {
+  title: string;
+  description: string;
+  isPublic?: boolean;
+}

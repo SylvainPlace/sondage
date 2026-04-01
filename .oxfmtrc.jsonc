@@ -3,7 +3,7 @@
   // Part of the unified Oxc toolchain (Oxfmt + Oxlint)
   // Documentation: https://oxc.rs/docs/guide/usage/formatter.html
 
-  "$schema": "https://oxc.rs/schemas/oxfmtrc.json",
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
 
   // General formatting options
   "useTabs": false,

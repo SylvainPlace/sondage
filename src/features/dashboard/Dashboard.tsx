@@ -10,6 +10,7 @@ import { DashboardSkeleton, ResultsSkeleton } from "@/components/ui/Skeleton";
 import LoginModal from "@/features/auth/LoginModal";
 import Filters from "@/features/filters/Filters";
 import ComparisonForm from "@/features/dashboard/ComparisonForm";
+import IdeaBox from "@/features/ideas/IdeaBox";
 import { formatMoney } from "@/lib/frontend-utils";
 import { Button } from "@/components/ui/Button";
 
@@ -280,7 +281,14 @@ export default function Dashboard() {
         >
           Participer au sondage
         </a>
+        <div className={styles.mobileIdeaBox}>
+          <IdeaBox />
+        </div>
       </header>
+
+      <div className={styles.floatingIdeaBox}>
+        <IdeaBox />
+      </div>
 
       <main className={styles.mainGrid}>
         <div className={styles.filtersColumn}>

@@ -95,6 +95,31 @@
   transform: translateY(0);
 }
 
+/* FLOATING IDEA BOX */
+
+.floatingIdeaBox {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  z-index: 9000;
+}
+
+.mobileIdeaBox {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .floatingIdeaBox {
+    display: none;
+  }
+  
+  .mobileIdeaBox {
+    display: block;
+    margin-top: 1rem;
+    text-align: center;
+  }
+}
+
 /* STATS GRID */
 
 .statsGrid {

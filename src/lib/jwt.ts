@@ -25,3 +25,17 @@ export async function verifyUserToken(token: string): Promise<JWTPayload> {
     throw new Error("Invalid Token");
   }
 }
+
+export function getUserEmailFromToken(token: string): string | null {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3 || !parts[1]) {
+      return null;
+    }
+    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const payload = JSON.parse(atob(base64));
+    return payload.sub || null;
+  } catch {
+    return null;
+  }
+}
