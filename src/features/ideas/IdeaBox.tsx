@@ -64,7 +64,7 @@ export default function IdeaBox() {
       }
 
       const data = (await res.json()) as { idea: Idea };
-      setIdeas([data.idea, ...ideas]);
+      setIdeas((prev) => [data.idea, ...prev]);
       setFormData({ title: "", description: "" });
       setShowForm(false);
     } catch (err) {
@@ -92,14 +92,14 @@ export default function IdeaBox() {
 
       const data = (await res.json()) as { idea: Idea | null };
       if (data.idea) {
-        setIdeas(
-          ideas
+        setIdeas((prev) =>
+          prev
             .map((idea) => (idea.id === ideaId ? data.idea : idea))
             .filter((idea): idea is Idea => idea !== null),
         );
       }
     } catch (err) {
-      console.error("Error voting:", err);
+      setError(err instanceof Error ? err.message : "Erreur lors du vote");
     }
   };
 
@@ -117,9 +117,9 @@ export default function IdeaBox() {
         throw new Error(data.error || "Failed to delete");
       }
 
-      setIdeas(ideas.filter((idea) => idea.id !== ideaId));
+      setIdeas((prev) => prev.filter((idea) => idea.id !== ideaId));
     } catch (err) {
-      console.error("Error deleting:", err);
+      setError(err instanceof Error ? err.message : "Erreur lors de la suppression");
     }
   };
 
