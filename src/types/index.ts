@@ -87,7 +87,6 @@ export interface Idea {
   created_at: string;
   upvotes: number;
   userHasVoted: boolean;
-  author_email?: string;
   userIsAuthor?: boolean;
   isPublic?: boolean;
 }

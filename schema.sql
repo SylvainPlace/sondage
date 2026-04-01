@@ -2,13 +2,15 @@
 -- Run with: npx wrangler d1 execute ideas_db --local --file=./schema.sql
 
 -- Create ideas table
-CREATE TABLE IF NOT EXISTS ideas (
-    id TEXT PRIMARY KEY,
-    title TEXT NOT NULL,
-    description TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    upvotes INTEGER DEFAULT 0
-);
+CREATE TABLE IF NOT EXISTS ideas (  
+    id TEXT PRIMARY KEY,  
+    title TEXT NOT NULL,  
+    description TEXT,  
+    author_email TEXT NOT NULL,  
+    is_public INTEGER DEFAULT 1,  
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,  
+    upvotes INTEGER DEFAULT 0  
+);  
 
 -- Create idea_votes table to track who voted
 CREATE TABLE IF NOT EXISTS idea_votes (

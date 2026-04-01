@@ -32,7 +32,8 @@ export function getUserEmailFromToken(token: string): string | null {
     if (parts.length !== 3 || !parts[1]) {
       return null;
     }
-    const payload = JSON.parse(atob(parts[1]));
+    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const payload = JSON.parse(atob(base64));
     return payload.sub || null;
   } catch {
     return null;

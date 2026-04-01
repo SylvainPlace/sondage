@@ -40,13 +40,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: "Already voted" }, { status: 400 });
     }
 
-    await env.IDEAS_DB.prepare(`INSERT INTO idea_votes (idea_id, user_email) VALUES (?, ?)`)
-      .bind(ideaId, userEmail)
-      .run();
-
-    await env.IDEAS_DB.prepare(`UPDATE ideas SET upvotes = upvotes + 1 WHERE id = ?`)
-      .bind(ideaId)
-      .run();
+    await env.IDEAS_DB.batch([
+      env.IDEAS_DB.prepare(`INSERT INTO idea_votes (idea_id, user_email) VALUES (?, ?)`).bind(
+        ideaId,
+        userEmail,
+      ),
+      env.IDEAS_DB.prepare(`UPDATE ideas SET upvotes = upvotes + 1 WHERE id = ?`).bind(ideaId),
+    ]);
 
     const updatedIdea = (await env.IDEAS_DB.prepare(
       `SELECT i.id, i.title, i.description, i.created_at, i.upvotes, i.author_email, i.is_public,
@@ -63,7 +63,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     return NextResponse.json({
       idea: {
-        ...updatedIdea,
+        id: updatedIdea.id,
+        title: updatedIdea.title,
+        description: updatedIdea.description,
+        created_at: updatedIdea.created_at,
+        upvotes: updatedIdea.upvotes,
+        userHasVoted: true,
         userIsAuthor: updatedIdea.author_email === userEmail,
         isPublic: Boolean(updatedIdea.is_public),
       },
@@ -103,19 +108,23 @@ export async function DELETE(
   const { env } = getCloudflareContext();
 
   try {
-    const deleteResult = await env.IDEAS_DB.prepare(
-      `DELETE FROM idea_votes WHERE idea_id = ? AND user_email = ?`,
+    const checkVote = await env.IDEAS_DB.prepare(
+      `SELECT 1 FROM idea_votes WHERE idea_id = ? AND user_email = ?`,
     )
       .bind(ideaId, userEmail)
-      .run();
+      .first();
 
-    if (deleteResult.meta.changes === 0) {
+    if (!checkVote) {
       return NextResponse.json({ error: "No vote to remove" }, { status: 400 });
     }
 
-    await env.IDEAS_DB.prepare(`UPDATE ideas SET upvotes = upvotes - 1 WHERE id = ?`)
-      .bind(ideaId)
-      .run();
+    await env.IDEAS_DB.batch([
+      env.IDEAS_DB.prepare(`DELETE FROM idea_votes WHERE idea_id = ? AND user_email = ?`).bind(
+        ideaId,
+        userEmail,
+      ),
+      env.IDEAS_DB.prepare(`UPDATE ideas SET upvotes = upvotes - 1 WHERE id = ?`).bind(ideaId),
+    ]);
 
     const updatedIdea = (await env.IDEAS_DB.prepare(
       `SELECT i.id, i.title, i.description, i.created_at, i.upvotes, i.author_email, i.is_public,
@@ -132,7 +141,12 @@ export async function DELETE(
 
     return NextResponse.json({
       idea: {
-        ...updatedIdea,
+        id: updatedIdea.id,
+        title: updatedIdea.title,
+        description: updatedIdea.description,
+        created_at: updatedIdea.created_at,
+        upvotes: updatedIdea.upvotes,
+        userHasVoted: false,
         userIsAuthor: updatedIdea.author_email === userEmail,
         isPublic: Boolean(updatedIdea.is_public),
       },

@@ -46,7 +46,6 @@ export async function DELETE(
       return NextResponse.json({ error: "Not authorized to delete this idea" }, { status: 403 });
     }
 
-    await db.prepare(`DELETE FROM idea_votes WHERE idea_id = ?`).bind(ideaId).run();
     await db.prepare(`DELETE FROM ideas WHERE id = ?`).bind(ideaId).run();
 
     return NextResponse.json({ success: true });

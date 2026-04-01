@@ -5,7 +5,7 @@ import { verifyUserToken, getUserEmailFromToken } from "@/lib/jwt";
 import type { Idea, IdeaFormData } from "@/types";
 
 function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+  return crypto.randomUUID();
 }
 
 export async function GET(request: NextRequest) {
@@ -45,8 +45,14 @@ export async function GET(request: NextRequest) {
     const ideas = ideasResult.results as unknown as (Idea & { author_email: string })[];
 
     const ideasWithMeta = ideas.map((idea) => ({
-      ...idea,
+      id: idea.id,
+      title: idea.title,
+      description: idea.description,
+      created_at: idea.created_at,
+      upvotes: idea.upvotes,
+      userHasVoted: idea.userHasVoted,
       userIsAuthor: idea.author_email === userEmail,
+      isPublic: idea.isPublic,
     }));
 
     return NextResponse.json({ ideas: ideasWithMeta });
