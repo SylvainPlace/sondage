@@ -112,3 +112,15 @@ src/
 3. Follow existing component patterns
 4. Maintain CSS Modules architecture
 5. Test utility functions thoroughly
+
+## Agent skills
+
+### Issue tracker
+
+Les specs et tickets sont suivis sous forme de fichiers Markdown dans
+`.scratch/`. Voir `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Le projet utilise un contexte unique avec `CONTEXT.md` à la racine et les
+décisions dans `docs/adr/`. Voir `docs/agents/domain.md`.
