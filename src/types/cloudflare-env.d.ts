@@ -2,6 +2,7 @@ import type { D1Database } from "@cloudflare/workers-types";
 
 declare global {
   interface CloudflareEnv {
+    DB: D1Database;
     IDEAS_DB: D1Database;
     IMAGES: {
       get: (key: string) => Promise<ArrayBuffer | null>;

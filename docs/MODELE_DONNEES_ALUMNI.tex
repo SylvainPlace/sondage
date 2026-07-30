@@ -1,0 +1,654 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{fontspec}
+\setmainfont{Arial}
+\setsansfont{Arial}
+\setmonofont{Consolas}
+
+\usepackage[french]{babel}
+\usepackage{geometry}
+\geometry{top=20mm,bottom=20mm,left=18mm,right=18mm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{titlesec}
+\usepackage{microtype}
+\usepackage{ragged2e}
+
+\definecolor{Primary}{HTML}{173B57}
+\definecolor{Secondary}{HTML}{287D8E}
+\definecolor{Accent}{HTML}{E98B2A}
+\definecolor{LightBlue}{HTML}{EAF3F6}
+\definecolor{LightGray}{HTML}{F3F5F6}
+\definecolor{MidGray}{HTML}{60717D}
+\definecolor{Dark}{HTML}{17242D}
+\definecolor{Success}{HTML}{2F7D5A}
+\definecolor{Warning}{HTML}{A45B13}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=Primary,
+  urlcolor=Secondary,
+  pdftitle={Nouveau modèle de données de la plateforme alumni},
+  pdfauthor={Association alumni},
+  pdfsubject={Présentation au bureau de l'association}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{MidGray}Plateforme alumni}
+\fancyhead[R]{\small\color{MidGray}Modèle de données cible}
+\fancyfoot[L]{\small\color{MidGray}Document de cadrage - 30 juillet 2026}
+\fancyfoot[R]{\small\color{MidGray}Page \thepage\ sur \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\titleformat{\section}
+  {\Large\bfseries\color{Primary}}
+  {\thesection.}{0.5em}{}
+\titleformat{\subsection}
+  {\large\bfseries\color{Secondary}}
+  {\thesubsection.}{0.5em}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{Dark}}
+  {\thesubsubsection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{1.1em}{0.55em}
+\titlespacing*{\subsection}{0pt}{0.9em}{0.4em}
+
+\setlist[itemize]{leftmargin=5mm,itemsep=2pt,topsep=3pt}
+\setlist[enumerate]{leftmargin=6mm,itemsep=2pt,topsep=3pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\renewcommand{\arraystretch}{1.22}
+
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+
+\newcommand{\badge}[2]{%
+  \tikz[baseline=(X.base)]\node[
+    fill=#1!12,
+    text=#1,
+    rounded corners=2pt,
+    inner xsep=5pt,
+    inner ysep=2pt,
+    font=\footnotesize\bfseries
+  ] (X) {#2};%
+}
+
+\newenvironment{keybox}[1]{%
+  \begin{center}
+  \begin{minipage}{0.95\textwidth}
+  \color{Primary}\hrule height 1pt
+  \vspace{2mm}
+  \textbf{\color{Primary}#1}\par\smallskip
+  \color{Dark}
+}{%
+  \par\smallskip
+  \color{Primary}\hrule height 1pt
+  \end{minipage}
+  \end{center}
+}
+
+\begin{document}
+
+\begin{titlepage}
+  \thispagestyle{empty}
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[Primary] (current page.north west)
+      rectangle ([yshift=-78mm]current page.north east);
+    \fill[Secondary] ([yshift=-78mm]current page.north west)
+      rectangle ([yshift=-82mm]current page.north east);
+  \end{tikzpicture}
+
+  \vspace*{7mm}
+  \begin{center}
+    \includegraphics[width=25mm]{../public/logo.png}
+
+    \vspace{10mm}
+    {\Huge\bfseries\color{white} Nouveau modèle de données\par}
+    \vspace{3mm}
+    {\LARGE\color{white} Plateforme alumni\par}
+    \vspace{8mm}
+    {\large\color{white} Nouvelle implantation, données demandées et transition depuis le sondage historique\par}
+  \end{center}
+
+  \vspace{45mm}
+
+  \begin{center}
+    \begin{minipage}{0.82\textwidth}
+      \large
+      \textbf{\color{Primary}Objet du document}
+
+      Présenter au bureau de l'association le passage d'un sondage anonyme et
+      ponctuel à une plateforme privée dans laquelle chaque alumni maintient son
+      parcours professionnel, tout en protégeant strictement les rémunérations
+      individuelles.
+
+      \vspace{7mm}
+      \begin{tabularx}{\textwidth}{@{}L{38mm}Y@{}}
+        \textbf{Statut} & Proposition consolidée pour validation et conception technique \\
+        \textbf{Version} & 1.0 \\
+        \textbf{Date} & 30 juillet 2026 \\
+        \textbf{Public} & Bureau de l'association et équipe projet \\
+      \end{tabularx}
+    \end{minipage}
+  \end{center}
+
+  \vfill
+  \begin{center}
+    \small\color{MidGray}
+    Source de cadrage : \texttt{PRODUCT\_DISCOVERY.md} et \texttt{CONTEXT.md}
+  \end{center}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+\section{Résumé exécutif}
+
+Le modèle actuel repose sur une réponse unique dans Google Sheets. Il permet de
+produire un panorama, mais il ne sait pas reconnaître un alumni, suivre une
+évolution de carrière ou distinguer une information récente d'une information
+ancienne.
+
+Le modèle cible introduit quatre changements structurants :
+
+\begin{enumerate}
+  \item un compte vérifié pour chaque adresse autorisée ;
+  \item une séparation entre le profil, l'activité professionnelle continue et
+        les relevés datés de rémunération ;
+  \item des taxonomies administrables pour fiabiliser les métiers, secteurs,
+        organisations et avantages ;
+  \item une confidentialité mesurable : aucun salaire individuel exposé et un
+        minimum de trois alumni distincts pour toute statistique.
+\end{enumerate}
+
+\begin{keybox}{Décision proposée au bureau}
+Valider la collecte progressive du nouveau jeu de données, l'import unique des
+réponses historiques dans Cloudflare D1 et la conservation des anciennes
+données comme référence temporaire jusqu'à disposer de huit profils récents par
+segment.
+\end{keybox}
+
+\begin{tabularx}{\textwidth}{@{}L{42mm}YY@{}}
+  \toprule
+  \textbf{Dimension} & \textbf{Aujourd'hui} & \textbf{Cible} \\
+  \midrule
+  Identité & Email autorisé sans lien avec la réponse & Compte individuel vérifié \\
+  Temporalité & Photographie ponctuelle & Activités et relevés datés \\
+  Stockage & Google Sheets lu en production & D1 comme source unique \\
+  Qualité & Texte libre normalisé dans le code & Catégories et alias administrables \\
+  Confidentialité & Agrégation côté API & Seuil par alumni, consentements et contrôles d'accès \\
+  Mise à jour & Nouveau formulaire externe & Espace personnel et confirmation en un clic \\
+  \bottomrule
+\end{tabularx}
+
+\section{Ce que contient l'ancien modèle}
+
+\subsection{Source et fonctionnement}
+
+Les données proviennent de l'onglet \textit{Réponses au formulaire 1} d'un
+Google Sheet. L'application lit les lignes, transforme les valeurs libres avec
+des règles codées dans \texttt{src/lib/normalization.ts}, puis calcule les
+statistiques à la volée.
+
+La whitelist d'adresses email sert uniquement à autoriser l'accès à
+l'application. Elle n'est pas reliée aux réponses du sondage. Il est donc
+impossible d'attribuer de façon fiable une ancienne ligne à un alumni.
+
+\subsection{Données actuellement exploitées}
+
+\begin{longtable}{@{}L{43mm}L{47mm}L{77mm}@{}}
+  \toprule
+  \textbf{Champ actuel} & \textbf{Format} & \textbf{Limite principale} \\
+  \midrule
+  \endhead
+  Année de diplôme & Année & Information stable mais non reliée à un profil \\
+  Sexe & Texte ou choix & Donnée personnelle non nécessaire au nouveau parcours initial \\
+  Département de travail & Texte libre & Région, département et télétravail parfois mélangés \\
+  Secteur d'activité & Texte libre & Classement dépendant de mots-clés et de leur ordre \\
+  Type de structure & Choix ou texte & Mélange taille, nature juridique et maturité \\
+  Poste actuel & Texte libre & Intitulé, métier et niveau de responsabilité confondus \\
+  Expérience & Nombre ou tranche & Pas de distinction entre expérience totale et métier actuel \\
+  Salaire fixe & Tranche & Valeur approximative, sans devise ni temps de travail normalisé \\
+  Primes & Tranche ou texte & Composantes de rémunération non séparées \\
+  Avantages & Texte libre & Comparaison fragile par recherche de mots-clés \\
+  Conseil ou anecdote & Texte libre & Contenu communautaire sans cycle de modération dédié \\
+  \bottomrule
+\end{longtable}
+
+\subsection{Limites à résoudre}
+
+\begin{itemize}
+  \item Une ligne ne peut pas être corrigée par son auteur.
+  \item Un changement de poste écrase la notion de parcours.
+  \item Une réponse ancienne peut être présentée comme encore actuelle.
+  \item Les catégories sont codées en dur et nécessitent un déploiement.
+  \item Des règles basées sur \texttt{includes()} peuvent produire des
+        collisions ou des classements arbitraires.
+  \item Les données de rémunération ne distinguent pas devise, temps partiel,
+        fixe, variable et avantages quantifiables.
+\end{itemize}
+
+\section{Concepts du nouveau modèle}
+
+\subsection{Vocabulaire métier}
+
+\begin{tabularx}{\textwidth}{@{}L{43mm}Y@{}}
+  \toprule
+  \textbf{Concept} & \textbf{Définition} \\
+  \midrule
+  Profil alumni & Informations stables sur la personne et ses préférences. \\
+  Domaine professionnel & Grande discipline, par exemple Produit, Ingénierie logicielle ou Données et IA. \\
+  Métier & Fonction normalisée dans un domaine, par exemple Data Analyst. \\
+  Intitulé de poste & Libellé libre utilisé par l'employeur, par exemple Senior Healthcare Data Analyst. \\
+  Activité professionnelle & Période continue dans un métier et une organisation. \\
+  Relevé de situation & Photographie datée de la rémunération et des conditions d'une activité. \\
+  Situation actuelle & Dernier relevé confirmé de chaque activité encore ouverte. \\
+  Nature de l'organisation & Entreprise privée, organisme public, association, coopérative ou indépendant. \\
+  Secteur d'activité & Activité économique réelle, indépendamment du statut public ou privé. \\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Pourquoi séparer activité et relevé}
+
+\begin{keybox}{Exemple}
+Un alumni reste cinq ans chez le même employeur et reçoit trois augmentations.
+Le modèle crée une activité professionnelle et trois relevés de situation. Un
+changement d'employeur ou de métier clôture l'activité et en ouvre une nouvelle.
+\end{keybox}
+
+Ce découpage permet de représenter :
+
+\begin{itemize}
+  \item les augmentations sans inventer plusieurs emplois ;
+  \item les activités simultanées, par exemple salariat et activité indépendante ;
+  \item une confirmation annuelle sans ressaisir le formulaire ;
+  \item un historique exploitable pour mesurer les évolutions.
+\end{itemize}
+
+\section{Vue relationnelle cible}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=7mm and 9mm,
+  entity/.style={
+    draw=Primary,
+    fill=LightBlue,
+    rounded corners=2pt,
+    minimum width=35mm,
+    minimum height=11mm,
+    align=center,
+    font=\small\bfseries,
+    text=Dark
+  },
+  support/.style={
+    draw=Secondary,
+    fill=Secondary!8,
+    rounded corners=2pt,
+    minimum width=35mm,
+    minimum height=11mm,
+    align=center,
+    font=\small,
+    text=Dark
+  },
+  legacy/.style={
+    draw=Accent,
+    fill=Accent!10,
+    rounded corners=2pt,
+    minimum width=39mm,
+    minimum height=11mm,
+    align=center,
+    font=\small,
+    text=Dark
+  },
+  link/.style={-{Latex[length=2mm]}, thick, draw=MidGray}
+]
+  \node[entity] (account) {Compte utilisateur};
+  \node[entity, right=of account] (profile) {Profil alumni};
+  \node[entity, right=of profile] (activity) {Activité professionnelle};
+  \node[entity, below=of activity] (snapshot) {Relevé de situation};
+  \node[entity, below=of snapshot] (benefit) {Avantage du relevé};
+
+  \node[support, below=of account] (session) {Session};
+  \node[support, below=of profile] (consent) {Consentement};
+  \node[support, right=of activity] (taxonomy) {Taxonomies et alias};
+  \node[legacy, left=of snapshot] (legacy) {Réponse historique importée};
+
+  \draw[link] (account) -- node[above,font=\scriptsize]{1 à 1} (profile);
+  \draw[link] (profile) -- node[above,font=\scriptsize]{1 à n} (activity);
+  \draw[link] (activity) -- node[right,font=\scriptsize]{1 à n} (snapshot);
+  \draw[link] (snapshot) -- node[right,font=\scriptsize]{1 à n} (benefit);
+  \draw[link] (account) -- node[left,font=\scriptsize]{1 à n} (session);
+  \draw[link] (profile) -- node[right,font=\scriptsize]{1 à n} (consent);
+  \draw[link] (taxonomy) -- (activity);
+  \draw[link] (taxonomy) -- (benefit);
+  \draw[link,dashed] (legacy) -- node[above,font=\scriptsize]{comparaison} (snapshot);
+\end{tikzpicture}
+\end{center}
+
+\textbf{Lecture du schéma :}
+
+\begin{itemize}
+  \item les anciennes réponses restent séparées et ne sont jamais rattachées à
+        un compte ;
+  \item les taxonomies fournissent des identifiants stables aux métiers,
+        secteurs, organisations et avantages ;
+  \item les consentements pilotent l'annuaire, pas l'utilisation des
+        rémunérations individuelles ;
+  \item Firebase vérifie les identifiants ; D1 conserve des sessions
+        applicatives révocables, indépendantes du mot de passe.
+\end{itemize}
+
+\section{Dictionnaire des données demandées}
+
+\subsection{Compte et profil}
+
+\begin{longtable}{@{}L{43mm}L{30mm}L{28mm}L{65mm}@{}}
+  \toprule
+  \textbf{Donnée} & \textbf{Obligation} & \textbf{Visibilité} & \textbf{Finalité} \\
+  \midrule
+  \endhead
+  Adresse email & Requise & Privée & Activation, connexion et administration de l'accès \\
+  Identifiant Firebase & Technique & Jamais exposé & Relier le compte métier à l'identité de connexion sans stocker de hash dans D1 \\
+  Année de diplôme & Requise & Agrégée & Cohortes et calcul de repères d'expérience \\
+  Formation ou spécialité & Facultative & Selon consentement & Compréhension des parcours \\
+  Diplômes complémentaires & Facultative & Selon consentement & Enrichissement du profil \\
+  Disponibilité au contact & Facultative & Annuaire uniquement & Recrutement, échange ou mentorat \\
+  Préférence de rappels & Facultative & Privée & Autoriser ou refuser les emails d'actualisation \\
+  Consentements d'annuaire & Facultative & Privée & Choix précis des champs publiés \\
+  \bottomrule
+\end{longtable}
+
+\subsection{Activité professionnelle}
+
+\begin{longtable}{@{}L{43mm}L{30mm}L{28mm}L{65mm}@{}}
+  \toprule
+  \textbf{Donnée} & \textbf{Obligation} & \textbf{Visibilité} & \textbf{Finalité} \\
+  \midrule
+  \endhead
+  Date de début & Facultative & Agrégée & Parcours et durée dans l'activité \\
+  Date de fin & Facultative & Agrégée & Clôture de l'activité \\
+  Activité principale & Requise si plusieurs & Privée & Priorité d'affichage dans le cockpit \\
+  Relation de travail & Requise & Agrégée & CDI, CDD, fonction publique, indépendant et autres \\
+  Domaine professionnel & Requis & Agrégée & Comparaisons larges \\
+  Métier normalisé & Requis & Agrégée & Comparaisons précises \\
+  Intitulé de poste & Requis & Selon consentement & Libellé réel et annuaire \\
+  Séniorité & Facultative & Agrégée & Débutant, Confirmé, Senior ou Expert \\
+  Responsabilité & Facultative & Agrégée & Lead, Manager ou Directeur \\
+  Taille d'équipe & Facultative & Agrégée & Mesure de la responsabilité managériale \\
+  Employeur & Facultative & Selon consentement & Annuaire et contexte de parcours \\
+  Nature de l'organisation & Facultative & Agrégée & Privé, public, association, coopérative ou indépendant \\
+  Effectif & Facultative & Agrégée & Tranche universelle de 1 à 5 000 et plus \\
+  Stade de développement & Facultative & Agrégée & Start-up, scale-up ou organisation établie \\
+  Secteur et sous-secteur & Requis & Agrégée & Activité économique réelle de l'organisation \\
+  Pays d'emploi & Requis & Agrégée & Devise, droit du travail et comparaison géographique \\
+  Région de travail & Selon pays & Agrégée & Comparaisons régionales \\
+  Ville & Facultative & Selon consentement & Annuaire et recherche locale \\
+  \bottomrule
+\end{longtable}
+
+\subsection{Relevé de situation}
+
+\begin{longtable}{@{}L{43mm}L{30mm}L{28mm}L{65mm}@{}}
+  \toprule
+  \textbf{Donnée} & \textbf{Obligation} & \textbf{Visibilité} & \textbf{Finalité} \\
+  \midrule
+  \endhead
+  Date d'observation & Requise & Agrégée & Fraîcheur et historique \\
+  Salaire fixe annuel & Selon statut & Agrégée uniquement & Statistiques de rémunération \\
+  Rémunération variable & Selon statut & Agrégée uniquement & Rémunération totale \\
+  Devise & Si rémunération & Agrégée & Conservation de la valeur originale \\
+  Temps de travail & Requis & Agrégée & Montant réel et équivalent temps plein \\
+  Durée hebdomadaire & Facultative & Agrégée & Normalisation précise \\
+  Organisation du travail & Facultative & Agrégée & Sur site, hybride ou télétravail complet \\
+  Jours de télétravail & Facultative & Agrégée & Comparaison des conditions \\
+  Date de confirmation & Technique & Privée & Fraîcheur sans duplication de l'activité \\
+  Taux de change et source & Technique & Agrégée & Conversion en euros auditables \\
+  Équivalent temps plein & Calculée & Agrégée uniquement & Comparaison entre quotités \\
+  \bottomrule
+\end{longtable}
+
+\subsection{Avantages structurés}
+
+\begin{tabularx}{\textwidth}{@{}L{47mm}L{55mm}Y@{}}
+  \toprule
+  \textbf{Catégorie initiale} & \textbf{Précision possible} & \textbf{Exemple} \\
+  \midrule
+  Télétravail & Jours par semaine & 2 jours par semaine \\
+  Tickets restaurant & Valeur et part employeur & 10 euros, pris en charge à 60 pour cent \\
+  Voiture de fonction & Présence et précision libre & Véhicule de fonction \\
+  RTT ou congés supplémentaires & Jours par an & 12 RTT par an \\
+  Intéressement ou participation & Montant annuel & 2 500 euros \\
+  Autre & Libellé, valeur et unité & Budget formation de 1 000 euros \\
+  \bottomrule
+\end{tabularx}
+
+Une valeur « autre » rejoint une file administrateur. Elle peut être rattachée à
+une catégorie existante, devenir une nouvelle catégorie ou rester non
+statistique. Les correspondances approximatives sont proposées à l'utilisateur,
+mais jamais appliquées silencieusement.
+
+\section{Comparaison ancien et nouveau modèle}
+
+\small
+\begin{longtable}{@{}L{36mm}L{51mm}L{75mm}@{}}
+  \toprule
+  \textbf{Ancienne donnée} & \textbf{Nouvelle implantation} & \textbf{Évolution} \\
+  \midrule
+  \endhead
+  Année de diplôme & Profil alumni & Devient une donnée stable, modifiable par son propriétaire \\
+  Sexe & Non demandé dans le parcours V1 & Conservé uniquement dans l'historique anonyme si utile aux anciennes analyses \\
+  Département de travail & Pays, région et ville facultative & Le télétravail est séparé de la géographie \\
+  Secteur libre & Secteur et sous-secteur identifiés & Taxonomie administrable avec alias \\
+  Type de structure & Nature, effectif et stade & Fin du choix impossible entre public, PME ou start-up \\
+  Poste actuel & Domaine, métier, intitulé, séniorité et responsabilité & Les fonctions ne sont plus confondues \\
+  Expérience globale & Expérience totale et expérience dans le métier & La séniorité reste déclarative et séparée \\
+  Salaire par tranche & Montant exact, devise et équivalent temps plein & Le montant reste privé et sert uniquement aux agrégats \\
+  Prime par tranche & Variable annuelle exacte & Calcul transparent de la rémunération totale \\
+  Avantages libres & Catégories avec valeurs typées & Statistiques fiables et file de qualification pour « autre » \\
+  Conseil libre & Référence historique ou boîte à idées & Le nouveau formulaire reste centré sur les données de carrière \\
+  Réponse unique & Activité plus relevés successifs & Historique sans duplication des emplois \\
+  Aucun consentement fin & Consentements par champ d'annuaire & Profil invisible par défaut \\
+  \bottomrule
+\end{longtable}
+\normalsize
+
+\section{Règles de qualité, fraîcheur et confidentialité}
+
+\subsection{Fraîcheur}
+
+\begin{tabularx}{\textwidth}{@{}L{38mm}L{45mm}Y@{}}
+  \toprule
+  \textbf{Âge du relevé} & \textbf{Statut} & \textbf{Comportement} \\
+  \midrule
+  Jusqu'à 12 mois & Récent & Inclus dans les statistiques actuelles \\
+  De 12 à 36 mois & À confirmer & Inclus avec un signal de fraîcheur \\
+  Plus de 36 mois & Historique & Exclu des statistiques actuelles \\
+  \bottomrule
+\end{tabularx}
+
+Le cockpit permet de confirmer en un clic qu'une situation n'a pas changé.
+L'administration configure les échéances, le quota quotidien et la mise en
+pause des rappels automatiques.
+
+\subsection{Transition depuis l'ancien sondage}
+
+\begin{tabularx}{\textwidth}{@{}L{42mm}Y@{}}
+  \toprule
+  \textbf{Profils récents dans le segment} & \textbf{Résultat présenté} \\
+  \midrule
+  0 à 2 & Référence historique uniquement \\
+  3 à 7 & Données actuelles et historiques côte à côte, avec avertissement \\
+  8 et plus & Données actuelles comme référence principale, historique en comparaison \\
+  \bottomrule
+\end{tabularx}
+
+Les anciennes tranches de salaire restent stockées telles quelles. Une valeur
+représentative documentée peut être calculée, par exemple 47 500 euros pour la
+tranche 45 à 50 k euros. Les graphiques signalent toute estimation.
+
+\subsection{Confidentialité}
+
+\begin{itemize}
+  \item Toute statistique exige au moins trois alumni distincts.
+  \item Le seuil porte sur les personnes, jamais sur le nombre de relevés.
+  \item Le salaire, le variable et les avantages ne sont jamais affichés
+        individuellement.
+  \item Le profil est absent de l'annuaire par défaut.
+  \item Le nom, le poste, l'employeur, la ville et la disponibilité sont publiés
+        uniquement après consentement explicite.
+  \item Une demande de suppression est traitée par l'administration sous un
+        mois. Les contributions ne sont conservées qu'après anonymisation
+        irréversible.
+\end{itemize}
+
+\section{Implantation logique dans Cloudflare D1}
+
+\subsection{Tables principales proposées}
+
+\begin{longtable}{@{}L{48mm}L{45mm}L{69mm}@{}}
+  \toprule
+  \textbf{Table logique} & \textbf{Clé ou relation} & \textbf{Responsabilité} \\
+  \midrule
+  \endhead
+  \texttt{authorized\_email} & email unique & Liste des adresses autorisées et état d'invitation \\
+  \texttt{user\_account} & identifiant utilisateur & Compte, rôle et état d'activation \\
+  \texttt{firebase\_uid} & attribut du compte & Référence vers l'identité Firebase, sans donnée de carrière \\
+  \texttt{verification\_code} & utilisateur ou email & Activation, récupération et changement d'adresse \\
+  \texttt{user\_session} & utilisateur 1 à n & Sessions opaques, révocables et renouvelables \\
+  \texttt{alumni\_profile} & utilisateur 1 à 1 & Diplôme, spécialité et préférences générales \\
+  \texttt{directory\_consent} & profil 1 à n & Visibilité explicite de chaque champ \\
+  \texttt{professional\_activity} & profil 1 à n & Métier, organisation, dates et activité principale \\
+  \texttt{situation\_snapshot} & activité 1 à n & Rémunération et conditions datées \\
+  \texttt{snapshot\_benefit} & relevé 1 à n & Avantage, valeur et unité \\
+  \texttt{taxonomy\_category} & hiérarchie parent enfant & Domaines, métiers, secteurs, organisations et avantages \\
+  \texttt{taxonomy\_alias} & catégorie 1 à n & Variantes reconnues et suggestions \\
+  \texttt{taxonomy\_proposal} & valeur « autre » & File de qualification et décision administrateur \\
+  \texttt{legacy\_survey\_response} & identifiant d'import & Copie immuable et anonyme de l'ancien sondage \\
+  \texttt{import\_batch} & lot 1 à n réponses & Provenance, contrôles et rapport de migration \\
+  \texttt{email\_queue} & message planifié & Invitations, codes et rappels avec priorité \\
+  \texttt{email\_log} & message envoyé & Résultat de livraison et consommation du quota \\
+  \texttt{reminder\_configuration} & configuration active & Échéances et limite quotidienne \\
+  \texttt{admin\_audit\_log} & acteur et action & Traçabilité des opérations sensibles \\
+  \texttt{idea} et \texttt{idea\_vote} & modèle existant & Boîte à idées déplacée sur sa propre page \\
+  \bottomrule
+\end{longtable}
+
+\subsection{Principes techniques}
+
+\begin{itemize}
+  \item Les identifiants sont opaques et indépendants des emails.
+  \item Toutes les dates techniques sont stockées en UTC.
+  \item Les montants utilisent des unités entières minimales pour éviter les
+        erreurs d'arrondi.
+  \item Les valeurs originales, calculées et normalisées sont séparées.
+  \item Les taxonomies utilisent des identifiants stables ; un changement de
+        libellé ne modifie pas l'historique.
+  \item Les suppressions et reclassifications administratives sont auditées.
+  \item Les requêtes statistiques comptent des identifiants alumni distincts
+        avant de retourner une valeur.
+\end{itemize}
+
+\section{Migration et mise en service}
+
+\begin{enumerate}
+  \item \textbf{Préparer D1} : créer les tables, contraintes et index.
+  \item \textbf{Importer les taxonomies} : charger les catégories initiales et
+        leurs alias.
+  \item \textbf{Importer l'historique} : copier les lignes Google Sheets sans
+        les rattacher aux comptes.
+  \item \textbf{Contrôler} : comparer volumes, distributions et statistiques
+        avec l'application actuelle.
+  \item \textbf{Importer la whitelist} : créer les adresses autorisées sans
+        envoyer de campagne automatique.
+  \item \textbf{Ouvrir l'activation} : annoncer la plateforme sur le groupe de
+        discussion et laisser les alumni activer leur compte.
+  \item \textbf{Basculer la lecture} : utiliser D1 comme source unique en
+        production et conserver le Google Sheet comme archive externe.
+  \item \textbf{Accompagner la transition} : afficher l'historique jusqu'à
+        obtenir huit profils récents par segment.
+\end{enumerate}
+
+\subsection{Contrôles de migration attendus}
+
+\begin{itemize}
+  \item nombre de lignes sources, importées, ignorées et invalides ;
+  \item correspondance des distributions de salaire et d'expérience ;
+  \item rapport des valeurs classées dans « autre » ;
+  \item absence d'association entre anciennes réponses et comptes ;
+  \item reproductibilité du lot avec un identifiant et une empreinte de source.
+\end{itemize}
+
+\section{Impacts pour les alumni et l'association}
+
+\begin{tabularx}{\textwidth}{@{}L{42mm}YY@{}}
+  \toprule
+  \textbf{Public} & \textbf{Bénéfices} & \textbf{Points d'attention} \\
+  \midrule
+  Alumni & Profil maîtrisé, historique, comparaison plus précise, annuaire sur consentement & Première activation et actualisation périodique \\
+  Bureau & Données plus fraîches, pilotage des invitations et rappels, catégories ajustables & Responsabilité de traitement et traitement des demandes de suppression \\
+  Administrateurs & Outils de qualification, quotas email, journal d'audit & Aucun accès aux salaires individuels \\
+  Équipe projet & Une base unique, modèle explicite, migrations contrôlées & Mise en place initiale plus structurante que le Google Sheet \\
+  \bottomrule
+\end{tabularx}
+
+\section{Critères de validation de la V1}
+
+La V1 est prête lorsque :
+
+\begin{itemize}
+  \item un alumni autorisé active son compte et conserve une session sécurisée ;
+  \item il crée plusieurs activités et plusieurs relevés ;
+  \item il confirme une situation inchangée sans duplication ;
+  \item le cockpit et l'explorateur respectent la fraîcheur et les seuils ;
+  \item l'import D1 reproduit les statistiques historiques attendues ;
+  \item l'administration gère accès, taxonomies, invitations et rappels ;
+  \item aucune interface ni API ne retourne un salaire individuel ;
+  \item les parcours fonctionnent sur mobile et au clavier ;
+  \item les contrôles de qualité et le build OpenNext passent ;
+  \item aucune offre payante n'est nécessaire.
+\end{itemize}
+
+\begin{keybox}{Objectif d'adoption à trois mois}
+Atteindre au moins huit profils récents dans chacun des trois principaux
+domaines professionnels observés dans les données historiques.
+\end{keybox}
+
+\section{Décisions demandées au bureau}
+
+\begin{enumerate}
+  \item Valider le passage du sondage ponctuel au modèle profil, activité et
+        relevé.
+  \item Valider les données obligatoires et facultatives présentées dans ce
+        document.
+  \item Valider le seuil de confidentialité de trois alumni distincts.
+  \item Valider la conservation transitoire des références historiques et la
+        bascule à huit profils récents par segment.
+  \item Valider l'import unique dans D1 et l'arrêt de la lecture Google Sheets
+        en production.
+  \item Valider le principe d'un annuaire invisible par défaut et fondé sur le
+        consentement explicite.
+  \item Mandater une validation juridique de la politique de suppression et
+        d'anonymisation avant mise en production.
+\end{enumerate}
+
+\vfill
+\begin{center}
+  \color{MidGray}
+  \rule{0.45\textwidth}{0.4pt}
+
+  \small Document généré depuis la source LaTeX
+  \texttt{docs/MODELE\_DONNEES\_ALUMNI.tex}
+\end{center}
+
+\end{document}

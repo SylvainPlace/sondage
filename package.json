@@ -19,6 +19,7 @@
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "build:cloudflare": "opennextjs-cloudflare build",
     "deploy:cloudflare": "opennextjs-cloudflare deploy",
+    "d1:migrate:local": "wrangler d1 migrations apply DB --local --config wrangler.local.jsonc",
     "prepare": "husky",
     "cf:types": "wrangler types --env-interface CloudflareEnv"
   },
