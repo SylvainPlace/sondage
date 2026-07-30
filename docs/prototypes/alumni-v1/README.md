@@ -65,6 +65,19 @@ Chaque direction possède une capture desktop pour les cinq surfaces :
 Les captures `a-cockpit-mobile.png`, `b-cockpit-mobile.png` et
 `c-cockpit-mobile.png` permettent de comparer le comportement responsive.
 
+## Raffinement du cockpit clair
+
+À la suite de la première revue, trois variantes moins génériques du cockpit
+clair sont disponibles sur :
+
+```text
+/prototype/alumni/cockpit-clair?variant=A
+```
+
+La variante C explore une identité inspirée des hiéroglyphes et du panthéon
+égyptien, déjà suggérée par le logo de l’association. Le plan de design et les
+captures sont documentés dans `cockpit-clair/README.md`.
+
 ## Points à décider
 
 - Quelle structure donne le plus envie de revenir actualiser sa situation ?

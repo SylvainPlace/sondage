@@ -1,0 +1,1375 @@
+.prototypeRoot {
+  min-height: 100vh;
+  color: #18242c;
+}
+
+.prototypeRoot button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.prototypeRoot a:focus-visible,
+.prototypeRoot button:focus-visible {
+  outline: 3px solid #e1a52f;
+  outline-offset: 3px;
+}
+
+.brand {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.brandMark {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 34px;
+  background: #fff;
+  border: 1px solid currentColor;
+}
+
+.brandMark img {
+  width: 31px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.brand > span:last-child {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brand strong {
+  font-size: 0.93rem;
+  letter-spacing: 0.02em;
+}
+
+.brand small {
+  margin-top: 4px;
+  color: #65727a;
+  font-size: 0.6rem;
+}
+
+.brandInverse {
+  color: #f4e5b5;
+}
+
+.brandInverse .brandMark {
+  background: #f4e5b5;
+  border-color: #c79a3b;
+}
+
+.brandInverse small {
+  color: #c8c4b5;
+}
+
+.curveGrid {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.13;
+}
+
+.curveLine {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 4;
+  stroke-linecap: square;
+}
+
+.curveDot {
+  fill: currentColor;
+}
+
+.switcher {
+  position: fixed;
+  z-index: 1000;
+  bottom: 18px;
+  left: 50%;
+  display: grid;
+  grid-template-columns: 38px minmax(170px, auto) 38px;
+  gap: 8px;
+  align-items: center;
+  padding: 7px;
+  color: #f5f5f2;
+  background: rgba(16, 20, 23, 0.96);
+  border: 1px solid #5f666b;
+  border-radius: 4px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.24);
+  transform: translateX(-50%);
+}
+
+.switcher button {
+  width: 38px;
+  height: 36px;
+  color: inherit;
+  background: transparent;
+  border: 1px solid #4e565b;
+}
+
+.switcher button:hover {
+  color: #111;
+  background: #f5f5f2;
+}
+
+.switcher strong {
+  text-align: center;
+  font-size: 0.76rem;
+}
+
+/* A — Carnet de promotion */
+
+.carnet {
+  min-height: 100vh;
+  padding-bottom: 96px;
+  color: #183447;
+  background: #f1f4f1;
+  font-family: "Trebuchet MS", Arial, sans-serif;
+}
+
+.carnetHeader {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 40px;
+  align-items: center;
+  height: 74px;
+  padding: 0 max(24px, calc((100vw - 1240px) / 2));
+  background: #fff;
+  border-bottom: 1px solid #bec9ca;
+}
+
+.carnetHeader nav {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  color: #50646e;
+  font-size: 0.79rem;
+}
+
+.carnetHeader nav a {
+  padding: 27px 0 23px;
+  border-bottom: 4px solid transparent;
+}
+
+.carnetHeader nav .carnetNavActive {
+  color: #183447;
+  border-color: #d09a31;
+  font-weight: 700;
+}
+
+.carnetIdentity {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: #183447;
+  font-size: 0.76rem;
+}
+
+.carnetIdentity > b {
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 35px;
+  color: #fff;
+  background: #2f6b58;
+  border-radius: 50%;
+  font-size: 0.7rem;
+}
+
+.carnetIdentity > span {
+  display: flex;
+  flex-direction: column;
+}
+
+.carnetIdentity small {
+  color: #74838a;
+  font-size: 0.59rem;
+}
+
+.carnetMain {
+  width: min(1240px, calc(100% - 48px));
+  margin: 0 auto;
+}
+
+.carnetIntro {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  padding: 58px 0 34px;
+}
+
+.carnetKicker {
+  color: #2f6b58;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.carnetIntro h1 {
+  margin: 7px 0 5px;
+  color: #183447;
+  font-family: "Arial Narrow", "Trebuchet MS", sans-serif;
+  font-size: clamp(2.1rem, 4.5vw, 4rem);
+  font-weight: 700;
+  letter-spacing: -0.055em;
+}
+
+.carnetIntro p {
+  max-width: 650px;
+  color: #5d6f77;
+}
+
+.carnetIntro button {
+  padding: 13px 20px;
+  color: #fff;
+  background: #183447;
+  border: 1px solid #183447;
+  border-radius: 2px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.carnetFreshness {
+  display: grid;
+  grid-template-columns: 1.6fr repeat(3, 1fr);
+  border-block: 1px solid #aab8ba;
+}
+
+.carnetFreshness > span {
+  padding: 12px 18px;
+  color: #536871;
+  border-right: 1px solid #c6d0d0;
+  font-size: 0.69rem;
+}
+
+.carnetFreshness > span:last-child {
+  border-right: 0;
+}
+
+.carnetFreshness > span:first-child {
+  color: #245947;
+  font-weight: 700;
+}
+
+.carnetFreshness i {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 8px;
+  background: #2f6b58;
+  border-radius: 50%;
+}
+
+.carnetColumns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.14fr) minmax(320px, 0.86fr);
+  margin-top: 36px;
+  background: #fff;
+  border: 1px solid #b9c4c6;
+}
+
+.carnetSituation,
+.carnetComparison {
+  padding: clamp(28px, 4vw, 50px);
+}
+
+.carnetSituation {
+  border-right: 1px solid #b9c4c6;
+}
+
+.carnetSituation header,
+.carnetComparison header {
+  display: flex;
+  justify-content: space-between;
+  color: #2f6b58;
+  font-size: 0.69rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+
+.carnetSituation header small,
+.carnetComparison header small {
+  color: #728188;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.carnetSituation h2 {
+  max-width: 620px;
+  margin-top: 34px;
+  color: #183447;
+  font-family: "Arial Narrow", "Trebuchet MS", sans-serif;
+  font-size: clamp(2rem, 4vw, 3.35rem);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+
+.carnetEmployer {
+  margin-top: 12px;
+  color: #65757c;
+}
+
+.carnetLedger {
+  margin-top: 35px;
+  border-top: 2px solid #183447;
+}
+
+.carnetLedger > div {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.9fr) 1.1fr;
+  gap: 24px;
+  padding: 13px 0;
+  border-bottom: 1px solid #cbd3d3;
+}
+
+.carnetLedger dt {
+  color: #718087;
+  font-size: 0.69rem;
+}
+
+.carnetLedger dd {
+  color: #183447;
+  font-size: 0.83rem;
+  font-weight: 700;
+}
+
+.textAction {
+  margin-top: 24px;
+  padding: 4px 0;
+  color: #183447;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid #d09a31;
+  font-size: 0.77rem;
+  font-weight: 700;
+}
+
+.carnetDelta {
+  display: flex;
+  gap: 13px;
+  align-items: end;
+  margin-top: 45px;
+}
+
+.carnetDelta b {
+  color: #183447;
+  font-family: Georgia, serif;
+  font-size: clamp(2.8rem, 5vw, 4.7rem);
+  font-weight: 400;
+  line-height: 0.8;
+}
+
+.carnetDelta span {
+  max-width: 130px;
+  color: #65757c;
+  font-size: 0.69rem;
+}
+
+.carnetCurve {
+  width: 100%;
+  margin: 32px 0 10px;
+  color: #d09a31;
+}
+
+.carnetReading {
+  padding-top: 20px;
+  color: #4e626b;
+  border-top: 1px solid #cbd3d3;
+  font-family: Georgia, serif;
+  font-size: 0.96rem;
+  line-height: 1.75;
+}
+
+.carnetReading strong {
+  color: #183447;
+}
+
+.carnetFooterGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  padding: 32px 0;
+  border-bottom: 1px solid #aab8ba;
+}
+
+.carnetFooterGrid > div {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 18px;
+}
+
+.carnetFooterGrid p {
+  color: #4f636b;
+  font-size: 0.82rem;
+}
+
+/* B — Registre de carrière */
+
+.registre {
+  min-height: 100vh;
+  padding-bottom: 96px;
+  color: #20262d;
+  background: #e8ecef;
+  font-family: Verdana, Geneva, sans-serif;
+}
+
+.registreHeader {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 30px;
+  align-items: center;
+  min-height: 68px;
+  padding: 0 30px;
+  background: #fff;
+  border-bottom: 4px solid #214d84;
+}
+
+.registreHeader > span {
+  color: #6f7880;
+  font-family: Consolas, monospace;
+  font-size: 0.62rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.registreHeader nav {
+  display: flex;
+  gap: 7px;
+}
+
+.registreHeader nav a {
+  padding: 8px 10px;
+  color: #56616b;
+  border: 1px solid transparent;
+  font-size: 0.68rem;
+}
+
+.registreHeader nav .registreNavActive {
+  color: #214d84;
+  border-color: #214d84;
+  font-weight: 700;
+}
+
+.registreMain {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  width: min(1320px, calc(100% - 48px));
+  margin: 42px auto 0;
+  background: #fff;
+  border: 1px solid #909ba4;
+  box-shadow: 8px 8px 0 #c3cbd1;
+}
+
+.registreProfile {
+  padding: 32px 28px;
+  background: #f6f7f7;
+  border-right: 1px solid #9ba5ad;
+}
+
+.registrePortrait {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 88px;
+  color: #fff;
+  background: #214d84;
+  border-bottom: 8px solid #d8a13b;
+  font-family: "Arial Narrow", Arial, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.registreProfile h2 {
+  margin-top: 24px;
+  font-family: "Arial Narrow", Arial, sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: -0.02em;
+}
+
+.registreProfile > p {
+  margin-top: 3px;
+  color: #707a81;
+  font-size: 0.69rem;
+}
+
+.registreProfile dl {
+  margin-top: 35px;
+  border-top: 1px solid #a9b1b7;
+}
+
+.registreProfile dl > div {
+  padding: 13px 0;
+  border-bottom: 1px solid #c5cbd0;
+}
+
+.registreProfile dt {
+  color: #717b82;
+  font-family: Consolas, monospace;
+  font-size: 0.57rem;
+  text-transform: uppercase;
+}
+
+.registreProfile dd {
+  margin-top: 5px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.registreProfile button {
+  width: 100%;
+  margin-top: 28px;
+  padding: 11px 8px;
+  color: #fff;
+  background: #214d84;
+  border: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.registreContent {
+  min-width: 0;
+}
+
+.registreTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  padding: 42px 44px 34px;
+  border-bottom: 1px solid #9ba5ad;
+}
+
+.registreTitle > div > span {
+  color: #214d84;
+  font-family: Consolas, monospace;
+  font-size: 0.61rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.registreTitle h1 {
+  margin-top: 12px;
+  font-family: "Arial Narrow", Arial, sans-serif;
+  font-size: clamp(2rem, 4vw, 3.55rem);
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.registreTitle p {
+  margin-top: 8px;
+  color: #68737c;
+  font-size: 0.82rem;
+}
+
+.registreStatus {
+  padding: 7px 10px;
+  color: #1f5948;
+  background: #e2efe9;
+  border: 1px solid #1f5948;
+  font-family: Consolas, monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.registreFacts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid #9ba5ad;
+}
+
+.registreFacts > div {
+  padding: 24px 28px;
+  border-right: 1px solid #b5bdc3;
+}
+
+.registreFacts > div:last-child {
+  border-right: 0;
+}
+
+.registreFacts span {
+  display: block;
+  color: #6d777e;
+  font-family: Consolas, monospace;
+  font-size: 0.57rem;
+  text-transform: uppercase;
+}
+
+.registreFacts strong {
+  display: block;
+  margin-top: 9px;
+  font-family: "Arial Narrow", Arial, sans-serif;
+  font-size: clamp(1.35rem, 2.5vw, 2.15rem);
+}
+
+.registreBody {
+  display: grid;
+  grid-template-columns: 1.12fr 0.88fr;
+}
+
+.registreHistory {
+  padding: 34px 44px 42px;
+  border-right: 1px solid #9ba5ad;
+}
+
+.registreHistory header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #20262d;
+}
+
+.registreHistory h2 {
+  font-family: "Arial Narrow", Arial, sans-serif;
+  font-size: 1.2rem;
+}
+
+.registreHistory header button {
+  color: #214d84;
+  background: transparent;
+  border: 0;
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.registreHistory ol {
+  list-style: none;
+}
+
+.registreHistory li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid #c6ccd0;
+}
+
+.registreHistory time {
+  color: #214d84;
+  font-family: Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.registreHistory li > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.registreHistory li strong {
+  font-size: 0.82rem;
+}
+
+.registreHistory li span {
+  margin-top: 3px;
+  color: #657078;
+  font-size: 0.69rem;
+}
+
+.registreHistory li small {
+  margin-top: 8px;
+  color: #7d858b;
+  font-size: 0.6rem;
+}
+
+.registreAnalysis {
+  padding: 34px 34px 42px;
+  background: #214d84;
+  color: #fff;
+}
+
+.registreAnalysis > span {
+  color: #c5d7ed;
+  font-family: Consolas, monospace;
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+
+.registreAnalysis > strong {
+  display: block;
+  margin-top: 26px;
+  font-family: "Arial Narrow", Arial, sans-serif;
+  font-size: 2rem;
+}
+
+.registreAnalysis p {
+  margin-top: 12px;
+  color: #dce7f4;
+  font-family: Georgia, serif;
+  font-size: 0.91rem;
+  line-height: 1.7;
+}
+
+.registreCurve {
+  width: 100%;
+  margin: 28px 0 13px;
+  color: #f0bd54;
+}
+
+.registreAnalysis > small {
+  color: #c5d7ed;
+  font-size: 0.58rem;
+}
+
+/* C — Panthéon */
+
+.pantheon {
+  min-height: 100vh;
+  padding-bottom: 96px;
+  color: #24251f;
+  background: #d8d1bd;
+  font-family: "Trebuchet MS", Arial, sans-serif;
+}
+
+.pantheonHeader {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 34px;
+  align-items: center;
+  min-height: 76px;
+  padding: 0 max(24px, calc((100vw - 1260px) / 2));
+  color: #f4e5b5;
+  background: #14264d;
+  border-bottom: 7px solid #c5963d;
+}
+
+.hieroglyphBand {
+  overflow: hidden;
+  color: #c5963d;
+  font-family: "Segoe UI Historic", "Noto Sans Egyptian Hieroglyphs", serif;
+  font-size: 1.65rem;
+  text-align: center;
+  white-space: nowrap;
+  letter-spacing: 0.32em;
+}
+
+.pantheonHeader nav {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  font-size: 0.69rem;
+}
+
+.pantheonHeader nav a {
+  padding: 8px 0;
+  border-bottom: 2px solid transparent;
+}
+
+.pantheonHeader nav .pantheonNavActive {
+  color: #fff3c9;
+  border-color: #c5963d;
+}
+
+.pantheonMain {
+  width: min(1260px, calc(100% - 48px));
+  margin: 0 auto;
+}
+
+.pantheonTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  padding: 54px 0 30px;
+  border-bottom: 1px solid #746a53;
+}
+
+.pantheonTitle span {
+  color: #2f6f60;
+  font-family: "Lucida Console", Consolas, monospace;
+  font-size: 0.61rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.pantheonTitle h1 {
+  margin-top: 10px;
+  color: #14264d;
+  font-family: "Palatino Linotype", Palatino, serif;
+  font-size: clamp(2.4rem, 5vw, 4.8rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+}
+
+.pantheonTitle p {
+  margin-top: 12px;
+  color: #5e5a4e;
+  font-family: "Palatino Linotype", Palatino, serif;
+}
+
+.pantheonTitle button {
+  padding: 12px 18px;
+  color: #f7e9bc;
+  background: #14264d;
+  border: 2px solid #14264d;
+  box-shadow: inset 0 0 0 2px #c5963d;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.pantheonLayout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 28px;
+  margin-top: 32px;
+}
+
+.cartouche {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: start;
+  padding: 25px 18px 28px;
+  text-align: center;
+  background: #e9e1cb;
+  border: 3px solid #14264d;
+  outline: 1px solid #c5963d;
+  outline-offset: -9px;
+}
+
+.cartoucheGlyph {
+  color: #2f6f60;
+  font-family: "Segoe UI Historic", "Noto Sans Egyptian Hieroglyphs", serif;
+  font-size: 2.7rem;
+}
+
+.cartoucheInitials {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 112px;
+  margin: 13px 0 17px;
+  color: #f1dfaa;
+  background: #14264d;
+  border: 5px double #c5963d;
+  border-radius: 50% / 16%;
+  font-family: "Palatino Linotype", serif;
+  font-size: 1.25rem;
+}
+
+.cartouche strong {
+  color: #14264d;
+  font-family: "Palatino Linotype", Palatino, serif;
+  font-size: 1.05rem;
+}
+
+.cartouche small {
+  margin-top: 3px;
+  color: #746d5e;
+  font-size: 0.61rem;
+}
+
+.cartouche i {
+  width: 50px;
+  height: 1px;
+  margin: 23px 0 18px;
+  background: #a94a36;
+}
+
+.cartouche > span:nth-last-of-type(1) {
+  color: #2f6f60;
+  font-family: "Lucida Console", monospace;
+  font-size: 0.55rem;
+  text-transform: uppercase;
+}
+
+.cartouche b {
+  margin-top: 6px;
+  color: #4d4a40;
+  font-size: 0.65rem;
+}
+
+.stela {
+  background: #ece4cf;
+  border: 1px solid #746a53;
+  box-shadow: 10px 10px 0 rgba(20, 38, 77, 0.12);
+}
+
+.stelaRegister {
+  padding: 28px 34px 32px;
+  border-bottom: 4px double #746a53;
+}
+
+.stelaRegister:last-child {
+  border-bottom: 0;
+}
+
+.stelaRegister > header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.stelaRegister > header span {
+  color: #a94a36;
+  font-family: "Segoe UI Historic", "Noto Sans Egyptian Hieroglyphs", serif;
+  font-size: 1.6rem;
+}
+
+.stelaRegister > header small {
+  color: #2f6f60;
+  font-family: "Lucida Console", Consolas, monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.stelaActivity {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.85fr) 1.15fr;
+  gap: 42px;
+}
+
+.stelaActivity h2 {
+  color: #14264d;
+  font-family: "Palatino Linotype", Palatino, serif;
+  font-size: clamp(2rem, 4vw, 3.35rem);
+  font-weight: 400;
+  line-height: 0.96;
+}
+
+.stelaActivity p {
+  margin-top: 9px;
+  color: #686153;
+  font-family: "Palatino Linotype", Palatino, serif;
+}
+
+.stelaActivity dl {
+  border-top: 2px solid #14264d;
+}
+
+.stelaActivity dl > div {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 15px;
+  padding: 10px 0;
+  border-bottom: 1px solid #b6aa8d;
+}
+
+.stelaActivity dt,
+.pantheonNumbers dt {
+  color: #746d5e;
+  font-family: "Lucida Console", Consolas, monospace;
+  font-size: 0.55rem;
+  text-transform: uppercase;
+}
+
+.stelaActivity dd {
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.pantheonNumbers {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.pantheonNumbers > div {
+  padding: 7px 22px 7px 0;
+  border-right: 1px solid #aa9e81;
+}
+
+.pantheonNumbers > div:not(:first-child) {
+  padding-left: 22px;
+}
+
+.pantheonNumbers > div:last-child {
+  border-right: 0;
+}
+
+.pantheonNumbers dd {
+  margin-top: 10px;
+  color: #14264d;
+  font-family: "Palatino Linotype", Palatino, serif;
+  font-size: clamp(1.5rem, 3vw, 2.4rem);
+}
+
+.pantheonComparison {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(240px, 0.7fr);
+  gap: 36px;
+  align-items: center;
+}
+
+.pantheonCurve {
+  width: 100%;
+  color: #a94a36;
+}
+
+.pantheonComparison strong {
+  color: #14264d;
+  font-family: "Palatino Linotype", Palatino, serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+}
+
+.pantheonComparison p {
+  margin-top: 9px;
+  color: #5f594c;
+  font-size: 0.75rem;
+  line-height: 1.65;
+}
+
+.pantheonComparison small {
+  display: block;
+  margin-top: 13px;
+  color: #2f6f60;
+  font-family: "Lucida Console", Consolas, monospace;
+  font-size: 0.55rem;
+}
+
+.pantheonChronicle {
+  display: grid;
+  grid-template-columns: 55px 1fr auto;
+  gap: 24px;
+  align-items: center;
+  margin-top: 28px;
+  padding: 21px 25px;
+  color: #f2e4bb;
+  background: #14264d;
+  border-top: 6px solid #c5963d;
+}
+
+.pantheonChronicle > span {
+  color: #c5963d;
+  font-family: "Segoe UI Historic", "Noto Sans Egyptian Hieroglyphs", serif;
+  font-size: 2.1rem;
+}
+
+.pantheonChronicle small {
+  color: #c7b77f;
+  font-family: "Lucida Console", monospace;
+  font-size: 0.55rem;
+  text-transform: uppercase;
+}
+
+.pantheonChronicle p {
+  margin-top: 4px;
+  font-family: "Palatino Linotype", Palatino, serif;
+  font-size: 0.85rem;
+}
+
+.pantheonChronicle button {
+  padding: 9px 12px;
+  color: #f2e4bb;
+  background: transparent;
+  border: 1px solid #c5963d;
+  font-size: 0.65rem;
+}
+
+@media (max-width: 940px) {
+  .carnetColumns,
+  .registreBody,
+  .stelaActivity,
+  .pantheonComparison {
+    grid-template-columns: 1fr;
+  }
+
+  .carnetSituation,
+  .registreHistory {
+    border-right: 0;
+    border-bottom: 1px solid #9ba5ad;
+  }
+
+  .registreMain {
+    grid-template-columns: 210px minmax(0, 1fr);
+  }
+
+  .registreFacts,
+  .pantheonNumbers {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .registreFacts > div:nth-child(2),
+  .pantheonNumbers > div:nth-child(2) {
+    border-right: 0;
+  }
+
+  .registreFacts > div:nth-child(-n + 2),
+  .pantheonNumbers > div:nth-child(-n + 2) {
+    border-bottom: 1px solid #b5bdc3;
+  }
+
+  .pantheonNumbers > div:nth-child(3) {
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .prototypeRoot {
+    padding-bottom: 78px;
+  }
+
+  .switcher {
+    right: 8px;
+    bottom: 8px;
+    left: auto;
+    width: calc(100vw - 70px);
+    grid-template-columns: 38px 1fr 38px;
+    transform: none;
+  }
+
+  .carnet,
+  .registre,
+  .pantheon {
+    padding-bottom: 90px;
+  }
+
+  .carnetHeader,
+  .registreHeader,
+  .pantheonHeader {
+    display: flex;
+    justify-content: space-between;
+    min-height: 64px;
+    padding: 0 14px;
+  }
+
+  .carnetHeader nav,
+  .registreHeader > span:nth-child(2),
+  .registreHeader nav,
+  .hieroglyphBand,
+  .pantheonHeader nav {
+    display: none;
+  }
+
+  .carnetIdentity > span,
+  .brand small {
+    display: none;
+  }
+
+  .carnetMain,
+  .pantheonMain {
+    width: calc(100% - 28px);
+  }
+
+  .carnetIntro,
+  .pantheonTitle {
+    display: block;
+    padding: 34px 0 24px;
+  }
+
+  .carnetIntro h1 {
+    font-size: 2.8rem;
+  }
+
+  .carnetIntro button,
+  .pantheonTitle button {
+    width: 100%;
+    margin-top: 22px;
+  }
+
+  .carnetFreshness {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .carnetFreshness > span {
+    border-bottom: 1px solid #c6d0d0;
+  }
+
+  .carnetFreshness > span:nth-child(2),
+  .carnetFreshness > span:nth-child(4) {
+    border-right: 0;
+  }
+
+  .carnetColumns {
+    grid-template-columns: 1fr;
+    margin-top: 22px;
+  }
+
+  .carnetSituation,
+  .carnetComparison {
+    padding: 26px 22px;
+  }
+
+  .carnetSituation {
+    border-right: 0;
+    border-bottom: 1px solid #b9c4c6;
+  }
+
+  .carnetSituation header,
+  .carnetComparison header {
+    display: block;
+  }
+
+  .carnetSituation header small,
+  .carnetComparison header small {
+    display: block;
+    margin-top: 4px;
+  }
+
+  .carnetLedger > div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .carnetFooterGrid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .carnetFooterGrid > div {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .registreMain {
+    display: block;
+    width: calc(100% - 20px);
+    margin-top: 16px;
+    box-shadow: 4px 4px 0 #c3cbd1;
+  }
+
+  .registreProfile {
+    display: grid;
+    grid-template-columns: 62px 1fr;
+    column-gap: 16px;
+    padding: 20px;
+    border-right: 0;
+    border-bottom: 1px solid #9ba5ad;
+  }
+
+  .registrePortrait {
+    grid-row: 1 / 3;
+    width: 62px;
+    height: 70px;
+  }
+
+  .registreProfile h2 {
+    align-self: end;
+    margin: 0;
+  }
+
+  .registreProfile dl,
+  .registreProfile button {
+    grid-column: 1 / -1;
+  }
+
+  .registreTitle {
+    display: block;
+    padding: 28px 20px 23px;
+  }
+
+  .registreStatus {
+    display: inline-block;
+    margin-top: 18px;
+  }
+
+  .registreFacts {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .registreFacts > div {
+    padding: 18px 16px;
+  }
+
+  .registreHistory,
+  .registreAnalysis {
+    padding: 26px 20px;
+  }
+
+  .registreHistory header {
+    display: block;
+  }
+
+  .registreHistory header button {
+    margin-top: 10px;
+  }
+
+  .pantheonTitle h1 {
+    font-size: 2.85rem;
+  }
+
+  .pantheonLayout {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 20px;
+  }
+
+  .cartouche {
+    display: grid;
+    grid-template-columns: 50px 72px 1fr;
+    gap: 4px 14px;
+    align-items: center;
+    padding: 18px;
+    text-align: left;
+  }
+
+  .cartoucheGlyph {
+    grid-row: 1 / 3;
+    font-size: 2rem;
+  }
+
+  .cartoucheInitials {
+    grid-row: 1 / 3;
+    width: 58px;
+    height: 72px;
+    margin: 0;
+  }
+
+  .cartouche strong,
+  .cartouche small {
+    grid-column: 3;
+  }
+
+  .cartouche i,
+  .cartouche > span:nth-last-of-type(1),
+  .cartouche b {
+    display: none;
+  }
+
+  .stelaRegister {
+    padding: 24px 20px 27px;
+  }
+
+  .stelaActivity {
+    gap: 25px;
+  }
+
+  .stelaActivity dl > div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .pantheonNumbers {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pantheonNumbers > div,
+  .pantheonNumbers > div:not(:first-child) {
+    padding: 12px;
+  }
+
+  .pantheonComparison {
+    gap: 20px;
+  }
+
+  .pantheonChronicle {
+    grid-template-columns: 40px 1fr;
+    gap: 15px;
+    padding: 18px;
+  }
+
+  .pantheonChronicle button {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prototypeRoot *,
+  .prototypeRoot *::before,
+  .prototypeRoot *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
