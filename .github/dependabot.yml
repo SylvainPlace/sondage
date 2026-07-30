@@ -37,6 +37,12 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "react-dom"
         update-types: ["version-update:semver-major"]
+      # Cloudflare builds currently run Node 22.16.0; jsdom 30 requires >=22.22.2.
+      - dependency-name: "jsdom"
+        update-types: ["version-update:semver-major"]
+      # Next.js 16 still requires the TypeScript 6 compiler API.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
 
   # GitHub Actions workflow updates
   - package-ecosystem: "github-actions"
