@@ -11,6 +11,7 @@ d’actualiser son relevé.
 /prototype/alumni/cockpit-clair?variant=A
 /prototype/alumni/cockpit-clair?variant=B
 /prototype/alumni/cockpit-clair?variant=C
+/prototype/alumni/cockpit-clair?variant=D
 ```
 
 Les flèches du sélecteur ou du clavier changent de variante.
@@ -54,6 +55,22 @@ pourraient sembler génériques hors contexte. Le cartouche, le lapis et
 l’organisation en registres les rattachent ici directement à l’identité
 égyptienne demandée.
 
+## D — Sanctuaire solaire
+
+- Palette : ivoire `#FFFDFA`, or sombre `#745B00`, or solaire `#F2CA50`, pierre
+  claire `#FAF9F6`, contour `#D0C5AF`, encre `#201F21`.
+- Typographie : Georgia pour la thèse et les titres, Trebuchet pour l’interface
+  et les données.
+- Structure : une navigation institutionnelle latérale, une barre d’archives, un
+  sceau de profil et un cluster analytique en bento.
+- Signature : le titre « Le sanctuaire de Sophie — Version solaire » ouvre la
+  page comme une thèse, puis les données de carrière prennent la place des
+  filtres abstraits de la référence.
+
+Cette variante adapte la maquette « Le Sanctuaire d’Isis (Version Solaire) »
+fournie pour la revue. Elle ne dépend ni de Tailwind, ni de Google Fonts, ni
+d’images distantes.
+
 ## Captures
 
 Chaque variante dispose d’une capture desktop et mobile :
@@ -61,3 +78,4 @@ Chaque variante dispose d’une capture desktop et mobile :
 - `a-carnet-desktop.png` et `a-carnet-mobile.png` ;
 - `b-registre-desktop.png` et `b-registre-mobile.png` ;
 - `c-pantheon-desktop.png` et `c-pantheon-mobile.png`.
+- `d-sanctuaire-desktop.png` et `d-sanctuaire-mobile.png`.

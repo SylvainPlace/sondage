@@ -38,7 +38,8 @@ Les captures de comparaison et les consignes de revue sont disponibles dans
 direction ou la description explicite d’une hybridation.
 
 Après une préférence exprimée pour le cockpit clair, une seconde passe propose
-trois raffinements moins génériques sur `/prototype/alumni/cockpit-clair`. La
+quatre raffinements moins génériques sur `/prototype/alumni/cockpit-clair`. La
 variante C traduit l’iconographie égyptienne du logo en cartouche et registres
-d’information. Les choix sont détaillés dans
-`docs/prototypes/alumni-v1/cockpit-clair/README.md`.
+d’information. La variante D adapte la référence « Sanctuaire d’Isis — Version
+solaire » en navigation institutionnelle et cluster analytique. Les choix sont
+détaillés dans `docs/prototypes/alumni-v1/cockpit-clair/README.md`.

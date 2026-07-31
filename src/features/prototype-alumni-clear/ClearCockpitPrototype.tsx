@@ -15,6 +15,7 @@ const variants = [
   { key: "A", label: "Carnet de promotion" },
   { key: "B", label: "Registre de carrière" },
   { key: "C", label: "Panthéon" },
+  { key: "D", label: "Sanctuaire solaire" },
 ] as const;
 
 type VariantKey = (typeof variants)[number]["key"];
@@ -428,6 +429,208 @@ function PantheonCockpit() {
   );
 }
 
+function SolarSanctuaryCockpit() {
+  const salaryBars = [22, 38, 61, 86, 100, 76, 43, 18];
+
+  return (
+    <div className={styles.solar}>
+      <aside className={styles.solarSidebar}>
+        <div className={styles.solarInstitution}>
+          <Brand />
+          <p>L’institution · réseau alumni</p>
+        </div>
+
+        <nav aria-label="Navigation du sanctuaire">
+          <a href="#sanctuaire" className={styles.solarNavActive}>
+            <span aria-hidden="true">𓂀</span>
+            Sanctuaire
+          </a>
+          <a href="#papyrus">
+            <span aria-hidden="true">▤</span>
+            Papyrus
+          </a>
+          <a href="#agora">
+            <span aria-hidden="true">◎</span>
+            L’Agora
+          </a>
+          <a href="#chronique">
+            <span aria-hidden="true">⌁</span>
+            Chronique
+          </a>
+          <a href="#tresor">
+            <span aria-hidden="true">◇</span>
+            Trésor
+          </a>
+        </nav>
+
+        <div className={styles.solarSidebarFooter}>
+          <a href="#preferences">Préférences</a>
+          <a href="#aide">Aide</a>
+          <button type="button">Actualiser mon relevé</button>
+        </div>
+      </aside>
+
+      <header className={styles.solarHeader}>
+        <div>
+          <strong>NIL</strong>
+          <nav aria-label="Navigation supérieure">
+            <a href="#sanctuaire" className={styles.solarTopActive}>
+              Sanctuaire
+            </a>
+            <a href="#papyrus">Papyrus</a>
+            <a href="#agora">L’Agora</a>
+          </nav>
+        </div>
+        <div className={styles.solarHeaderActions}>
+          <span className={styles.solarSearch}>Rechercher dans les archives…</span>
+          <button type="button" aria-label="Notifications">
+            ◌
+          </button>
+          <span className={styles.solarAvatar}>{career.initials}</span>
+        </div>
+      </header>
+
+      <main className={styles.solarMain} id="sanctuaire">
+        <section className={styles.solarHero}>
+          <span>Écosystème analytique</span>
+          <h1>
+            Le sanctuaire de Sophie
+            <em>Version solaire</em>
+          </h1>
+        </section>
+
+        <div className={styles.solarAnalytics}>
+          <aside className={styles.solarProfile}>
+            <h2>Sceau du profil</h2>
+
+            <div className={styles.solarProfileIdentity}>
+              <span>{career.initials}</span>
+              <div>
+                <strong>{career.name}</strong>
+                <small>{career.graduation}</small>
+              </div>
+            </div>
+
+            <dl>
+              <div>
+                <dt>Dernière confirmation</dt>
+                <dd>{career.updated}</dd>
+              </div>
+              <div>
+                <dt>Complétude du relevé</dt>
+                <dd>92 %</dd>
+              </div>
+              <div>
+                <dt>Activité principale</dt>
+                <dd>{career.title}</dd>
+              </div>
+              <div>
+                <dt>Organisation du travail</dt>
+                <dd>{career.workMode}</dd>
+              </div>
+            </dl>
+
+            <div className={styles.solarCompletion} aria-label="Profil complété à 92 %">
+              <span style={{ width: "92%" }} />
+            </div>
+
+            <button type="button">Compléter le papyrus</button>
+          </aside>
+
+          <div className={styles.solarVisuals}>
+            <section className={styles.solarDistribution}>
+              <header>
+                <div>
+                  <span>Distribution des ressources</span>
+                  <h2>Rémunération annuelle</h2>
+                </div>
+                <small>Médiane · {career.median}</small>
+              </header>
+
+              <div className={styles.solarBars} aria-label="Distribution de rémunération simulée">
+                {salaryBars.map((height, index) => (
+                  <i key={`${height}-${index}`} style={{ height: `${height}%` }} />
+                ))}
+              </div>
+              <div className={styles.solarBarLabels} aria-hidden="true">
+                <span>40 k€</span>
+                <span>50 k€</span>
+                <span>60 k€</span>
+                <span>70 k€+</span>
+              </div>
+            </section>
+
+            <section className={styles.solarTrajectory}>
+              <span>Trajectoire</span>
+              <h2>Évolution par expérience</h2>
+              <CareerCurve className={styles.solarCurve} />
+              <dl>
+                <div>
+                  <dt>Votre progression</dt>
+                  <dd>{career.evolution}</dd>
+                </div>
+                <div>
+                  <dt>Groupe comparable</dt>
+                  <dd>+5,2 %</dd>
+                </div>
+              </dl>
+            </section>
+
+            <section className={styles.solarReach}>
+              <span>Portée alumni</span>
+              <h2>Situation comparable</h2>
+              <div className={styles.solarDonutRow}>
+                <div className={styles.solarDonut}>
+                  <span>
+                    <strong>54</strong>
+                    alumni
+                  </span>
+                </div>
+                <ul>
+                  <li>
+                    <i className={styles.solarLegendPrimary} /> Données et IA
+                  </li>
+                  <li>
+                    <i className={styles.solarLegendSecondary} /> Secteur public
+                  </li>
+                  <li>
+                    <i className={styles.solarLegendMuted} /> 5–10 ans
+                  </li>
+                </ul>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <section className={styles.solarRebirth}>
+          <span>Le prochain chapitre</span>
+          <h2>Votre parcours reste vivant.</h2>
+          <p>
+            Confirmez votre situation une fois par an pour conserver des repères précis et aider les
+            prochaines promotions à mieux comprendre leurs possibilités.
+          </p>
+          <div>
+            <button type="button">Actualiser ma situation</button>
+            <button type="button">Ouvrir l’explorateur</button>
+          </div>
+        </section>
+      </main>
+
+      <footer className={styles.solarFooter}>
+        <div>
+          <strong>L’héritage des promotions</strong>
+          <small>Panorama des carrières · données anonymisées</small>
+        </div>
+        <nav aria-label="Liens de pied de page">
+          <a href="#confidentialite">Confidentialité</a>
+          <a href="#charte">Charte</a>
+          <a href="#association">Association</a>
+        </nav>
+      </footer>
+    </div>
+  );
+}
+
 function VariantSwitcher({
   variant,
   onChange,
@@ -499,6 +702,7 @@ export default function ClearCockpitPrototype() {
       {variant === "A" && <CarnetCockpit />}
       {variant === "B" && <RegistreCockpit />}
       {variant === "C" && <PantheonCockpit />}
+      {variant === "D" && <SolarSanctuaryCockpit />}
       <VariantSwitcher variant={variant} onChange={updateVariant} />
     </div>
   );
