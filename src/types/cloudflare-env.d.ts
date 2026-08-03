@@ -3,7 +3,6 @@ import type { D1Database } from "@cloudflare/workers-types";
 declare global {
   interface CloudflareEnv {
     DB: D1Database;
-    IDEAS_DB: D1Database;
     IMAGES: {
       get: (key: string) => Promise<ArrayBuffer | null>;
       put: (key: string, value: ArrayBuffer) => Promise<void>;
@@ -13,10 +12,10 @@ declare global {
       fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
     };
     NEXTJS_ENV: string;
-    GLOBAL_PASSWORD: string;
-    JWT_SECRET: string;
-    GCP_SERVICE_ACCOUNT_EMAIL: string;
-    GCP_PRIVATE_KEY: string;
-    SPREADSHEET_ID: string;
+    FIREBASE_PROJECT_ID: string;
+    FIREBASE_CLIENT_EMAIL: string;
+    FIREBASE_PRIVATE_KEY: string;
+    RESEND_API_KEY: string;
+    TURNSTILE_SECRET_KEY: string;
   }
 }

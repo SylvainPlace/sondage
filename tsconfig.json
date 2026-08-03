@@ -35,5 +35,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "worker-configuration.d.ts"]
+  "exclude": ["node_modules", "legacy", "worker-configuration.d.ts"]
 }

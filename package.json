@@ -24,14 +24,10 @@
     "cf:types": "wrangler types --env-interface CloudflareEnv"
   },
   "dependencies": {
-    "chart.js": "^4.4.1",
-    "geojson": "^0.5.0",
     "jose": "^6.2.5",
     "knip": "^6.29.0",
-    "leaflet": "^1.9.4",
     "next": "^16.2.4",
     "react": "^19.2.8",
-    "react-chartjs-2": "^5.2.0",
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
@@ -40,7 +36,6 @@
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.2",
-    "@types/leaflet": "^1.9.8",
     "@types/node": "^26.1.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19",
