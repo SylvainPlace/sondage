@@ -1,0 +1,14 @@
+.logo {
+  display: block;
+  width: auto;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
+.compact {
+  height: 3rem;
+}
+
+.full {
+  height: 6.3125rem;
+}

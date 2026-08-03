@@ -67,7 +67,7 @@ Les captures `a-cockpit-mobile.png`, `b-cockpit-mobile.png` et
 
 ## Raffinement du cockpit clair
 
-À la suite de la première revue, quatre variantes moins génériques du cockpit
+À la suite de la première revue, cinq variantes moins génériques du cockpit
 clair sont disponibles sur :
 
 ```text
@@ -76,8 +76,9 @@ clair sont disponibles sur :
 
 La variante C explore une identité inspirée des hiéroglyphes et du panthéon
 égyptien, déjà suggérée par le logo de l’association. La variante D adapte le
-format « Sanctuaire d’Isis — Version solaire » fourni pendant la revue. Le plan
-de design et les captures sont documentés dans `cockpit-clair/README.md`.
+format « Sanctuaire d’Isis — Version solaire » fourni pendant la revue. La
+variante E conserve ce format avec les couleurs du nouveau logo NIL. Le plan de
+design et les captures sont documentés dans `cockpit-clair/README.md`.
 
 ## Points à décider
 

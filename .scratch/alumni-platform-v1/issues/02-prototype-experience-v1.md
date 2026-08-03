@@ -6,7 +6,7 @@ avant que les interfaces de production soient construites.
 
 **Blocked by:** None — can start immediately.
 
-**Status:** in-review
+**Status:** done
 
 - [x] Au moins trois directions visuelles réellement différentes sont
       accessibles dans un prototype isolé du produit de production.
@@ -19,9 +19,9 @@ avant que les interfaces de production soient construites.
       ordinateur avec une navigation clavier compréhensible.
 - [x] Des captures comparables permettent d’évaluer hiérarchie, densité,
       lisibilité des graphiques, formulaires et filtres.
-- [ ] La direction retenue peut être une proposition complète ou une hybridation
+- [x] La direction retenue peut être une proposition complète ou une hybridation
       explicitement décrite.
-- [ ] La décision finale documente palette, typographie, espacements,
+- [x] La décision finale documente palette, typographie, espacements,
       navigation, composants partagés, graphiques et comportements responsive.
 - [x] Le prototype reste jetable, ne dépend pas de services de production et
       peut être retiré sans affecter l’application finale.
@@ -38,8 +38,16 @@ Les captures de comparaison et les consignes de revue sont disponibles dans
 direction ou la description explicite d’une hybridation.
 
 Après une préférence exprimée pour le cockpit clair, une seconde passe propose
-quatre raffinements moins génériques sur `/prototype/alumni/cockpit-clair`. La
+cinq raffinements moins génériques sur `/prototype/alumni/cockpit-clair`. La
 variante C traduit l’iconographie égyptienne du logo en cartouche et registres
 d’information. La variante D adapte la référence « Sanctuaire d’Isis — Version
-solaire » en navigation institutionnelle et cluster analytique. Les choix sont
-détaillés dans `docs/prototypes/alumni-v1/cockpit-clair/README.md`.
+solaire » en navigation institutionnelle et cluster analytique. La variante E
+applique les couleurs et le nouveau logo NIL à cette même structure. Les choix
+sont détaillés dans `docs/prototypes/alumni-v1/cockpit-clair/README.md`.
+
+## Décision
+
+La variante E « Sanctuaire du Nil » est retenue. Elle reprend la structure de D
+et le langage coloré du nouveau logo. La décision durable est enregistrée dans
+`docs/adr/0003-identite-visuelle-sanctuaire-du-nil.md` ; les tokens et premiers
+composants de production ont été séparés du code jetable du prototype.

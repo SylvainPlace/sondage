@@ -16,6 +16,7 @@ const variants = [
   { key: "B", label: "Registre de carrière" },
   { key: "C", label: "Panthéon" },
   { key: "D", label: "Sanctuaire solaire" },
+  { key: "E", label: "Sanctuaire du Nil" },
 ] as const;
 
 type VariantKey = (typeof variants)[number]["key"];
@@ -52,6 +53,14 @@ function Brand({ inverse = false }: { inverse?: boolean }) {
         <strong>Alumni</strong>
         <small>Panorama des carrières</small>
       </span>
+    </span>
+  );
+}
+
+function NilBrand() {
+  return (
+    <span className={styles.nilBrand}>
+      <Image src="/logo-nil.jpg" alt="NIL — réseau alumni" width={126} height={101} />
     </span>
   );
 }
@@ -429,14 +438,14 @@ function PantheonCockpit() {
   );
 }
 
-function SolarSanctuaryCockpit() {
+function SolarSanctuaryCockpit({ nilPalette = false }: { nilPalette?: boolean }) {
   const salaryBars = [22, 38, 61, 86, 100, 76, 43, 18];
 
   return (
-    <div className={styles.solar}>
+    <div className={`${styles.solar} ${nilPalette ? styles.solarNil : ""}`}>
       <aside className={styles.solarSidebar}>
         <div className={styles.solarInstitution}>
-          <Brand />
+          {nilPalette ? <NilBrand /> : <Brand />}
           <p>L’institution · réseau alumni</p>
         </div>
 
@@ -472,7 +481,17 @@ function SolarSanctuaryCockpit() {
 
       <header className={styles.solarHeader}>
         <div>
-          <strong>NIL</strong>
+          {nilPalette ? (
+            <Image
+              className={styles.solarHeaderLogo}
+              src="/logo-nil.jpg"
+              alt="NIL"
+              width={60}
+              height={48}
+            />
+          ) : (
+            <strong>NIL</strong>
+          )}
           <nav aria-label="Navigation supérieure">
             <a href="#sanctuaire" className={styles.solarTopActive}>
               Sanctuaire
@@ -495,7 +514,7 @@ function SolarSanctuaryCockpit() {
           <span>Écosystème analytique</span>
           <h1>
             Le sanctuaire de Sophie
-            <em>Version solaire</em>
+            <em>{nilPalette ? "Identité du Nil" : "Version solaire"}</em>
           </h1>
         </section>
 
@@ -703,6 +722,7 @@ export default function ClearCockpitPrototype() {
       {variant === "B" && <RegistreCockpit />}
       {variant === "C" && <PantheonCockpit />}
       {variant === "D" && <SolarSanctuaryCockpit />}
+      {variant === "E" && <SolarSanctuaryCockpit nilPalette />}
       <VariantSwitcher variant={variant} onChange={updateVariant} />
     </div>
   );

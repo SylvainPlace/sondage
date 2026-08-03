@@ -1,0 +1,53 @@
+:root {
+  /* Identité NIL — extraite du logo validé « Sanctuaire du Nil ». */
+  --nil-navy-950: #0b1a5a;
+  --nil-navy-800: #112a6f;
+  --nil-blue-700: #163f87;
+  --nil-royal-600: #3749c0;
+  --nil-blue-500: #3084e4;
+  --nil-cyan-400: #32cce0;
+  --nil-turquoise-400: #35c6c6;
+
+  --nil-surface-page: #f5fbff;
+  --nil-surface-raised: #ffffff;
+  --nil-surface-soft: #eef8fd;
+  --nil-border: rgba(17, 42, 111, 0.12);
+  --nil-border-strong: rgba(48, 132, 228, 0.24);
+  --nil-text: var(--nil-navy-950);
+  --nil-text-secondary: #526d9c;
+  --nil-text-muted: #739dbc;
+  --nil-danger: #b4233c;
+  --nil-success: #167568;
+
+  --nil-gradient-flow: linear-gradient(
+    100deg,
+    var(--nil-royal-600),
+    var(--nil-blue-500) 52%,
+    var(--nil-turquoise-400)
+  );
+  --nil-gradient-action: linear-gradient(
+    135deg,
+    var(--nil-navy-950),
+    var(--nil-royal-600) 48%,
+    var(--nil-cyan-400)
+  );
+
+  --nil-radius-sm: 8px;
+  --nil-radius-md: 12px;
+  --nil-radius-lg: 20px;
+  --nil-shadow-sm: 0 8px 24px rgba(48, 132, 228, 0.06);
+  --nil-shadow-md: 0 18px 52px rgba(48, 132, 228, 0.1);
+
+  --nil-space-1: 0.25rem;
+  --nil-space-2: 0.5rem;
+  --nil-space-3: 0.75rem;
+  --nil-space-4: 1rem;
+  --nil-space-6: 1.5rem;
+  --nil-space-8: 2rem;
+  --nil-space-12: 3rem;
+  --nil-space-16: 4rem;
+
+  --nil-content-width: 72rem;
+  --nil-sidebar-width: 15.5rem;
+  --nil-header-height: 4rem;
+}

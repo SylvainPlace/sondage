@@ -12,6 +12,7 @@ d’actualiser son relevé.
 /prototype/alumni/cockpit-clair?variant=B
 /prototype/alumni/cockpit-clair?variant=C
 /prototype/alumni/cockpit-clair?variant=D
+/prototype/alumni/cockpit-clair?variant=E
 ```
 
 Les flèches du sélecteur ou du clavier changent de variante.
@@ -71,6 +72,30 @@ Cette variante adapte la maquette « Le Sanctuaire d’Isis (Version Solaire) »
 fournie pour la revue. Elle ne dépend ni de Tailwind, ni de Google Fonts, ni
 d’images distantes.
 
+## E — Sanctuaire du Nil
+
+- Palette extraite du nouveau logo : bleu nuit `#0B1A5A`, bleu profond
+  `#112A6F`, bleu royal `#3749C0`, bleu clair `#3084E4`, cyan `#32CCE0` et
+  turquoise `#35C6C6`.
+- Structure : strictement identique à la variante D pour isoler l’effet de la
+  nouvelle identité visuelle.
+- Signature : le titre, les indicateurs, les graphiques et les actions suivent
+  le courant coloré du logo, du bleu nuit vers le turquoise.
+- Logo : la référence fournie est intégrée dans `public/logo-nil.jpg` et
+  utilisée dans la navigation desktop et l’en-tête mobile.
+
+Le cyan et le turquoise restent réservés aux progressions et aux actions. Les
+textes utilisent le bleu nuit afin de conserver un contraste suffisant sur les
+surfaces très claires.
+
+## Verdict
+
+La variante E est retenue comme direction officielle. Elle conserve de D la
+navigation institutionnelle, le sceau de profil et le cluster analytique, tout
+en adoptant le logo et le courant bleu-turquoise de NIL. Les décisions pérennes
+sont consignées dans `docs/adr/0003-identite-visuelle-sanctuaire-du-nil.md` et
+les tokens de production dans `src/styles/nil-tokens.css`.
+
 ## Captures
 
 Chaque variante dispose d’une capture desktop et mobile :
@@ -79,3 +104,4 @@ Chaque variante dispose d’une capture desktop et mobile :
 - `b-registre-desktop.png` et `b-registre-mobile.png` ;
 - `c-pantheon-desktop.png` et `c-pantheon-mobile.png`.
 - `d-sanctuaire-desktop.png` et `d-sanctuaire-mobile.png`.
+- `e-sanctuaire-nil-desktop.png` et `e-sanctuaire-nil-mobile.png`.

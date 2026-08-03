@@ -1,15 +1,18 @@
+@import "../styles/nil-tokens.css";
+
 :root {
-  --primary: #be9249;
-  --primary-hover: #99763a;
-  --bg-body: #f8fafc;
-  --bg-card: #ffffff;
+  /* Alias historiques conservés pendant la migration des écrans existants. */
+  --primary: var(--nil-blue-500);
+  --primary-hover: var(--nil-navy-800);
+  --bg-body: var(--nil-surface-page);
+  --bg-card: var(--nil-surface-raised);
   --card-bg: var(--bg-card);
   --background: #ffffff;
-  --background-alt: #f1f5f9;
-  --text-main: #1e293b;
+  --background-alt: var(--nil-surface-soft);
+  --text-main: var(--nil-text);
   --foreground: var(--text-main);
-  --text-muted: #64748b;
-  --border: #e2e8f0;
+  --text-muted: var(--nil-text-secondary);
+  --border: var(--nil-border);
 }
 
 * {
@@ -26,24 +29,19 @@ body {
   position: relative;
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  background-image: url("/logo.svg");
-  background-repeat: repeat;
-  background-size: 50;
-  opacity: 0.05;
-  pointer-events: none;
-}
-
 a {
   text-decoration: none;
   color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--nil-cyan-400) 65%, white);
+  outline-offset: 3px;
+}
+
+::selection {
+  color: white;
+  background: var(--nil-royal-600);
 }
 
 .container {

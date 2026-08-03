@@ -1,10 +1,9 @@
 .card {
   background-color: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: var(--nil-radius-md);
+  box-shadow: var(--nil-shadow-sm);
   padding: 1.5rem;
-  transition: transform 0.2s, box-shadow 0.2s;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -12,9 +11,9 @@
 
 .title {
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: var(--nil-blue-700);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.12em;
   margin-bottom: 0.5rem;
   margin-top: 0;
   font-weight: 700;

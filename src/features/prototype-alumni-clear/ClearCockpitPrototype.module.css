@@ -1105,6 +1105,26 @@
   letter-spacing: 0.2em;
 }
 
+.nilBrand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nilBrand > img {
+  width: 126px;
+  height: 101px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
+.solarHeaderLogo {
+  width: 60px;
+  height: 48px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
 .solarSidebar > nav {
   display: flex;
   flex-direction: column;
@@ -1690,6 +1710,181 @@
   font-size: 0.55rem;
   text-transform: uppercase;
   letter-spacing: 0.13em;
+}
+
+/* E — Sanctuaire aux couleurs du nouveau logo NIL */
+
+.solarNil {
+  color: #0b1a5a;
+  background: #f5fbff;
+}
+
+.solarNil .solarSidebar {
+  background: #f9fdff;
+  border-color: rgba(11, 26, 90, 0.1);
+}
+
+.solarNil .solarInstitution p,
+.solarNil .solarProfile dt,
+.solarNil .solarBarLabels,
+.solarNil .solarTrajectory dt,
+.solarNil .solarDonut span,
+.solarNil .solarFooter small {
+  color: #739dbc;
+}
+
+.solarNil .solarSidebar > nav a {
+  color: #163f87;
+}
+
+.solarNil .solarSidebar > nav a span {
+  color: #3084e4;
+}
+
+.solarNil .solarSidebar > nav .solarNavActive {
+  color: #0b1a5a;
+  background: rgba(50, 204, 224, 0.1);
+  border-color: #3084e4;
+}
+
+.solarNil .solarSidebar > nav .solarNavActive span {
+  color: #35c6c6;
+}
+
+.solarNil .solarSidebarFooter {
+  border-color: rgba(11, 26, 90, 0.1);
+}
+
+.solarNil .solarSidebarFooter a,
+.solarNil .solarHeader nav a,
+.solarNil .solarReach ul,
+.solarNil .solarRebirth p,
+.solarNil .solarFooter nav a {
+  color: #526d9c;
+}
+
+.solarNil .solarSidebarFooter button,
+.solarNil .solarRebirth button:last-child {
+  color: #112a6f;
+  background: rgba(48, 132, 228, 0.05);
+  border-color: #3084e4;
+}
+
+.solarNil .solarHeader {
+  background: rgba(249, 253, 255, 0.92);
+  border-color: rgba(11, 26, 90, 0.1);
+}
+
+.solarNil .solarHeader > div > strong,
+.solarNil .solarHeader nav .solarTopActive,
+.solarNil .solarHeaderActions button,
+.solarNil .solarProfile dd,
+.solarNil .solarDistribution header small,
+.solarNil .solarTrajectory dd,
+.solarNil .solarDonut strong,
+.solarNil .solarFooter strong {
+  color: #112a6f;
+}
+
+.solarNil .solarHeader nav .solarTopActive {
+  border-color: #32cce0;
+}
+
+.solarNil .solarSearch {
+  color: #739dbc;
+  background: #eef8fd;
+}
+
+.solarNil .solarAvatar,
+.solarNil .solarProfileIdentity > span,
+.solarNil .solarProfile > button,
+.solarNil .solarRebirth button:first-child {
+  color: #fff;
+  background: linear-gradient(135deg, #0b1a5a, #3749c0 48%, #32cce0);
+  border-color: #3084e4;
+}
+
+.solarNil .solarHero > span,
+.solarNil .solarProfile h2,
+.solarNil .solarVisuals section > span,
+.solarNil .solarVisuals section header span,
+.solarNil .solarRebirth > span {
+  color: #163f87;
+}
+
+.solarNil .solarHero h1 {
+  color: #0b1a5a;
+}
+
+.solarNil .solarHero h1 em {
+  color: transparent;
+  background: linear-gradient(90deg, #3749c0 0%, #3084e4 48%, #35c6c6 100%);
+  background-clip: text;
+}
+
+.solarNil .solarProfile,
+.solarNil .solarVisuals > section,
+.solarNil .solarRebirth {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(17, 42, 111, 0.1);
+  box-shadow: 0 18px 52px rgba(48, 132, 228, 0.08);
+}
+
+.solarNil .solarProfile h2,
+.solarNil .solarTrajectory dl,
+.solarNil .solarFooter {
+  border-color: rgba(48, 132, 228, 0.16);
+}
+
+.solarNil .solarCompletion {
+  background: #dceff7;
+}
+
+.solarNil .solarCompletion span {
+  background: linear-gradient(90deg, #3749c0, #3084e4, #35c6c6);
+}
+
+.solarNil .solarBars i {
+  background: rgba(48, 132, 228, 0.09);
+  border-color: rgba(48, 132, 228, 0.22);
+}
+
+.solarNil .solarBars i:nth-child(4) {
+  background: #3749c0;
+}
+
+.solarNil .solarBars i:nth-child(5) {
+  background: linear-gradient(180deg, #32cce0, #3084e4);
+}
+
+.solarNil .solarCurve {
+  color: #3084e4;
+}
+
+.solarNil .solarDonut {
+  background: conic-gradient(#0b1a5a 0 35%, #3084e4 35% 68%, #35c6c6 68% 88%, #dff7fb 88% 100%);
+}
+
+.solarNil .solarDonut::before {
+  background: #f9fdff;
+}
+
+.solarNil .solarLegendPrimary {
+  background: #0b1a5a;
+}
+
+.solarNil .solarLegendSecondary {
+  background: #3084e4;
+}
+
+.solarNil .solarLegendMuted {
+  background: #35c6c6;
+  border-color: #32cce0;
+}
+
+.solarNil .solarRebirth::before {
+  background: linear-gradient(90deg, #3749c0, #32cce0, #35c6c6);
+  opacity: 0.2;
 }
 
 @media (max-width: 940px) {

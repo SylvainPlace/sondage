@@ -2,12 +2,24 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  font-weight: 500;
+  border-radius: var(--nil-radius-md);
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease;
   border: none;
   font-family: inherit;
+}
+
+.button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .button:disabled {
@@ -17,56 +29,57 @@
 
 /* Variants */
 .primary {
-  background-color: var(--primary);
+  background: var(--nil-gradient-action);
   color: white;
+  box-shadow: 0 8px 22px rgba(48, 132, 228, 0.2);
 }
 
 .primary:hover:not(:disabled) {
-  background-color: var(--primary-hover);
+  box-shadow: 0 11px 28px rgba(48, 132, 228, 0.28);
 }
 
 .secondary {
-  background-color: transparent;
-  border: 1px solid var(--border);
-  color: var(--foreground);
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--nil-blue-500);
+  color: var(--nil-navy-800);
 }
 
 .secondary:hover:not(:disabled) {
-  background-color: var(--background-alt);
+  background-color: var(--nil-surface-soft);
 }
 
 .text {
   background-color: transparent;
-  color: var(--text-muted);
+  color: var(--nil-blue-700);
   padding: 0;
 }
 
 .text:hover:not(:disabled) {
-  color: var(--primary);
+  color: var(--nil-blue-500);
   text-decoration: underline;
 }
 
 .danger {
-  background-color: #dc2626;
+  background-color: var(--nil-danger);
   color: white;
 }
 
 .danger:hover:not(:disabled) {
-  background-color: #b91c1c;
+  background-color: #8f1830;
 }
 
 /* Sizes */
 .sm {
-  padding: 0.25rem 0.5rem;
+  padding: 0.45rem 0.75rem;
   font-size: 0.75rem;
 }
 
 .md {
-  padding: 0.5rem 1rem;
+  padding: 0.7rem 1.1rem;
   font-size: 0.875rem;
 }
 
 .lg {
-  padding: 0.75rem 1.5rem;
+  padding: 0.9rem 1.5rem;
   font-size: 1rem;
 }
