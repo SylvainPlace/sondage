@@ -25,8 +25,8 @@
   "dependencies": {
     "chart.js": "^4.4.1",
     "geojson": "^0.5.0",
-    "jose": "^6.2.5",
-    "knip": "^6.29.0",
+    "jose": "^6.2.8",
+    "knip": "^6.32.0",
     "leaflet": "^1.9.4",
     "next": "^16.3.0",
     "react": "^19.2.8",
@@ -34,23 +34,23 @@
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20260730.1",
+    "@cloudflare/workers-types": "^5.20260809.1",
     "@opennextjs/cloudflare": "^1.20.2",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.2",
-    "@types/leaflet": "^1.9.8",
-    "@types/node": "^26.1.2",
-    "@types/react": "^19.2.17",
+    "@types/leaflet": "^1.9.22",
+    "@types/node": "^26.2.0",
+    "@types/react": "^19.2.18",
     "@types/react-dom": "^19",
-    "@vitejs/plugin-react": "^6.0.4",
-    "esbuild": "^0.28.1",
+    "@vitejs/plugin-react": "^6.0.5",
+    "esbuild": "^0.28.2",
     "husky": "^9.1.7",
     "jsdom": "^29.1.1",
-    "oxfmt": "^0.61.0",
-    "oxlint": "^1.76.0",
+    "oxfmt": "^0.62.0",
+    "oxlint": "^1.77.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10",
-    "wrangler": "^4.115.0"
+    "wrangler": "^4.120.0"
   }
 }
