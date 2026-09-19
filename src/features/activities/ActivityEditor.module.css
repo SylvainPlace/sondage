@@ -1,0 +1,416 @@
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(17rem, 0.65fr);
+  gap: clamp(1rem, 3vw, 2rem);
+  align-items: start;
+}
+
+.form,
+.registry {
+  background: var(--nil-surface-raised);
+  border: 1px solid var(--nil-border);
+  border-radius: var(--nil-radius-lg);
+  box-shadow: var(--nil-shadow-sm);
+}
+
+.form {
+  overflow: hidden;
+}
+
+.formHeading {
+  padding: clamp(1.4rem, 3vw, 2.2rem);
+  color: white;
+  background:
+    radial-gradient(circle at 92% 0%, rgba(50, 204, 224, 0.24), transparent 12rem),
+    var(--nil-navy-950);
+}
+
+.formHeading > span,
+.registryHeading p {
+  color: var(--nil-cyan-400);
+  font-size: 0.64rem;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+.formHeading h2,
+.registryHeading h2 {
+  margin-top: 0.45rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.5rem, 3vw, 2.15rem);
+  font-weight: 400;
+  letter-spacing: -0.035em;
+}
+
+.formHeading p {
+  margin-top: 0.4rem;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.form fieldset {
+  display: grid;
+  gap: 1.1rem;
+  margin: 0;
+  padding: clamp(1.3rem, 3vw, 2rem);
+  border: 0;
+  border-bottom: 1px solid var(--nil-border);
+}
+
+.form legend {
+  padding: 0 0.7rem 0 0;
+  color: var(--nil-blue-700);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.15rem;
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.fieldGrid label,
+.form fieldset > label {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--nil-navy-800);
+  font-size: 0.72rem;
+  font-weight: 780;
+}
+
+.fieldGrid label > span,
+.form fieldset > label > span {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.fieldGrid small,
+.form fieldset small {
+  color: var(--nil-text-muted);
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.fieldGrid input,
+.fieldGrid select,
+.form fieldset > label input,
+.form fieldset > label select {
+  width: 100%;
+  min-height: 2.85rem;
+  padding: 0.72rem 0.8rem;
+  color: var(--nil-text);
+  background: var(--nil-surface-page);
+  border: 1px solid var(--nil-border-strong);
+  border-radius: var(--nil-radius-md);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 550;
+}
+
+.fieldGrid input:focus,
+.fieldGrid select:focus,
+.form fieldset > label input:focus {
+  background: white;
+  border-color: var(--nil-blue-500);
+  outline: 3px solid color-mix(in srgb, var(--nil-cyan-400) 20%, transparent);
+}
+
+.fieldGrid em,
+.form fieldset label > em {
+  color: var(--nil-danger);
+  font-size: 0.68rem;
+  font-style: normal;
+}
+
+.wideField {
+  grid-column: 1 / -1;
+}
+
+.moneyInput {
+  position: relative;
+}
+
+.moneyInput input {
+  padding-right: 2.5rem !important;
+}
+
+.moneyInput > span {
+  position: absolute;
+  top: 50%;
+  right: 0.9rem;
+  color: var(--nil-blue-700);
+  transform: translateY(-50%);
+}
+
+.checkRow {
+  display: flex !important;
+  grid-template-columns: auto 1fr;
+  gap: 0.7rem !important;
+  align-items: center;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.checkRow input {
+  width: 1.15rem !important;
+  min-height: 1.15rem !important;
+  accent-color: var(--nil-royal-600);
+}
+
+.baseline {
+  display: flex;
+  gap: 0.7rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 0.9rem;
+  color: var(--nil-text-secondary);
+  background: color-mix(in srgb, var(--nil-cyan-400) 8%, white);
+  border-radius: var(--nil-radius-md);
+  font-size: 0.7rem;
+}
+
+.baseline strong {
+  color: var(--nil-navy-800);
+}
+
+.actions {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: flex-end;
+  padding: 1.2rem clamp(1.3rem, 3vw, 2rem);
+}
+
+.actions button,
+.activityCard footer button {
+  border: 0;
+  border-radius: var(--nil-radius-md);
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.primaryButton {
+  display: flex;
+  gap: 1.8rem;
+  align-items: center;
+  min-height: 3rem;
+  padding: 0.7rem 1rem 0.7rem 1.15rem;
+  color: white;
+  background: var(--nil-gradient-action);
+  box-shadow: var(--nil-shadow-md);
+}
+
+.secondaryButton {
+  padding: 0.7rem 1rem;
+  color: var(--nil-blue-700);
+  background: var(--nil-surface-soft);
+}
+
+.primaryButton:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.registry {
+  position: sticky;
+  top: 1.5rem;
+  overflow: hidden;
+}
+
+.registryHeading {
+  padding: 1.3rem;
+  border-bottom: 1px solid var(--nil-border);
+}
+
+.registryHeading p {
+  color: var(--nil-blue-700);
+}
+
+.registryHeading h2 {
+  font-size: 1.6rem;
+}
+
+.registryHeading > span {
+  display: inline-block;
+  margin-top: 0.6rem;
+  padding: 0.3rem 0.55rem;
+  color: var(--nil-success);
+  background: color-mix(in srgb, var(--nil-turquoise-400) 10%, white);
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.emptyState {
+  display: grid;
+  gap: 0.8rem;
+  min-height: 12rem;
+  padding: 1.5rem;
+  color: var(--nil-text-secondary);
+  place-content: center;
+  text-align: center;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.emptyState > span {
+  color: var(--nil-cyan-400);
+  font-size: 2rem;
+}
+
+.activityCard {
+  padding: 1.3rem;
+}
+
+.activityCard + .activityCard {
+  border-top: 1px solid var(--nil-border);
+}
+
+.activityTopline {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--nil-text-muted);
+  font-size: 0.61rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.activityTopline > span {
+  color: var(--nil-blue-700);
+  font-weight: 850;
+}
+
+.activityCard h3 {
+  margin-top: 1rem;
+  color: var(--nil-navy-950);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.45rem;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
+
+.activityCard > p {
+  margin-top: 0.25rem;
+  color: var(--nil-text-secondary);
+  font-size: 0.72rem;
+}
+
+.activityCard dl {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 1.2rem;
+}
+
+.activityCard dl > div {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed var(--nil-border);
+}
+
+.activityCard dt {
+  color: var(--nil-text-muted);
+  font-size: 0.65rem;
+}
+
+.activityCard dd {
+  color: var(--nil-navy-800);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-align: right;
+}
+
+.activityCard footer {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.activityCard footer button {
+  flex: 1;
+  padding: 0.6rem;
+  color: var(--nil-blue-700);
+  background: var(--nil-surface-soft);
+}
+
+.activityCard footer button:last-child {
+  color: var(--nil-danger);
+}
+
+.error,
+.state {
+  margin: 1rem;
+  padding: 1rem;
+  border-radius: var(--nil-radius-md);
+  font-size: 0.78rem;
+}
+
+.error {
+  color: var(--nil-danger);
+  background: color-mix(in srgb, var(--nil-danger) 8%, white);
+}
+
+.state {
+  display: grid;
+  gap: 0.5rem;
+  color: var(--nil-text-secondary);
+  background: white;
+  border: 1px solid var(--nil-border);
+}
+
+.state a {
+  color: var(--nil-blue-700);
+  font-weight: 750;
+}
+
+@media (max-width: 1080px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .registry {
+    position: static;
+  }
+}
+
+@media (max-width: 620px) {
+  .fieldGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .wideField {
+    grid-column: auto;
+  }
+
+  .baseline,
+  .activityTopline {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+  }
+
+  .actions button {
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primaryButton {
+    transition: none;
+  }
+}

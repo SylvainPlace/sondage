@@ -6,7 +6,7 @@ import type {
   SessionAuthenticationStore,
   SessionStore,
 } from "./session-repository";
-import { authenticateSession, issueSession } from "./session-service";
+import { authenticateSession, describeDevice, issueSession } from "./session-service";
 
 describe("issueSession", () => {
   it("persists only the token hash and returns the raw token once", async () => {
@@ -32,14 +32,25 @@ describe("issueSession", () => {
   });
 });
 
+describe("describeDevice", () => {
+  it("builds a readable device label from the user agent", () => {
+    expect(
+      describeDevice("Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/142.0"),
+    ).toBe("Firefox sur Windows");
+  });
+});
+
 describe("authenticateSession", () => {
   const activeSession: AuthenticatedSession = {
     sessionId: "session_1",
     accountId: "account_1",
+    firebaseUid: "firebase_1",
     emailNormalized: "alumni@example.org",
     role: "alumni",
     lastSeenAt: "2026-07-29T10:00:00.000Z",
     expiresAt: "2027-10-29T10:00:00.000Z",
+    csrfTokenHash: "csrf-hash",
+    authenticatedAt: "2026-07-29T10:00:00.000Z",
   };
 
   it("rejects unknown, revoked, expired or inactive sessions through the store", async () => {

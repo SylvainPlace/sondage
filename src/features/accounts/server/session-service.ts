@@ -14,12 +14,14 @@ interface IssueSessionInput {
   now: Date;
   deviceLabel?: string | null;
   userAgentSummary?: string | null;
+  authenticatedAt?: Date;
 }
 
 export interface IssuedSession {
   id: string;
   token: string;
   expiresAt: Date;
+  csrfToken: string;
 }
 
 export async function issueSession(
@@ -28,6 +30,8 @@ export async function issueSession(
 ): Promise<IssuedSession> {
   const token = createOpaqueSessionToken();
   const tokenHash = await hashOpaqueToken(token, input.pepper);
+  const csrfToken = createOpaqueSessionToken();
+  const csrfTokenHash = await hashOpaqueToken(csrfToken, input.pepper);
   const id = `session_${crypto.randomUUID()}`;
   const expiresAt = calculateSessionExpiry(input.now);
   const nowIso = input.now.toISOString();
@@ -36,16 +40,43 @@ export async function issueSession(
     id,
     tokenHash,
     accountId: input.accountId,
-    deviceLabel: input.deviceLabel ?? null,
+    deviceLabel: input.deviceLabel ?? describeDevice(input.userAgentSummary),
     userAgentSummary: input.userAgentSummary ?? null,
     createdAt: nowIso,
     lastSeenAt: nowIso,
     expiresAt: expiresAt.toISOString(),
+    csrfTokenHash,
+    authenticatedAt: (input.authenticatedAt ?? input.now).toISOString(),
   };
 
   await store.create(session);
 
-  return { id, token, expiresAt };
+  return { id, token, expiresAt, csrfToken };
+}
+
+export function describeDevice(userAgent: string | null | undefined): string {
+  if (!userAgent) return "Appareil non identifié";
+  const browser = userAgent.includes("Edg/")
+    ? "Edge"
+    : userAgent.includes("Firefox/")
+      ? "Firefox"
+      : userAgent.includes("Chrome/")
+        ? "Chrome"
+        : userAgent.includes("Safari/")
+          ? "Safari"
+          : "Navigateur";
+  const system = userAgent.includes("iPhone")
+    ? "iPhone"
+    : userAgent.includes("Android")
+      ? "Android"
+      : userAgent.includes("Windows")
+        ? "Windows"
+        : userAgent.includes("Macintosh")
+          ? "macOS"
+          : userAgent.includes("Linux")
+            ? "Linux"
+            : "appareil inconnu";
+  return `${browser} sur ${system}`;
 }
 
 export async function authenticateSession(
@@ -63,7 +94,7 @@ export async function authenticateSession(
 
   const lastSeenAt = new Date(session.lastSeenAt);
   if (!shouldTouchSession(lastSeenAt, now)) {
-    return session;
+    return { ...session, touched: false };
   }
 
   const expiresAt = calculateSessionExpiry(now);
@@ -78,5 +109,6 @@ export async function authenticateSession(
     ...session,
     lastSeenAt: now.toISOString(),
     expiresAt: expiresAt.toISOString(),
+    touched: true,
   };
 }

@@ -24,6 +24,11 @@ interface CreateEligibleAccount {
   now: string;
 }
 
+export interface EnsureEligibleAccountResult {
+  account: Account;
+  created: boolean;
+}
+
 function toAccount(row: AccountRow): Account {
   return {
     id: row.id,
@@ -85,9 +90,13 @@ export class AccountRepository {
   }
 
   async createEligible(input: CreateEligibleAccount): Promise<Account> {
+    return (await this.ensureEligible(input)).account;
+  }
+
+  async ensureEligible(input: CreateEligibleAccount): Promise<EnsureEligibleAccountResult> {
     const emailNormalized = normalizeEmail(input.email);
 
-    await this.db
+    const result = await this.db
       .prepare(
         `INSERT OR IGNORE INTO account (
           id, email_normalized, role, status, created_at, updated_at
@@ -101,7 +110,10 @@ export class AccountRepository {
       throw new Error("Eligible account could not be created");
     }
 
-    return account;
+    return {
+      account,
+      created: result.meta.changes > 0,
+    };
   }
 
   async activate(id: string, firebaseUid: string, now: string): Promise<Account | null> {

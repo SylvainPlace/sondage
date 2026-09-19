@@ -1,7 +1,7 @@
 {
   "name": "sondage",
   "main": ".open-next/worker.js",
-  "compatibility_date": "2024-09-23",
+  "compatibility_date": "2026-09-19",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "binding": "ASSETS",
@@ -13,6 +13,13 @@
   "images": {
     "binding": "IMAGES"
   },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "alumni_db",
+      "migrations_dir": "migrations"
+    }
+  ],
   "observability": {
     "logs": {
       "enabled": true,
